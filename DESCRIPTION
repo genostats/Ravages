@@ -1,0 +1,16 @@
+Package: oz
+Type: Package
+Title: Genetic Data Handling (QC, GRM, LD, PCA) & Linear Mixed Models
+Version: 0.1
+Date: 2017-02-22
+Encoding: UTF-8
+Author: Hervé Perdry 
+Maintainer: Hervé Perdry <herve.perdry@u-psud.fr>
+Description: essai
+License: GPL-3
+LinkingTo: Rcpp, RcppParallel, RcppEigen, gaston
+Depends: Rcpp, RcppParallel, methods, gaston
+Imports: WhopGenome (>= 0.9.4)
+NeedsCompilation: yes
+LazyLoad: yes
+LazyData: yes
