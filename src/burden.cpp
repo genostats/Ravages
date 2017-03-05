@@ -13,6 +13,7 @@ using namespace RcppParallel;
 NumericMatrix burden2(matrix4 & A, int n_regions, IntegerVector region, NumericVector w0, NumericVector w1, NumericVector w2) { 
   NumericMatrix B(A.true_ncol*4, n_regions);  
   for(size_t i = 0; i < A.nrow; i++) {
+    if(region[i] == NA_INTEGER) continue;
     double ww[4] = {w0(i), w1(i), w2(i), 0};
     for(size_t j = 0; j < A.true_ncol; j++) {
       uint8_t d = A.data[i][j];
@@ -30,8 +31,6 @@ NumericMatrix burden2(matrix4 & A, int n_regions, IntegerVector region, NumericV
 NumericMatrix burden2(XPtr<matrix4> p_A, int n_regions, IntegerVector region, NumericVector w0, NumericVector w1, NumericVector w2) {
   return burden2(*p_A, n_regions, region, w0, w1, w2);
 }
-
-
 
  
 RcppExport SEXP oz_burden2(SEXP p_ASEXP, SEXP n_regionsSEXP, SEXP regionSEXP, SEXP w0SEXP, SEXP w1SEXP, SEXP w2SEXP) {
