@@ -9,4 +9,4 @@ importFrom("RcppParallel", "setThreadOptions", "defaultNumThreads")
 
 useDynLib(oz)
 
-export(burden)
+export(burden, region_geno,B_cast)
