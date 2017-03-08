@@ -10,3 +10,4 @@ importFrom("RcppParallel", "setThreadOptions", "defaultNumThreads")
 useDynLib(oz)
 
 export(burden, region_geno,B_cast)
+export(count.singletons)
