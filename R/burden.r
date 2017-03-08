@@ -44,6 +44,48 @@ B_cast <- function(x, seuil, regions){
   }
 
 
+Chi2 <- function(centre, B){
+ x <- table(centre,B)
+ if (is.matrix(x)) {
+   nr <- as.integer(nrow(x))
+   nc <- as.integer(ncol(x))
+   n <- sum(x)
+     if (is.na(nr) || is.na(nc) || is.na(nr * nc))
+       stop("invalid nrow(x) or ncol(x)", domain = NA)
+   sr <- rowSums(x)
+   sc <- colSums(x)
+   E <- outer(sr, sc, "*")/n
+                                    
+   if (all(E>5)) {
+     c <- chisq.test( x )
+   }
+   else {
+     c <- chisq.test( x, simulate.p.value=TRUE, B=1e5)
+   }
+ }
+ return(c$p.value)       
+ }
+
+
+
+WSS <- function(x,seuil,regions){
+
+ weights.0 <- ifelse( x@snps$Q>0.5 & x@snps$maf<seuil, 2/x@snps$WSS, 0)
+ weights.1 <- ifelse( x@snps$maf<seuil, 1/x@snps$WSS, 0)
+ weights.2 <- ifelse( x@snps$Q<0.5 & x@snps$maf<seuil, 2/x@snps$WSS, 0)
+    
+ if(length(weights.1) != ncol(x) | length(weights.2) != ncol(x) | length(regions) != ncol(x)) {
+   stop("x and weights dimensions mismatch")
+   }
+ if(!is.factor(regions)) stop("'regions' is not a factor")
+                            
+   B <- .Call('oz_burden2', PACKAGE = 'oz', x@bed, nlevels(regions), regions, weights.0, weights.1, weights.2)
+   colnames(B) <- levels(regions)
+   rownames(B) <- x@ped$id
+   return(B)
+ }
+
+
 
 burden <- function(x, regions, weights.0, weights.1, weights.2) {
   if(length(weights.1) != ncol(x) | length(weights.2) != ncol(x) | length(regions) != ncol(x)) {
@@ -56,4 +98,3 @@ burden <- function(x, regions, weights.0, weights.1, weights.2) {
   rownames(B) <- x@ped$id
   B
 }
-
