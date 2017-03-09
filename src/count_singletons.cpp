@@ -70,6 +70,9 @@ IntegerVector count_alternative_alleles(XPtr<matrix4> p_A, LogicalVector which_s
   int n = p_A->nrow; // nb snps
   int m = p_A->ncol; // nb inds
 
+  if(which_snps.length() != p_A->nrow)
+    stop("Dimensions mismatch");
+
   int nb_snps = sum(which_snps);
   uint8_t ** data = new uint8_t * [nb_snps];
   std::vector<bool> inv(nb_snps);
