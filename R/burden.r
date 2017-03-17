@@ -68,13 +68,13 @@ Chi2 <- function(centre, B){
 
 
 
-WSS <- function(x, regions, threshold=0.01){
+WSS <- function(x, regions){
 
  Q <- (2*x@snps$N2+x@snps$N1 + 1) / ( 2*(x@snps$N0+x@snps$N1+x@snps$N2) +2 )
  W <- sqrt((nrow(x)-x@snps$NAs) * Q * (1-Q))
- weights.0 <- ifelse( Q > 0.5 & (1-Q) < threshold, 2/W, 0)
- weights.1 <- ifelse( Q < threshold | (1-Q) < threshold, 1/W, 0)
- weights.2 <- ifelse( Q < 0.5 & Q < threshold, 2/W, 0)
+ weights.0 <- ifelse( Q > 0.5, 2/W, 0)
+ weights.1 <- 1/W
+ weights.2 <- ifelse( Q < 0.5, 2/W, 0)
     
  if(length(weights.0) != ncol(x) | length(weights.1) != ncol(x) | length(weights.2) != ncol(x) | length(regions) != ncol(x)) {
    stop("x and weights dimensions mismatch")
