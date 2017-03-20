@@ -1,14 +1,9 @@
-// [[Rcpp::depends(RcppParallel)]]
 #include <Rcpp.h>
-#include <RcppParallel.h>
 #include <iostream>
 #include <ctime>
 #include "gaston.h"
 
 using namespace Rcpp;
-using namespace RcppParallel;
-
-
 
 NumericMatrix burden2(matrix4 & A, int n_regions, IntegerVector region, NumericVector w0, NumericVector w1, NumericVector w2) { 
   NumericMatrix B(A.true_ncol*4, n_regions);  
