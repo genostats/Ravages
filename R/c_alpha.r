@@ -1,0 +1,16 @@
+C.ALPHA <- function(x, centre, gpe) {
+  Nc <- minor.alleles.by.group(x, centre)
+  N <- colSums(Nc)
+  Mc <- major.alleles.by.group(x, centre)
+  M <- colSums(Mc)
+  p <- sweep( Nc + Mc, 2, (N + M ), "/" )
+  Sc <- (sweep(p, 2, N, "*") - Nc)**2 - sweep(p*(1-p), 2, N, "*")
+  Ca <- colSums(Sc)
+  sp2 <- colSums(p^2)
+  Vc <- 2 * N * ( (N-3) * sp2^2 + (N-1) * sp2 - 2 * (N-2) * colSums(p^3) )
+  Stat <- data.frame(Ca, Vc, gpe=gpe$gpe)
+  Ca_Sum <- tapply(Stat$Ca, Stat$gpe, sum)
+  Vc_Sum <- tapply(Stat$Vc, Stat$gpe, sum)  
+  p <- pnorm( Ca_Sum/sqrt(Vc_Sum) , lower.tail=FALSE)
+  data.frame( chr=tapply(gpe$chr,gpe$gpe,mean),pos=tapply(gpe$pos,gpe$gpe,mean),gpe=levels(gpe$gpe), C.alpha = Ca_Sum, Sd = sqrt(Vc_Sum), p = p )
+  }
