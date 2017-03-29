@@ -8,7 +8,7 @@ using namespace Rcpp;
 using namespace RcppParallel;
 
 // 
-struct ploc : public Worker {
+struct plic : public Worker {
   // input 
   uint8_t ** data;
   const size_t ncol;
@@ -21,20 +21,20 @@ struct ploc : public Worker {
   int * R;
 
  //constructeur
- ploc(uint8_t ** data, const size_t ncol, const size_t true_ncol, const size_t nrow, const size_t nlevels, std::vector<int> group, std::vector<bool> inverse) 
+ plic(uint8_t ** data, const size_t ncol, const size_t true_ncol, const size_t nrow, const size_t nlevels, std::vector<int> group, std::vector<bool> inverse) 
             : data(data), ncol(ncol), true_ncol(true_ncol), nrow(nrow), nlevels(nlevels), group(group), inverse(inverse) {
-    R = new int[nlevels*nrow];
-    std::fill(R, R+nlevels*nrow, 0); 
+    R = new int[2*nlevels*nrow];
+    std::fill(R, R+2*nlevels*nrow, 0); 
   }
 
   //constructeur pour le split
-  ploc(ploc & Q, Split) : data(Q.data), ncol(Q.ncol), true_ncol(Q.true_ncol), nrow(Q.nrow), nlevels(Q.nlevels), group(Q.group), inverse(Q.inverse) {
-    R = new int[nlevels*nrow];
-    std::fill(R, R+nlevels*nrow, 0); 
+  plic(plic & Q, Split) : data(Q.data), ncol(Q.ncol), true_ncol(Q.true_ncol), nrow(Q.nrow), nlevels(Q.nlevels), group(Q.group), inverse(Q.inverse) {
+    R = new int[2*nlevels*nrow];
+    std::fill(R, R+2*nlevels*nrow, 0); 
   }
 
   // destructeur
-  ~ploc() {
+  ~plic() {
     delete [] R;
   }
 
@@ -51,7 +51,8 @@ struct ploc : public Worker {
       for(size_t j = 0; j < true_ncol; j++) {
         uint8_t x = data[i][j];
         for(int ss = 0; ss < 4 && (4*j + ss) < ncol; ss++) {
-          R[ i*nlevels + group[4*j+ss]-1 ] += gg[x&3];
+          R[ 2*(i*nlevels + group[4*j+ss]-1) ] += gg[x&3];
+          R[ 2*(i*nlevels + group[4*j+ss]-1) + 1] += gg[2-x&3];
           x >>= 2;
         }
       }
@@ -59,15 +60,15 @@ struct ploc : public Worker {
   }
 
   // join
-  void join(const ploc & Q) {
-    std::transform(R, R + nlevels*nrow, Q.R, R, std::plus<int>());
+  void join(const plic & Q) {
+    std::transform(R, R + 2*nlevels*nrow, Q.R, R, std::plus<int>());
   }
 
 };
 
 
 //[[Rcpp::export]]
-IntegerMatrix alt_alleles_by_factor(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector group, LogicalVector inverse) {
+List alleles_by_factor(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector group, LogicalVector inverse) {
   int n = p_A->nrow; // nb snps
   int m = p_A->ncol; // nb inds
 
@@ -91,17 +92,24 @@ IntegerMatrix alt_alleles_by_factor(XPtr<matrix4> p_A, LogicalVector which_snps,
 
   int nlevels = as<CharacterVector>(group.attr("levels")).size();
 
-  ploc X(data, p_A->ncol, p_A->true_ncol, p_A->nrow, nlevels, gr, inv);
+  plic X(data, p_A->ncol, p_A->true_ncol, p_A->nrow, nlevels, gr, inv);
   parallelReduce(0, nb_snps, X);
   delete [] data;
 
   IntegerMatrix R(nlevels,nb_snps);
-  std::copy(X.R, X.R + nlevels*nb_snps, R.begin());
-
-  return R;
+  IntegerMatrix S(nlevels,nb_snps);
+  for(size_t i = 0; i < nlevels*nb_snps; i++) {
+    R[i] = X.R[2*i];
+    S[i] = X.R[2*i+1];
+  }
+  
+  List L;
+  L["minor"] = R;
+  L["major"] = S;
+  return L;
 }
 
-RcppExport SEXP oz_alt_alleles_by_factor(SEXP p_ASEXP, SEXP which_snpsSEXP, SEXP grSEXP, SEXP inverseSEXP) {
+RcppExport SEXP oz_alleles_by_factor(SEXP p_ASEXP, SEXP which_snpsSEXP, SEXP grSEXP, SEXP inverseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -109,7 +117,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< LogicalVector >::type which_snps(which_snpsSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type group(grSEXP);
     Rcpp::traits::input_parameter< LogicalVector >::type inverse(inverseSEXP);
-    rcpp_result_gen = Rcpp::wrap(alt_alleles_by_factor(p_A, which_snps, group, inverse));
+    rcpp_result_gen = Rcpp::wrap(alleles_by_factor(p_A, which_snps, group, inverse));
     return rcpp_result_gen;
 END_RCPP
 }
