@@ -13,7 +13,7 @@ NumericVector sum_by_group(NumericVector stat, IntegerVector group) {
   }
   NumericVector R(nlevels);
   for(int i = 0; i < n; i++)
-    if(!std::isnan(stat[i])) R[ group[i]-1 ] += stat[i];
+    if(!std::isnan(stat[i]) && !std::isnan(group[i]) ) R[ group[i]-1 ] += stat[i];
   return R;
 }
 
