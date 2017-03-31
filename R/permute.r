@@ -7,7 +7,7 @@ permute <- function(x, centre, region, STAT, target = 10, B.max = 1e5, which.snp
   while(b < B.max) {
     b <- b+1
     Perm <- STAT(x, sample(centre), region, which.snps);
-    w.greater <- (Perm > Obs)
+    w.greater <- (Perm >= Obs)
     A <- A + (!is.na(w.greater) & w.greater)
     B <- B + !is.na(w.greater)  
     # ne considérer que les snps qui sont dans un groupe où A < target

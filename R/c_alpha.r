@@ -1,4 +1,4 @@
-C.ALPHA <- function(x, centre, region, which.snps = rep(TRUE, ncol(x))) {
+C.ALPHA <- function(x, centre, region, which.snps = rep(TRUE, ncol(x)), p.asympt=FALSE) {
   L <- alleles.by.group(x, centre, which.snps)
   N <- colSums(L$minor)
   M <- colSums(L$major)
@@ -9,5 +9,9 @@ C.ALPHA <- function(x, centre, region, which.snps = rep(TRUE, ncol(x))) {
   Vc <- 2 * N * ( (N-3) * sp2^2 + (N-1) * sp2 - 2 * (N-2) * oz:::colSumsCub(p) )
   Ca_Sum <- .Call("oz_sum_by_group", PACKAGE = "oz", Ca, region[which.snps])
   Vc_Sum <- .Call("oz_sum_by_group", PACKAGE = "oz", Vc, region[which.snps])
-  Ca_Sum/sqrt(Vc_Sum)
+  if(p.asympt==TRUE){
+    S <- data.frame(gpe=levels(region), stat=Ca_Sum/sqrt(Vc_Sum), p=pnorm( Ca_Sum/sqrt(Vc_Sum) , lower.tail=FALSE))}
+  else{  
+    S <- Ca_Sum/sqrt(Vc_Sum)}
+  return (S)
 }
