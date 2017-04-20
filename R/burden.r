@@ -11,7 +11,7 @@ region_geno <- function(x, nb_groupes){
   while(length(which(pos_d$d>seuil)) > nb_groupes){
     seuil <- seuil+1000  }
                      
-  diff_pos <- diff(c(0,which(pos_d$chr!=23 & pos_d$chr!=24 & pos_d$chr!=26 & pos_d$d>seuil)))
+  diff_pos <- diff(c(0,which(pos_d$d>seuil), length(pos_d$d)))
   gpe <- as.factor(rep.int(1:length(diff_pos), diff_pos))  
                            
   gpe_geno <- data.frame(pos_d,gpe=gpe)
