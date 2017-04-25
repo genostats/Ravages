@@ -12,8 +12,9 @@ NumericVector sum_by_group(NumericVector stat, IntegerVector group) {
     stop("stat and group don't have the same length");
   }
   NumericVector R(nlevels);
-  for(int i = 0; i < n; i++)
-    if(!std::isnan(stat[i]) && !std::isnan(group[i]) ) R[ group[i]-1 ] += stat[i];
+  for(int i = 0; i < n; i++) 
+    if(!NumericVector::is_na(stat[i]) && !IntegerVector::is_na(group[i])) R[ group[i]-1 ] += stat[i];
+  
   return R;
 }
 
