@@ -10,7 +10,7 @@ permute <- function(x, centre, region, STAT, target = 10, B.max = 1e5, which.snp
 
   Obs <- STAT(x, centre, region, which.snps)
   n.reg <- nlevels(region)
-  A <- B <- integer(n.reg)
+  A <- B <- S <- SC <- integer(n.reg)
   b <- 0;
   while(b < B.max) {
     b <- b+1
@@ -21,6 +21,19 @@ permute <- function(x, centre, region, STAT, target = 10, B.max = 1e5, which.snp
     # ne considérer que les snps qui sont dans un groupe où A < target
     keep <- (A < target)
     which.snps <- which.snps & keep[region]
+    S <- S + Perm
+    SC <- S + Perm^2
   }
-  data.frame(Obs = Obs, A = A, B = B, p = A/B)
+  
+  if(B==B.max){
+    M <- S/B
+    V <- (1/ (B-1) ) * (SC - (S^2)/B)
+    StatO <- STAT(x, centre, region, which.snps)
+    p <- pnorm( ((StatO - M) / sqrt(V)), lower.tail=FALSE)
+  }
+  else{
+  p <- A/B
+  }
+  
+  data.frame(Obs = Obs, A = A, B = B, p = p)
 }

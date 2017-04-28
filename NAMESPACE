@@ -9,7 +9,8 @@ importFrom("RcppParallel", "setThreadOptions", "defaultNumThreads")
 
 useDynLib(oz)
 
-export(burden, region_geno,B_cast, Chi2, WSS)
+export(burden, B_cast, Chi2, WSS)
+export(pos_gpe, genes_gpe)
 export(count.singletons)
 export(Jaccard)
 export(minor.alleles.by.group, major.alleles.by.group, alleles.by.group)
