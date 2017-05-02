@@ -32,5 +32,5 @@ permute <- function(x, centre, region, STAT, target = 10, B.max = 1e5, which.snp
   
   p <- ifelse(B==B.max, pnorm( ((Obs - M) / sqrt(V)), lower.tail=FALSE), A/B)
   
-  data.frame(Obs = Obs, A = A, B = B, Moyenne = M, S=S, Sc=SC, Variance = V, p = p)
+  data.frame(Obs = Obs, A = A, B = B, Moyenne = M, Variance = V, p = p)
 }
