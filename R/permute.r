@@ -21,19 +21,16 @@ permute <- function(x, centre, region, STAT, target = 10, B.max = 1e5, which.snp
     # ne considérer que les snps qui sont dans un groupe où A < target
     keep <- (A < target)
     which.snps <- which.snps & keep[region]
+    Perm[ is.na(Perm) ] <- FALSE
     S <- S + Perm
-    SC <- S + Perm^2
+    SC <- SC + Perm^2
   }
+  #Calcul moyenne et variance
+  M <- S/B
+  V <- (1/ (B-1) ) * (SC - (S^2)/B)
   
-  if(B==B.max){
-    M <- S/B
-    V <- (1/ (B-1) ) * (SC - (S^2)/B)
-    StatO <- STAT(x, centre, region, which.snps)
-    p <- pnorm( ((StatO - M) / sqrt(V)), lower.tail=FALSE)
-  }
-  else{
-  p <- A/B
-  }
   
-  data.frame(Obs = Obs, A = A, B = B, p = p)
+  p <- ifelse(B==B.max, pnorm( ((Obs - M) / sqrt(V)), lower.tail=FALSE), A/B)
+  
+  data.frame(Obs = Obs, A = A, B = B, Moyenne = M, S=S, Sc=SC, Variance = V, p = p)
 }
