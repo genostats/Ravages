@@ -10,7 +10,7 @@ permute <- function(x, centre, region, STAT, target = 10, B.max = 1e5, which.snp
 
   Obs <- STAT(x, centre, region, which.snps)
   n.reg <- nlevels(region)
-  A <- B <- S <- SC <- integer(n.reg)
+  A <- B <- S <- SC <- SC3 <- SC4 <- integer(n.reg)
   b <- 0;
   while(b < B.max) {
     b <- b+1
@@ -24,13 +24,19 @@ permute <- function(x, centre, region, STAT, target = 10, B.max = 1e5, which.snp
     Perm[ is.na(Perm) ] <- FALSE
     S <- S + Perm
     SC <- SC + Perm^2
+    SC3 <- SC3 + Perm^3
+    SC4 <- SC4 + Perm^4
   }
   #Calcul moyenne et variance
   M <- S/B
   V <- (1/ (B-1) ) * (SC - (S^2)/B)
   
+  #Calcul des moments
+  M2 <- (1/B) * (SC - (S^2)/B)
+  M3 <- (1/B) * SC3 - 3 * M2 * M - M^3
+  M4 <- (1/B) * SC4 - 4 * M * (1/B) * SC3 + 6 * (1/B) * SC * M^2 - 3 * M^4
   
   p <- ifelse(B==B.max, pnorm( ((Obs - M) / sqrt(V)), lower.tail=FALSE), A/B)
   
-  data.frame(Obs = Obs, A = A, B = B, Moyenne = M, Variance = V, p = p)
+  data.frame(Obs = Obs, A = A, B = B, Moyenne = M, Variance = V, M2, M3, M4, p = p)
 }
