@@ -1,5 +1,5 @@
 
-permute <- function(x, centre, region, STAT, target = 10, B.max = 1e5, which.snps = rep(TRUE, ncol(x))) {
+permute <- function(x, centre, region, STAT, target = 10, B.max = 1e5, which.snps = rep(TRUE, ncol(x)), pearson=FALSE) {
   # mettre les niveaux du facteur 'region' dans l'ordre où ils apparaissent
   region1 <- as.character(region)
   region <- factor(region1,  unique(region1))
