@@ -56,7 +56,7 @@ permute <- function(x, centre, region, STAT, target = 10, B.max = 1e5, which.snp
     p <- ifelse(B==B.max, ppearson(Obs, pearsonFitM(M, V, Sk, Ku), lower.tail=FALSE), A/B)
   }
   
-  pval <- data.frame(Obs = Obs, A = A, B = B, Moyenne = M, Variance = V, M2, M3, M4, p = p)
+  pval <- data.frame(Obs = Obs, A = A, B = B, Moyenne = M, Variance = V, M2, M3, M4, Sk, Ku, p = p)
   
   #Calcul de la p valeur de pearson quand NA
   for (i in which(pval$p=="NaN")){
