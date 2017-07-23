@@ -7,7 +7,6 @@
 using namespace Rcpp;
 using namespace RcppParallel;
 
-// 
 struct plic : public Worker {
   // input 
   uint8_t ** data;
@@ -66,8 +65,6 @@ struct plic : public Worker {
 
 };
 
-
-//[[Rcpp::export]]
 List alleles_by_factor(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector group, LogicalVector inverse) {
   int n = p_A->nrow; // nb snps
   int m = p_A->ncol; // nb inds
@@ -76,6 +73,20 @@ List alleles_by_factor(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVecto
     stop("Dimensions mismatch");
 
   int nb_snps = sum(which_snps);
+  int nlevels = as<CharacterVector>(group.attr("levels")).size();
+
+  // une sécurité...  
+  if(nb_snps == 0 || nlevels == 0) {
+    IntegerMatrix R(nlevels, nb_snps);
+    IntegerMatrix S(nlevels, nb_snps);
+    List L;
+    L["minor"] = R;
+    L["major"] = S;
+    return L;
+  }
+ 
+
+  // extraction des données pertinentes...
   uint8_t ** data = new uint8_t * [nb_snps];
   std::vector<bool> inv(nb_snps);
   size_t k = 0;
@@ -85,14 +96,13 @@ List alleles_by_factor(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVecto
       data[k++] = p_A->data[i];
     }
   }
+  //******************************************
 
   std::vector<int> gr(m);
   for(size_t i = 0; i < m; i++)
     gr[i] = group[i];
 
-  int nlevels = as<CharacterVector>(group.attr("levels")).size();
-
-  plic X(data, p_A->ncol, p_A->true_ncol, p_A->nrow, nlevels, gr, inv);
+  plic X(data, p_A->ncol, p_A->true_ncol, nb_snps, nlevels, gr, inv);
   parallelReduce(0, nb_snps, X);
   delete [] data;
 
