@@ -3,42 +3,31 @@
 #include <iostream>
 #include <ctime>
 #include "gaston.h"
+#include "allelecounter2.h"
 
 using namespace Rcpp;
 using namespace RcppParallel;
 
-struct plic : public Worker {
-  // input 
-  uint8_t ** data;
-  const size_t ncol;
-  const size_t true_ncol; 
-  const size_t nrow;
-  const size_t nlevels;
-  std::vector<int> group; // facteur à nlevels niveaux
-  std::vector<bool> inverse;
-  //output
-  int * R;
-
  //constructeur
- plic(uint8_t ** data, const size_t ncol, const size_t true_ncol, const size_t nrow, const size_t nlevels, std::vector<int> group, std::vector<bool> inverse) 
+ allelecounter2::allelecounter2(uint8_t ** data, const size_t ncol, const size_t true_ncol, const size_t nrow, const size_t nlevels, std::vector<int> group, std::vector<bool> inverse) 
             : data(data), ncol(ncol), true_ncol(true_ncol), nrow(nrow), nlevels(nlevels), group(group), inverse(inverse) {
     R = new int[2*nlevels*nrow];
     std::fill(R, R+2*nlevels*nrow, 0); 
   }
 
   //constructeur pour le split
-  plic(plic & Q, Split) : data(Q.data), ncol(Q.ncol), true_ncol(Q.true_ncol), nrow(Q.nrow), nlevels(Q.nlevels), group(Q.group), inverse(Q.inverse) {
+  allelecounter2::allelecounter2(allelecounter2 & Q, Split) : data(Q.data), ncol(Q.ncol), true_ncol(Q.true_ncol), nrow(Q.nrow), nlevels(Q.nlevels), group(Q.group), inverse(Q.inverse) {
     R = new int[2*nlevels*nrow];
     std::fill(R, R+2*nlevels*nrow, 0); 
   }
 
   // destructeur
-  ~plic() {
+  allelecounter2::~allelecounter2() {
     delete [] R;
   }
 
   //worker
-  void operator()(size_t beg, size_t end) {
+  void allelecounter2::operator()(size_t beg, size_t end) {
     int gg[4];
     gg[3] = 0;
     for(size_t i = beg; i < end; i++) {
@@ -59,11 +48,12 @@ struct plic : public Worker {
   }
 
   // join
-  void join(const plic & Q) {
+  void allelecounter2::join(const allelecounter2 & Q) {
     std::transform(R, R + 2*nlevels*nrow, Q.R, R, std::plus<int>());
   }
 
-};
+
+
 
 List alleles_by_factor(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector group, LogicalVector inverse) {
   int n = p_A->nrow; // nb snps
@@ -102,7 +92,7 @@ List alleles_by_factor(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVecto
   for(size_t i = 0; i < m; i++)
     gr[i] = group[i];
 
-  plic X(data, p_A->ncol, p_A->true_ncol, nb_snps, nlevels, gr, inv);
+  allelecounter2 X(data, p_A->ncol, p_A->true_ncol, nb_snps, nlevels, gr, inv);
   parallelReduce(0, nb_snps, X);
   delete [] data;
 

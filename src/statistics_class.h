@@ -40,7 +40,8 @@ class Stats {
       update_snps();
   }
 
-  void update_snps() {
+  virtual void update_snps() {
+    //Rcout << "original update\n";
     nb_snps = sum(which_snps);
     data.resize(nb_snps);
     snp_group.resize(nb_snps);
@@ -73,7 +74,7 @@ class Stats {
       for(int i = 0; i < nb_snp_groups; i++) {
         if(!nb_snp_in_group[i]) continue;
         B[i]++;
-        if(stats[i] > Obs[i]) {
+        if(stats[i] >= Obs[i]) {
           A[i]++;
           if(A[i] == A_target) flag = true;
         }

@@ -8,6 +8,9 @@ C.ALPHA <- function(x, centre, region, which.snps = rep(TRUE, ncol(x)), p.asympt
   sp2 <- colSumsSq(p)
   Vc <- 2 * N * ( (N-3) * sp2^2 + (N-1) * sp2 - 2 * (N-2) * colSumsCub(p) )
   Ca_Sum <- sum_by_index(Ca, region[which.snps])
+
+  return(Ca_Sum)
+
   Vc_Sum <- sum_by_index(Vc, region[which.snps])
   if(p.asympt==TRUE){
     S <- data.frame(gpe=levels(region), stat=Ca_Sum/sqrt(Vc_Sum), p=pnorm( Ca_Sum/sqrt(Vc_Sum) , lower.tail=FALSE))}
