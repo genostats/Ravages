@@ -1,4 +1,4 @@
-pos_gpe <- function(x, nb_groupes){
+pos_gpe <- function(x, nb_groups){
   if(any(x@snps$pos == 0)) {
     stop("position equal to 0")
   }
@@ -8,7 +8,7 @@ pos_gpe <- function(x, nb_groupes){
   pos_d <- pos_d[which(pos_d$chr!=23 & pos_d$chr!=24 & pos_d$chr!=26),]
        
   seuil <- 1000
-  while(length(which(pos_d$d>seuil)) > nb_groupes){
+  while(length(which(pos_d$d>seuil)) > nb_groups){
     seuil <- seuil+1000  }
                      
   diff_pos <- diff(c(0,which(pos_d$d>seuil), length(pos_d$d)))
