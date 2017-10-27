@@ -1,15 +1,14 @@
 \name{genes_gpe}
-\alias{pos_gpe}
+\alias{genes_gpe}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Gene grouping
+Gene grouping based on known genes
 }
 \description{
-Performs a gene grouping using a bed.matrix
+Performs a gene grouping using a bed.matrix based on the positions of known genes
 }
 \usage{
 genes_gpe(x, genes, include.all = FALSE)
-pos_gpe(x, nb_groups)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,22 +20,17 @@ A list containing the fields : “Gene_Name”(the name of the gene), “Start” (the s
 }
   \item{include.all}{
 A logical indicated whether to include all SNPs in the grouping or not. Set as FALSE by default
-  \item{nb_groups}{
-The maximum number of groups to make
 }
 }
-}
-\details{
-Gene grouping using SNP positions(pos_gpe): The distance between two successive SNP is calculated. Then, the maximum allowed distance between two SNP in one genomic region is raised as long as the number of groups is greater than the \code{nb_groups}. 
-Gene grouping using known genes(genes_gpe): If \code{include.all} == FALSE, only the SNPs having their position between the \code{genes$Start} and the \code{genes$End} of a gene will be attributed to the corresponding gene. If \code{include.all == TRUE}, all the SNPs will be included. New gene positions are calculated by doing the average between the \code{genes$End} and the \code{genes$Start} of the next one. 
-
+\details{ 
+If \code{include.all} == FALSE, only the SNPs having their position between the \code{genes$Start} and the \code{genes$End} of a gene will be attributed to the corresponding gene. If \code{include.all == TRUE}, all the SNPs will be included. New gene positions are calculated by doing the average between the \code{genes$End} and the \code{genes$Start} of the next one. 
 }
 \value{
 A data frame containing:
   \item{chr}{The chromosome of the SNP}
   \item{id}{The name of the SNP}
   \item{pos}{The position of the SNP}
-  \item{gpe}{The computed group of the SNP being the \code{genes$Gene_Name} for genes_gpe or being a number between 1 and \code{nb_groups} for pos_gpe}
+  \item{gpe}{The computed group of the SNP being the \code{genes$Gene_Name}}
 }
 \data
 The files gene_positions_hg37.RData and gene_positions_hg38.RData can be used as the \code{genes} argument
@@ -56,8 +50,6 @@ Hervé Perdry and Ozvan Bocher
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-pos <- pos_gpe(x, 20000) #Separation of the SNP in 20000 groups at the most
-
 data(gene_positions_hg37)
 gpe_genes <- genes_gpe(x, hg37, include.all=TRUE) #Attribution of all the SNP in the genes from the list hg37
 

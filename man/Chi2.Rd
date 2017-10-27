@@ -44,7 +44,7 @@ Hervé Perdry and Ozvan Bocher
 data(gene_positions_hg37)
 gpe_genes <- genes_gpe(x, hg37, include.all=TRUE)
 B_CAST <- B_cast(x, gpe_genes$genes, maf.threshold=0.01)
-pval <- apply(B, 2, group=x@ped$centre) #Performs a chi-squared test between the different phenotypes in the bed matrix x for each genomic_region from the list gpe_genes 
+pval <- apply(B, 2, Chi2, group=x@ped$centre) #Performs a chi-squared test between the different phenotypes in the bed matrix x for each genomic_region from the list gpe_genes 
 
 ## The function is currently defined as
 function (B_CAST, group) 
