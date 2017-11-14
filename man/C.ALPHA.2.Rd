@@ -43,41 +43,6 @@ A data frame containing the following fields:
   \item{B}{\code{B.max} if the \code{target} is not reached or the number of permutations used to reach the \code{target}}
   \item{p}{The p-value associated to the C-ALPHA test}
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-Hervé Perdry and Ozvan Bocher
-}
-\note{
-%%  ~~further notes~~
-}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (x, group, genomic_region, which.snps = rep(TRUE, ncol(x)), 
-    target = 0, B.max = 0) 
-{
-    inverse <- (x@p > 0.5)
-    r <- .Call("oz_c_alpha", PACKAGE = "oz", x@bed, which.snps, 
-        genomic_region, group, inverse, target, B.max)
-    res <- data.frame(genomic.region = levels(genomic_region), 
-        r)
-    if (!is.null(res$A)) 
-        res$p <- (res$A + 1)/(res$B + 1)
-    return(res)
-  }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

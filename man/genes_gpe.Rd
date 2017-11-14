@@ -1,30 +1,26 @@
 \name{genes_gpe}
 \alias{genes_gpe}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-Gene grouping based on known genes
-}
+\title{ Gene grouping based on known genes }
 \description{
 Performs a gene grouping using a bed.matrix based on the positions of known genes
 }
 \usage{
 genes_gpe(x, genes, include.all = FALSE)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{
-A bed.matrix
-}
+  \item{x}{ A bed.matrix }
   \item{genes}{
-A list containing the fields : “Gene_Name”(the name of the gene), “Start” (the start position of the gene), “End” (the end of the gene) and “Chr”(the chromosome number)
-}
-  \item{include.all}{
-A logical indicated whether to include all SNPs in the grouping or not. Set as FALSE by default
-}
+    A list containing the fields : \code{Gene_Name} (the name of the gene),a
+    \code{Start} (the start position of the gene), \code{End} (the end of the gene) 
+    and \code{Chr} (the chromosome number)
+  }
+  \item{include.all}{ Logical. If \code{TRUE}, all SNPs are included in the grouping.  }
 }
 \details{ 
-If \code{include.all} == FALSE, only the SNPs having their position between the \code{genes$Start} and the \code{genes$End} of a gene will be attributed to the corresponding gene. If \code{include.all == TRUE}, all the SNPs will be included. New gene positions are calculated by doing the average between the \code{genes$End} and the \code{genes$Start} of the next one. 
-}
+If \code{include.all == FALSE}, only the SNPs having their position between the 
+\code{genes$Start} and the \code{genes$End} of a gene will be attributed to the 
+corresponding gene. If \code{include.all == TRUE}, all the SNPs will be included,
+based on midpoints between genes.}
 \value{
 A data frame containing:
   \item{chr}{The chromosome of the SNP}
@@ -32,61 +28,12 @@ A data frame containing:
   \item{pos}{The position of the SNP}
   \item{gpe}{The computed group of the SNP being the \code{genes$Gene_Name}}
 }
-\data
-The files gene_positions_hg37.RData and gene_positions_hg38.RData can be used as the \code{genes} argument
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-Hervé Perdry and Ozvan Bocher
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
+%\data
+%The files gene_positions_hg37.RData and gene_positions_hg38.RData can be used as the \code{genes} argument
 \examples{
 data(gene_positions_hg37)
 gpe_genes <- genes_gpe(x, hg37, include.all=TRUE) #Attribution of all the SNP in the genes from the list hg37
-
-## The function is currently defined as
-function (x, genes, include.all = FALSE) 
-{
-    if (any(table(genes$Gene_Name) != 1) == TRUE) {
-        a <- unique(as.character(genes$Gene_Name))
-        genes$Gene_Name <- factor(as.character(genes$Gene_Name), 
-            levels = a)
-        w <- names(which(table(genes$Gene_Name) == 1))
-        genes <- subset(genes, genes$Gene_Name \%in\% w)
-        genes$Gene_Name <- droplevels(genes$Gene_Name)
-    }
-    if (include.all == TRUE) {
-        genes_c <- genes
-        for (i in 2:nrow(genes)) {
-            if (genes$Start[i] > genes$End[i - 1]) {
-                genes_c$Start[i] <- mean(c(genes$End[i - 1], 
-                  genes$Start[i]))
-                genes_c$End[i - 1] <- genes_c$Start[i]
-            }
-        }
-        genes <- genes_c
-    }
-    gpe <- data.frame(chr = x@snps$chr, pos = x@snps$pos, id = x@snps$id, 
-        gpe = factor(rep(NA, nrow(x@snps)), levels = levels(genes$Gene_Name)))
-    for (i in 1:nrow(genes)) {
-        w <- (x@snps$chr == genes$Chr[i] & x@snps$pos >= genes$Start[i] & 
-            x@snps$pos <= genes$End[i])
-        gpe$gpe[w] <- genes$Gene_Name[i]
-    }
-    gpe$gpe <- droplevels(gpe$gpe)
-    return(gpe)
-  }
+head(gpe_genes, 20)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
