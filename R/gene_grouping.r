@@ -1,4 +1,4 @@
-pos_gpe <- function(x, nb_groups){
+region.by.pos <- function(x, nb.groups){
   if(any(x@snps$pos == 0)) {
     stop("position equal to 0")
   }
@@ -8,7 +8,7 @@ pos_gpe <- function(x, nb_groups){
   pos_d <- pos_d[which(pos_d$chr!=23 & pos_d$chr!=24 & pos_d$chr!=26),]
        
   seuil <- 1000
-  while(length(which(pos_d$d>seuil)) > nb_groups){
+  while(length(which(pos_d$d>seuil)) > nb.groups){
     seuil <- seuil+1000  }
                      
   diff_pos <- diff(c(0,which(pos_d$d>seuil), length(pos_d$d)))
@@ -25,7 +25,7 @@ pos_gpe <- function(x, nb_groups){
 
 
 
-genes_gpe <- function(x, genes, include.all=FALSE){
+region.by.gene <- function(x, genes, include.all=FALSE){
   #Remove gene on different chromosomes
   if(any(table(genes$Gene_Name)!=1)==TRUE){
     a <- unique(as.character(genes$Gene_Name))

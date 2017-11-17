@@ -1,19 +1,24 @@
-B_cast <- function(x, genomic_region, maf.threshold=0.01){
+CAST <- function(x, genomic.region, maf.threshold=0.01, pvalue=FALSE, group=rep(NA, nrow(x))){
 
   weights.0 <- ifelse( (x@snps$maf == (1-x@p) & x@snps$maf < maf.threshold), 1, 0)
   weights.1 <- ifelse( (x@snps$maf < maf.threshold), 1, 0)
   weights.2 <- ifelse( (x@snps$maf == x@p & x@snps$maf < maf.threshold), 1, 0)
       
-  if(length(weights.0) != ncol(x) | length(weights.1) != ncol(x) | length(weights.2) != ncol(x) | length(genomic_region) != ncol(x)) {
+  if(length(weights.0) != ncol(x) | length(weights.1) != ncol(x) | length(weights.2) != ncol(x) | length(genomic.region) != ncol(x)) {
     stop("x and weights dimensions mismatch")
   }
-  if(!is.factor(genomic_region)) stop("'genomic_region' is not a factor")
+  if(!is.factor(genomic.region)) stop("'genomic.region' is not a factor")
                 
-  B <- .Call('oz_burden2', PACKAGE = 'oz', x@bed, nlevels(genomic_region), genomic_region, weights.0, weights.1, weights.2)
-  colnames(B) <- levels(genomic_region)
+  B <- .Call('oz_burden2', PACKAGE = 'oz', x@bed, nlevels(genomic.region), genomic.region, weights.0, weights.1, weights.2)
+  colnames(B) <- levels(genomic.region)
   rownames(B) <- x@ped$id
   Bcast <- (B>0)+0
   return(Bcast)
+  
+  if(pvalue==TRUE){
+    pval <- apply(Bcast, 2, Chi2, group=group)
+    return(pval)
+  }
   }
 
 
@@ -41,7 +46,7 @@ Chi2 <- function(B_CAST, group){
 
 
 
-WSS <- function(x, genomic_region){
+WSS <- function(x, genomic.region){
 
  Q <- (2*x@snps$N2+x@snps$N1 + 1) / ( 2*(x@snps$N0+x@snps$N1+x@snps$N2) +2 )
  W <- sqrt((nrow(x)-x@snps$NAs) * Q * (1-Q))
@@ -49,13 +54,13 @@ WSS <- function(x, genomic_region){
  weights.1 <- 1/W
  weights.2 <- ifelse( Q < 0.5, 2/W, 0)
     
- if(length(weights.0) != ncol(x) | length(weights.1) != ncol(x) | length(weights.2) != ncol(x) | length(genomic_region) != ncol(x)) {
+ if(length(weights.0) != ncol(x) | length(weights.1) != ncol(x) | length(weights.2) != ncol(x) | length(genomic.region) != ncol(x)) {
    stop("x and weights dimensions mismatch")
    }
- if(!is.factor(genomic_region)) stop("'genomic_region' is not a factor")
+ if(!is.factor(genomic.region)) stop("'genomic.region' is not a factor")
                             
-   B <- .Call('oz_burden2', PACKAGE = 'oz', x@bed, nlevels(genomic_region), genomic_region, weights.0, weights.1, weights.2)
-   colnames(B) <- levels(genomic_region)
+   B <- .Call('oz_burden2', PACKAGE = 'oz', x@bed, nlevels(genomic.region), genomic.region, weights.0, weights.1, weights.2)
+   colnames(B) <- levels(genomic.region)
    rownames(B) <- x@ped$id
    return(B)
  }
