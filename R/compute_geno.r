@@ -26,3 +26,15 @@ geno.simu <- function(maf.controls, maf.cases, nb.controls, nb.cases){
   x <- rbind(x.controls, x.cases) ; x@ped$pheno <- rep(c(0,1), c(nb.controls, nb.cases))
   return(x)
 }
+
+
+random.genotypes <- function(maf, n) {
+  matrix(rbinom(n*length(maf), 2, maf), byrow = TRUE, nrow = n)
+}
+
+# mafs = une matrice de mafs comme renvoyée par group.mafs
+random.variants <- function(maf, n) {
+  if((!is.matrix(maf) | nrow(maf) == 1) & length(n) == 1) # juste une pop
+    return(as.bed.matrix(random.genotypes(maf, n)))
+
+}
