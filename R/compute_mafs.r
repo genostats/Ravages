@@ -16,7 +16,7 @@ group.mafs <- function(pop.maf, OR, baseline) {
   if(!is.matrix(OR)) {
     if(length(OR) == length(pop.maf) & length(baseline = 1))
       OR <- matrix(OR, nrow = 1)
-    else if(length(OR) == length(baseline)) {
+    else if(length(OR) == length(baseline))
       OR <- matrix( rep_len(OR, length(pop.maf)*nrow(OR)), nrow = length(baseline))
     else
       stop("OR dimension mismatch")
