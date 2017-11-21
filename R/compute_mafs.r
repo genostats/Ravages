@@ -1,3 +1,4 @@
+# ancienne version
 mafs <- function(maf, OR, baseline = 0.01) {
   if(length(OR) == 1 & length(maf) > 1)
     OR <- rep(OR, length(maf))
@@ -12,6 +13,12 @@ mafs <- function(maf, OR, baseline = 0.01) {
   list(maf.controls = p.tem, maf.cases = p.cas)
 }
 
+
+# ----------- nvelle fonction
+# pop.maf = un vecteur de mafs pour la population (m)
+# OR = une matrice d'OR (n x m)  (on fait des efforts pour accepter vecteurs de longueur m (si n=1) ou n, ou matrices n x m')
+# baseline = la prévalence de chacun des groupes (n)
+# résultat = une matrice (n+1) x m (première ligne pour les témoins)
 group.mafs <- function(pop.maf, OR, baseline) {
   if(!is.matrix(OR)) {
     if(length(OR) == length(pop.maf) & length(baseline = 1))

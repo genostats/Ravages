@@ -1,3 +1,30 @@
+# n = nbre d'individus (pas un vecteur)
+random.genotypes <- function(maf, n) {
+  matrix(rbinom(n*length(maf), 2, maf), byrow = TRUE, nrow = n)
+}
+
+# mafs = une matrice de mafs comme renvoyée par group.mafs
+random.bed.matrix <- function(maf, size) {
+  if((!is.matrix(maf) | nrow(maf) == 1) & length(size) == 1) # juste une pop
+    return(as.bed.matrix(random.genotypes(maf, size)))
+  if(!is.matrix(maf)) 
+    stop("maf should be a matrix")
+  if(nrow(maf) != length(size))
+    stop("Dimensions mismatch")
+  M <- NULL
+  for(i in 1:length(size)) 
+    M <- rbind(M, random.genotypes(maf[i,], size[i]))
+  x <- as.bed.matrix(M)
+  x@ped$pheno <- rep.int( 1:length(n) - 1, n)
+  x
+}
+
+
+
+
+
+
+# anciennes fonctions
 geno.simu.controls <- function(maf.controls, nb.controls){
   x.controls <- matrix(rbinom(nb.controls*length(maf.controls), 2, maf.controls), byrow=TRUE, nrow=nb.controls) 
   x.controls <- as.bed.matrix(x.controls)
@@ -28,13 +55,3 @@ geno.simu <- function(maf.controls, maf.cases, nb.controls, nb.cases){
 }
 
 
-random.genotypes <- function(maf, n) {
-  matrix(rbinom(n*length(maf), 2, maf), byrow = TRUE, nrow = n)
-}
-
-# mafs = une matrice de mafs comme renvoyée par group.mafs
-random.variants <- function(maf, n) {
-  if((!is.matrix(maf) | nrow(maf) == 1) & length(n) == 1) # juste une pop
-    return(as.bed.matrix(random.genotypes(maf, n)))
-
-}
