@@ -6,6 +6,7 @@ importFrom("stats", "pchisq", "quantile", "rnorm", "kmeans", "glm", "binomial", 
 importFrom("utils", "read.table", "write.table")
 importFrom("Rcpp", "evalCpp") # just to avoid << function 'enterRNGScope' not provided by package 'Rcpp' >> error
 importFrom("RcppParallel", "setThreadOptions", "defaultNumThreads")
+importFrom("gaston", "rbind", "cbind")
 
 useDynLib(oz)
 

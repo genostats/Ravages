@@ -117,7 +117,7 @@ List c_alpha(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector region, 
   } else {
     B.compute_stats();
     List L;
-    L["stat"] = B.stats;
+    L["statistic"] = B.stats;
     return L;
   }
 }

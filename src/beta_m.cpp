@@ -70,7 +70,7 @@ List beta_m(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector region, I
   } else {
     B.compute_stats();
     List L;
-    L["stat"] = B.stats;
+    L["statistic"] = B.stats;
     return L;
   }
 }

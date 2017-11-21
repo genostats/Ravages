@@ -15,7 +15,7 @@ random.bed.matrix <- function(maf, size) {
   for(i in 1:length(size)) 
     M <- rbind(M, random.genotypes(maf[i,], size[i]))
   x <- as.bed.matrix(M)
-  x@ped$pheno <- rep.int( 1:length(n) - 1, n)
+  x@ped$pheno <- rep.int( 1:length(size) - 1, size)
   x
 }
 
