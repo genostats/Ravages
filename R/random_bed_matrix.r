@@ -1,10 +1,31 @@
+# mafs = une matrice de mafs comme renvoyée par group.mafs
+# ie autant de colonnes que de SNP, autant de ligne que de groupes
+# size = un vecteur donnant la taille de chaque groupe
+random.bed.matrix <- function(maf, size) {
+  if(!is.matrix(maf)) maf <- matrix(maf, nrow = 1)
+  bed <- .Call('oz_random_bed_matrix', PACKAGE = "oz", maf, size)
+
+  ped <- data.frame(famid = 1:sum(size), id = 1:sum(size), father = 0, mother = 0, sex = 0, 
+            pheno = rep.int( 1:length(size) - 1, size), stringsAsFactors = FALSE)
+
+  snps <- data.frame(chr = NA, id = paste("M", 1:ncol(maf), sep="_"), dist = NA, pos = NA, 
+               A1 = NA, A2 = NA, stringsAsFactors = FALSE)
+
+  x <- new("bed.matrix", bed = bed, snps = snps, ped = ped, p = NULL, mu = NULL,
+           sigma = NULL, standardize_p = FALSE, standardize_mu_sigma = FALSE )
+  if(getOption("gaston.auto.set.stats", TRUE)) 
+    x <- set.stats(x, verbose = FALSE)
+  x
+}
+
+
 # n = nbre d'individus (pas un vecteur)
 random.genotypes <- function(maf, n) {
   matrix(rbinom(n*length(maf), 2, maf), byrow = TRUE, nrow = n)
 }
 
 # mafs = une matrice de mafs comme renvoyée par group.mafs
-random.bed.matrix <- function(maf, size) {
+random.bed.matrix0 <- function(maf, size) {
   if((!is.matrix(maf) | nrow(maf) == 1) & length(size) == 1) # juste une pop
     return(as.bed.matrix(random.genotypes(maf, size)))
   if(!is.matrix(maf)) 
@@ -18,9 +39,6 @@ random.bed.matrix <- function(maf, size) {
   x@ped$pheno <- rep.int( 1:length(size) - 1, size)
   x
 }
-
-
-
 
 
 
