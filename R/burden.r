@@ -66,7 +66,7 @@ WSS.0 <- function(x, genomic.region = x@snps$genomic.region) {
 
 WSS <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region) {
   B <- WSS.0(x, genomic.region)
-  R <- apply(B, 2, function(b) {k <- kruskal.test(b, g = x@ped$pheno); c(k$statistic, k$p.value) })
+  R <- apply(B, 2, function(b) {k <- kruskal.test(b, g = group); c(k$statistic, k$p.value) })
   R <- data.frame(t(R))
   colnames(R) <- c("statistic", "p.value")
   R

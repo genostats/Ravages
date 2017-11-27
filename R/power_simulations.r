@@ -1,15 +1,4 @@
 
-# un des scenario d'OR ...
-OR.matrix <- function(n.variants, OR.del, OR.pro = 1/OR.del, prob.del, prob.pro) {
-  if(length(OR.del) != length(OR.pro)) 
-    stop("Dimensions mismatch")
-  OR <- cbind(1, OR.del, OR.pro, deparse.level = 0)
-  # neutral, deleterious or protective
-  v <- sample(1:3, n.variants, TRUE, c(1-prob.del-prob.pro, prob.del, prob.pro))
-  t(apply(OR, 1, function(or) or[v]))
-}
-#example
-#0R.matrix(20 , c(2,4), c(0.5,0.25), 0.2, 0.1)
 
 # pas inspiré pour trouver un nom
 fff <- function(pop.maf, size, baseline, replicates, OR.pars) {
@@ -33,7 +22,7 @@ filter.rare.variants <- function(x, filter = c("controls", "any"), maf.threshold
     st <- .Call('gg_geno_stats_snps', PACKAGE = "gaston", x@bed, rep(TRUE, ncol(x)), which.controls)$snps
     p <- (st$N0.f + 0.5*st$N1.f)/(st$N0.f + st$N1.f + st$N2.f)
     maf <- pmin(p, 1-p)
-    w <- (maf < maf.threshold)
+    w <- (maf < maf.threshold & maf > 0)
   } else {
     # filter = any
     w <- rep(FALSE, ncol(x))
@@ -42,7 +31,7 @@ filter.rare.variants <- function(x, filter = c("controls", "any"), maf.threshold
       st <- .Call('gg_geno_stats_snps', PACKAGE = "gaston", x@bed, rep(TRUE, ncol(x)), which.c)$snps
       p <- (st$N0.f + 0.5*st$N1.f)/(st$N0.f + st$N1.f + st$N2.f)
       maf <- pmin(p, 1-p)
-      w <- w | (maf < maf.threshold)
+      w <- w | (maf < maf.threshold & maf > 0)
     }
   }
   x <- select.snps(x, w)
@@ -54,21 +43,34 @@ filter.rare.variants <- function(x, filter = c("controls", "any"), maf.threshold
 Power <- function(alpha = 0.05, filter = c("controls", "any"), maf.threshold = 0.01, WSS = TRUE, C.ALPHA = TRUE, Beta.M = TRUE, ...) {
   x <- fff(...)
   x <- filter.rare.variants(x, filter, maf.threshold)
-  
-  if(WSS) 
+  pheno.pooled <- ifelse(x@ped$pheno==0, 0, 1)
+
+  if(WSS){
     power.wss <- mean( WSS(x)$p.value < alpha ) 
-  else  
+    power.pooled.wss <- mean( WSS(x, group=pheno.pooled)$p.value < alpha )
+  }
+  else{  
     power.wss <- NA
+    power.pooled.wss <- NA
+  }
 
-  if(C.ALPHA) 
-    power.calpha <- mean( C.ALPHA(x, target = 10, B.max = 100)$p.value < alpha ) 
-  else  
+  if(C.ALPHA){ 
+    power.calpha <- mean( C.ALPHA(x, target=50, B.max=1000)$p.value < alpha ) 
+    power.pooled.calpha <- mean( C.ALPHA(x, group=pheno.pooled, target=50, B.max=1000)$p.value < alpha )
+  }
+  else{  
     power.calpha <- NA
-
-  if(Beta.M) 
-    power.betam <- mean( Beta.M(x, target = 10, B.max = 100)$p.value < alpha ) 
-  else  
+    power.pooled.calpha <- NA
+  }
+  
+  if(Beta.M){
+    power.betam <- mean( Beta.M(x, target = 50, B.max=1000)$p.value < alpha ) 
+    power.pooled.betam <- mean( Beta.M(x, group=pheno.pooled, target=50, B.max=1000)$p.value < alpha )
+  }
+  else{  
     power.betam <- NA
+    power.pooled.betam <- NA
+  }
 
-  c("Power.WSS" = power.wss, "Power.C.ALPHA" = power.calpha, "Power.Beta.M" = power.betam)
+  c("Power.WSS" = power.wss, "Power.pooled.WSS" = power.pooled.wss, "Power.C.ALPHA" = power.calpha, "Power.pooled.C.ALPHA" = power.pooled.calpha, "Power.Beta.M" = power.betam, "Power.pooled.Beta.M" = power.pooled.betam)
 }

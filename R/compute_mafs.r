@@ -64,6 +64,7 @@ group.mafs <- function(pop.maf, OR, baseline) {
 # pour calculer la maf témoins
 # OR = un vecteur d'OR [un pour chaque groupe]
 p.tem <- function(p, OR, baseline) {
+  if(all(baseline == 0)) return(p); # si maladie très rare, maf = pop maf
   if(length(OR) == 1) { # eq du second degré
     if(OR == 1) return(p)
     alpha <- (OR-1)*(1-baseline)
