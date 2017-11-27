@@ -16,7 +16,7 @@ XPtr<matrix4> random_bed_matrix(NumericMatrix maf, NumericVector size) {
   for(int i = 0; i < nrow; i++) {
     int k = 0;
     for(int pop = 0; pop < nb_pop; pop++) {
-      double q = maf(pop,i);
+      double q = maf(pop, i);
       double p2 = (1-q)*(1-q), dpq = 2*(1-q)*q;
       int s = size[pop];
       for(int j = 0; j < s; j++) {

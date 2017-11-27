@@ -74,10 +74,23 @@ class Stats {
       for(int i = 0; i < nb_snp_groups; i++) {
         if(!nb_snp_in_group[i]) continue;
         B[i]++;
+        /*
         if(stats[i] >= Obs[i]) {
           A[i]++;
           if(A[i] == A_target) flag = true;
-        }
+        } */
+        /*
+        if(stats[i] == Obs[i]) {
+          A[i] += 0.5;
+          if(A[i] >= A_target) flag = true;
+        } else if(stats[i] > Obs[i]) {
+          A[i]++;
+          if(A[i] >= A_target) flag = true;
+        } */
+        if(stats[i] > Obs[i]) {
+          A[i]++;
+          if(A[i] == A_target) flag = true;
+        } 
       }
       // Rcout << " A = " << A << " B = " << B << "\n";
       if(!flag) continue;
