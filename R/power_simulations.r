@@ -1,4 +1,22 @@
 
+# il faut ajouter un argument pour la fonction à appeler pour générer les OR
+# (ici OR.matrix...)
+random.bed.matrix.with.model <- function(pop.maf, size, baseline, replicates, OR.pars) {
+  OR.pars$n.variants <- length(pop.maf)
+  nb_snps <- OR.pars$n.variants * replicates
+  nb_inds <- sum(size)
+  x <- new.bed.matrix(nb_inds, nb_snps);
+  for(b in 1:replicates) {
+    OR <- do.call( OR.matrix, OR.pars)
+    MAFS <- group.mafs(pop.maf, OR, baseline)
+    .Call("oz_random_filling_bed_matrix", PACKAGE = "oz", x@bed, MAFS, size, (b-1)*OR.pars$n.variants)
+  }
+  x@snps$genomic.region <- factor( rep( sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = OR.pars$n.variants) )
+  x@snps$id <- paste( x@snps$genomic.region, x@snps$id, sep="_")
+  x <- set.stats(x, verbose = FALSE)
+  x
+}
+
 
 # pas inspiré pour trouver un nom
 fff <- function(pop.maf, size, baseline, replicates, OR.pars) {
@@ -46,8 +64,9 @@ filter.rare.variants <- function(x, filter = c("controls", "any"), maf.threshold
   x
 }
 
-Power <- function(alpha = 0.05, filter = c("controls", "any"), maf.threshold = 0.01, WSS = TRUE, C.ALPHA = TRUE, Beta.M = TRUE, ...) {
-  x <- fff(...)
+# model.pars doit contenir les arguments de random.bed.matrix.with.model
+Power <- function(alpha = 0.05, filter = c("controls", "any"), maf.threshold = 0.01, WSS = TRUE, C.ALPHA = TRUE, Beta.M = TRUE, model.pars) {
+  x <- do.call(random.bed.matrix.with.model, model.pars)
   x <- filter.rare.variants(x, filter, maf.threshold)
   pheno.pooled <- ifelse(x@ped$pheno==0, 0, 1)
 

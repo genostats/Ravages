@@ -16,7 +16,7 @@ export(count.singletons)
 export(Jaccard)
 export(C.ALPHA)
 export(Beta.M)
-export(group.mafs, random.bed.matrix)
+export(group.mafs, random.bed.matrix, random.bed.matrix.with.model, OR.matrix)
 export(filter.rare.variants)
 
 export(mafs)

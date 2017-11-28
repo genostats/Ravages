@@ -61,9 +61,9 @@ class Stats {
   }
 
   List permute_stats(int A_target, int B_max) {
-    NumericVector A(nb_snp_groups);
-    NumericVector B(nb_snp_groups);
-    NumericVector C(nb_snp_groups);
+    IntegerVector A(nb_snp_groups);
+    IntegerVector B(nb_snp_groups);
+    IntegerVector C(nb_snp_groups);
     compute_stats();
     NumericVector Obs = clone(stats);
     // Rcout << "stats = " << stats << "\n";
@@ -76,23 +76,13 @@ class Stats {
         if(!nb_snp_in_group[i]) continue;
         B[i]++;
        
-        /* 
         if(stats[i] >= Obs[i]) {
           A[i]++;
           if(A[i] == A_target) flag = true;
-        } */
-        
-        if(stats[i] == Obs[i]) {
-          C[i]++;
-        } else if(stats[i] > Obs[i]) {
-          A[i]++;
-          if(A[i] >= A_target) flag = true;
+          if(stats[i] == Obs[i]) {
+            C[i]++;
+          } 
         } 
-        /*
-        if(stats[i] > Obs[i]) {
-          A[i]++;
-          if(A[i] == A_target) flag = true;
-        } */
       }
       // Rcout << " A = " << A << " B = " << B << "\n";
       if(!flag) continue;
@@ -105,9 +95,14 @@ class Stats {
     }
     List L;
     L["stat"] = Obs;
-    L["A"] = A;
-    L["B"] = B;
-    L["C"] = C;
+    L["nb.geq"] = A;
+    L["nb.eq"] = C;
+    L["nb.perms"] = B;
+    NumericVector p(nb_snp_groups);
+    for(int j = 0; j < nb_snp_groups; j++) {
+      p[j] = ((double) A[j] - 0.5* (double) C[j] + 1.0)/((double) B[j] + 1.0);
+    }
+    L["p.value"] = p;
     return L;
   }
 
