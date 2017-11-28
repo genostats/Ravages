@@ -11,6 +11,7 @@ random.bed.matrix.with.model <- function(pop.maf, size, baseline, replicates, OR
     MAFS <- group.mafs(pop.maf, OR, baseline)
     .Call("oz_random_filling_bed_matrix", PACKAGE = "oz", x@bed, MAFS, size, (b-1)*OR.pars$n.variants)
   }
+  x@ped$pheno <- rep.int( 1:length(size) - 1, size)
   x@snps$genomic.region <- factor( rep( sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = OR.pars$n.variants) )
   x@snps$id <- paste( x@snps$genomic.region, x@snps$id, sep="_")
   x <- set.stats(x, verbose = FALSE)
@@ -33,7 +34,7 @@ fff <- function(pop.maf, size, baseline, replicates, OR.pars) {
   x
 }
 
-filter.rare.variants <- function(x, filter = c("controls", "any"), maf.threshold = 0.01, min.nb.snps) {
+filter.rare.variants <- function(x, filter = c("whole", "controls", "any"), maf.threshold = 0.01, min.nb.snps) {
   filter <- match.arg(filter)
   if(filter == "controls") {
     which.controls <- if(is.factor(x@ped$pheno)) x@ped$pheno == 1 else x@ped$pheno == 0
@@ -41,7 +42,8 @@ filter.rare.variants <- function(x, filter = c("controls", "any"), maf.threshold
     p <- (st$N0.f + 0.5*st$N1.f)/(st$N0.f + st$N1.f + st$N2.f)
     maf <- pmin(p, 1-p)
     w <- (maf < maf.threshold)
-  } else {
+  }
+  if(filter == "any"){
     # filter = any
     w <- rep(FALSE, ncol(x))
     for(i in unique(x@ped$pheno)) {
@@ -52,6 +54,11 @@ filter.rare.variants <- function(x, filter = c("controls", "any"), maf.threshold
       w <- w | (maf < maf.threshold)
     }
   }
+  if(filter == "whole"){
+      ##Filter = whole
+      w <- (x@snps$maf < maf.threshold)
+  }
+
   x <- select.snps(x, w & x@snps$maf > 0)
   if(is.factor(x@snps$genomic.region)) {
     if(!missing(min.nb.snps)) {
@@ -80,8 +87,8 @@ Power <- function(alpha = 0.05, filter = c("controls", "any"), maf.threshold = 0
   }
 
   if(C.ALPHA){ 
-    power.calpha <- mean( C.ALPHA(x, target=50, B.max=1000)$p.value < alpha ) 
-    power.pooled.calpha <- mean( C.ALPHA(x, group=pheno.pooled, target=50, B.max=1000)$p.value < alpha )
+    power.calpha <- mean( C.ALPHA(x, target=50, B.max = 50/alpha)$p.value < alpha ) 
+    power.pooled.calpha <- mean( C.ALPHA(x, group=pheno.pooled, target=50, B.max = 50/alpha)$p.value < alpha )
   }
   else{  
     power.calpha <- NA
@@ -89,8 +96,8 @@ Power <- function(alpha = 0.05, filter = c("controls", "any"), maf.threshold = 0
   }
   
   if(Beta.M){
-    power.betam <- mean( Beta.M(x, target = 50, B.max=1000)$p.value < alpha ) 
-    power.pooled.betam <- mean( Beta.M(x, group=pheno.pooled, target=50, B.max=1000)$p.value < alpha )
+    power.betam <- mean( Beta.M(x, target = 50, B.max = 50/alpha)$p.value < alpha ) 
+    power.pooled.betam <- mean( Beta.M(x, group=pheno.pooled, target=50, B.max = 50/alpha)$p.value < alpha )
   }
   else{  
     power.betam <- NA
