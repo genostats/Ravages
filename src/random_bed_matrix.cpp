@@ -17,13 +17,13 @@ XPtr<matrix4> random_bed_matrix(NumericMatrix maf, NumericVector size) {
     int k = 0;
     for(int pop = 0; pop < nb_pop; pop++) {
       double q = maf(pop, i);
-      double p2 = (1-q)*(1-q), dpq = 2*(1-q)*q;
+      double pr1 = (1-q)*(1-q), pr2 = pr1 + 2*(1-q)*q;
       int s = size[pop];
       for(int j = 0; j < s; j++) {
         double r = Rf_runif(0.0, 1.0);
-        if(r < p2) { 
+        if(r < pr1) { 
           p_A->set(i,k++,0);
-        } else if(r < dpq) {
+        } else if(r < pr2) {
           p_A->set(i,k++,1);
         } else {
           p_A->set(i,k++,2);

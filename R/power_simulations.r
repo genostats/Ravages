@@ -22,7 +22,7 @@ filter.rare.variants <- function(x, filter = c("controls", "any"), maf.threshold
     st <- .Call('gg_geno_stats_snps', PACKAGE = "gaston", x@bed, rep(TRUE, ncol(x)), which.controls)$snps
     p <- (st$N0.f + 0.5*st$N1.f)/(st$N0.f + st$N1.f + st$N2.f)
     maf <- pmin(p, 1-p)
-    w <- (maf < maf.threshold & maf > 0)
+    w <- (maf < maf.threshold)
   } else {
     # filter = any
     w <- rep(FALSE, ncol(x))
@@ -31,10 +31,10 @@ filter.rare.variants <- function(x, filter = c("controls", "any"), maf.threshold
       st <- .Call('gg_geno_stats_snps', PACKAGE = "gaston", x@bed, rep(TRUE, ncol(x)), which.c)$snps
       p <- (st$N0.f + 0.5*st$N1.f)/(st$N0.f + st$N1.f + st$N2.f)
       maf <- pmin(p, 1-p)
-      w <- w | (maf < maf.threshold & maf > 0)
+      w <- w | (maf < maf.threshold)
     }
   }
-  x <- select.snps(x, w)
+  x <- select.snps(x, w & x@snps$maf > 0)
   if(is.factor(x@snps$genomic.region)) {
     if(!missing(min.nb.snps)) {
       nb.snps <- table(x@snps$genomic.region)

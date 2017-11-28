@@ -17,6 +17,7 @@ export(Jaccard)
 export(C.ALPHA)
 export(Beta.M)
 export(group.mafs, random.bed.matrix)
+export(filter.rare.variants)
 
 export(mafs)
 export(geno.simu.controls, geno.simu.case, geno.simu)
