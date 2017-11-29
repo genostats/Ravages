@@ -1,13 +1,17 @@
 
 # il faut ajouter un argument pour la fonction à appeler pour générer les OR
 # (ici OR.matrix...)
-random.bed.matrix.with.model <- function(pop.maf, size, baseline, replicates, OR.pars) {
+random.bed.matrix.with.model <- function(pop.maf, size, baseline, replicates, OR.pars, scenario=c(1,2)) {
   OR.pars$n.variants <- length(pop.maf)
   nb_snps <- OR.pars$n.variants * replicates
   nb_inds <- sum(size)
   x <- new.bed.matrix(nb_inds, nb_snps);
   for(b in 1:replicates) {
-    OR <- do.call( OR.matrix, OR.pars)
+    if(scenario == 1){
+      OR <- do.call( same.OR.matrix, OR.pars)
+    } else {
+      OR <- do.call( OR.matrix, OR.pars)
+    }
     MAFS <- group.mafs(pop.maf, OR, baseline)
     .Call("oz_random_filling_bed_matrix", PACKAGE = "oz", x@bed, MAFS, size, (b-1)*OR.pars$n.variants)
   }
@@ -104,5 +108,5 @@ Power <- function(alpha = 0.05, filter = c("controls", "any"), maf.threshold = 0
     power.pooled.betam <- NA
   }
 
-  c("Power.WSS" = power.wss, "Power.pooled.WSS" = power.pooled.wss, "Power.C.ALPHA" = power.calpha, "Power.pooled.C.ALPHA" = power.pooled.calpha, "Power.Beta.M" = power.betam, "Power.pooled.Beta.M" = power.pooled.betam)
+  c("Power.WSS" = power.wss, "Power.pooled.WSS" = power.pooled.wss, "Power.C.ALPHA" = power.calpha, "Power.pooled.C.ALPHA" = power.pooled.calpha, "Power.Beta.M" = power.betam, "Power.pooled.Beta.M" = power.pooled.betam, "Nb.replicates" = nlevels(x@snps$genomic.region))
 }

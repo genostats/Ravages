@@ -13,7 +13,7 @@ OR.matrix <- function(n.variants, OR.del, OR.pro = 1/OR.del, prob.del, prob.pro)
 
 
 # Mêmes OR mais variants différents
-same.OR.matrix <- function(n.variants, OR.del, OR.pro = 1/OR.del, prob.del, prob.pro, pro=TRUE){
+same.OR.matrix <- function(n.variants, OR.del, OR.pro = 1/OR.del, prob.del, prob.pro){
   if(length(OR.del) != length(OR.pro))
     stop("Dimensions mismatch")
   OR <- cbind(1, OR.del, OR.pro, deparse.level = 0)
