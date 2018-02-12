@@ -14,7 +14,8 @@ class Stats {
   const IntegerVector full_snp_group; // facteur pour grouper les SNPs
   const int nb_snp_groups;                // son nombre de niveaux
 
-  LogicalVector which_snps;
+  LogicalVector which_snps_orig;
+  std::vector<bool> which_snps;
   int nb_snps;
   std::vector<uint8_t *> data;
   std::vector<int> snp_group;
@@ -29,20 +30,33 @@ class Stats {
   // permutations sont définis dans les classes dérivées)
   virtual void permute_pheno() {} ;
 
-  Stats(const XPtr<matrix4> pA, LogicalVector which_snps, IntegerVector SNPgroup)
-    : full_data(pA->data), ncol(pA->ncol), true_ncol(pA->true_ncol), 
-    full_nb_snps(pA->nrow), full_snp_group(SNPgroup),
+  Stats(const XPtr<matrix4> pA, LogicalVector which_snps, IntegerVector SNPgroup) : 
+    full_data(pA->data), 
+    ncol(pA->ncol), 
+    true_ncol(pA->true_ncol), 
+    full_nb_snps(pA->nrow), 
+    full_snp_group(SNPgroup),
     nb_snp_groups(as<CharacterVector>(SNPgroup.attr("levels")).size()),
-    which_snps(which_snps), nb_snp_in_group(nb_snp_groups), stats(nb_snp_groups) {
-      if(which_snps.length() != full_nb_snps || SNPgroup.length() != full_nb_snps) {
+    which_snps_orig(which_snps), 
+    which_snps(full_nb_snps),
+    nb_snp_in_group(nb_snp_groups), 
+    stats(nb_snp_groups)
+  {
+      if(which_snps_orig.length() != full_nb_snps || SNPgroup.length() != full_nb_snps) {
         stop("Dimensions mismatch\n");
       }
+      for(int i = 0; i < full_nb_snps; i++)
+        which_snps[i] = which_snps_orig[i];
       update_snps();
   }
 
   virtual void update_snps() {
     //Rcout << "original update\n";
-    nb_snps = sum(which_snps);
+    // count 'true' in which_snps
+    nb_snps = 0;
+    for(bool b : which_snps)
+      if(b) nb_snps++;
+
     data.resize(nb_snps);
     snp_group.resize(nb_snps);
 
@@ -71,7 +85,7 @@ class Stats {
       permute_pheno();
       compute_stats();
       // Rcout << "permutation = " << stats ;
-      bool flag = false;
+      bool flag = false; // ce drapeau se lèvera si A_target est atteint dans un groupe
       for(int i = 0; i < nb_snp_groups; i++) {
         if(!nb_snp_in_group[i]) continue;
         B[i]++;
@@ -86,7 +100,7 @@ class Stats {
       }
       // Rcout << " A = " << A << " B = " << B << "\n";
       if(!flag) continue;
-      // mettre à jour which_snps si nécessaire
+      // mettre à jour which_snps si nécessaire (le drapeau est levé !)
       for(int i = 0; i < full_nb_snps; i++) {
         which_snps[i] &= (A[ full_snp_group[i] - 1 ] < A_target); 
       }
@@ -106,6 +120,38 @@ class Stats {
     return L;
   }
 
+  // des fonctions pour les tests exacts
+  keep_one_snp_group(int group) {
+    for(size_t i = 0; i < nb_snp_groups; i++) 
+      which_snps[i] = which_snps_orig[i] && ( full_snp_group[i] == g );
+    update_snps();
+  }
+
+  // quels sont les individus qui portent des variants rares ?
+  std::vector<size_t> which_non_zero_inds() {
+    // stat Individus
+    std::vector<int> stat_inds(16*true_ncol);
+    for(uint8_t * da : data) {
+      for(size_t j = 0; j < true_ncol; j++) {
+        uint8_t d = da[j];
+        stat_inds[16*j + ((int) d&3)]++;
+        stat_inds[16*j + 4 + (int) ((d>>2)&3)]++;
+        stat_inds[16*j + 8 + (int) ((d>>4)&3)]++;
+        stat_inds[16*j + 12 + (int) ((d>>6)&3)]++;
+      }
+    }
+    std::vector<int> no_var, some_var;
+    for(size_t j = 0; j < ncol; j++) {
+      int N0  = stat_inds[4*j];
+      int N1  = stat_inds[4*j+1];
+      int N2  = stat_inds[4*j+2];
+      int NAs = stat_inds[4*j+3];
+      if(N1 == 0 && (N2 == 0 || N0 == 0) && NAs < nb_snps)
+        no_var.push_back(j);
+      else
+        some_var.push_back(j);
+    }
+  }
 };
 
 
