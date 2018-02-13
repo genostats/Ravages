@@ -11,8 +11,6 @@ using namespace RcppParallel;
 
 class Calpha : public Stats {
   public:
-  std::vector<int> gr;  // groupe d'individus
-  int nlevels;          // nb de groupes
 
   const LogicalVector full_inverse;
   std::vector<bool> inv; // snps à inverser (oblige à redéfinir update_snps)
@@ -23,13 +21,10 @@ class Calpha : public Stats {
   IntegerVector full_NNA;// alleles non NA
   std::vector<int> NNA;
 
-  Calpha(const XPtr<matrix4> pA, LogicalVector which_snps, IntegerVector SNPgroup, IntegerVector group, LogicalVector Inverse)
-  : Stats(pA, which_snps, SNPgroup), full_inverse(Inverse), full_minor(full_nb_snps), full_NNA(full_nb_snps) {
-    if(group.length() != ncol || Inverse.length() != full_nb_snps) 
+  Calpha(const XPtr<matrix4> pA, LogicalVector which_snps, IntegerVector SNPgroup, IntegerVector ind_group, LogicalVector Inverse)
+  : Stats(pA, which_snps, SNPgroup, ind_group), full_inverse(Inverse), full_minor(full_nb_snps), full_NNA(full_nb_snps) {
+    if(Inverse.length() != full_nb_snps) 
       stop("Dimensions mismatch");
-    nlevels = as<CharacterVector>(group.attr("levels")).size();
-    gr.resize(ncol);
-    for(size_t i = 0; i < ncol; i++) gr[i] = group[i];
     // précalculer le nombre de génotypes mineurs et non manquants
     for(size_t i = 0; i < full_nb_snps; i++) {
       for(size_t j = 0; j < true_ncol; j++) {
@@ -78,30 +73,21 @@ class Calpha : public Stats {
     }
   }
 
-  void permute_pheno() {
-    for(int i = ncol - 1; i > 0; i--) {
-      int j = (int) std::floor(i*R::runif(0,1));
-      int tmp = gr[i];
-      gr[i] = gr[j];
-      gr[j] = tmp;
-    }
-  }
-
   void compute_stats() {
     if(nb_snps == 0 || nb_snp_groups == 0) {
       return;
     }
     // comptages alléliques
-    allelecounter2 X(&data[0], ncol, true_ncol, nb_snps, nlevels, gr, inv);
+    allelecounter2 X(&data[0], ncol, true_ncol, nb_snps, nb_ind_groups, ind_group, inv);
     parallelReduce(0, nb_snps, X);
 
     for(int i = 0; i < nb_snp_groups; i++) stats[i] = 0;
     for(size_t i = 0; i < nb_snps; i++) {
       int n = minor[i];
       int grp = snp_group[i] - 1 ;
-      for(size_t c = 0; c < nlevels; c++) {
-        int n_c = X.R[ 2*(nlevels*i+c) ];
-        int m_c = X.R[ 2*(nlevels*i+c) + 1 ];
+      for(size_t c = 0; c < nb_ind_groups; c++) {
+        int n_c = X.R[ 2*(nb_ind_groups*i+c) ];
+        int m_c = X.R[ 2*(nb_ind_groups*i+c) + 1 ];
         double alpha_c = ((double) (n_c+m_c))/((double) NNA[i]);
         stats[ grp ] += (n_c - n*alpha_c)*(n_c - n*alpha_c) - n*alpha_c*(1-alpha_c);
       }

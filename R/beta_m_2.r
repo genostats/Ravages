@@ -4,3 +4,9 @@ Beta.M <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.regio
   res <- data.frame( genomic.region = levels(genomic.region), r )
   return(res)
 }
+
+ex_Beta.M <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, 
+                   which.snps = rep(TRUE, ncol(x)), groups) {
+  r <- .Call('oz_ex_beta_m', PACKAGE = 'oz', x@bed, which.snps, as.factor(genomic.region), as.factor(group), groups) 
+  r
+}

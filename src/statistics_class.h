@@ -1,9 +1,12 @@
 #include <Rcpp.h>
 #include <iostream>
 #include "matrix4.h"
+#include "itere_combinaisons.h"
+
 #ifndef statclass
 #define statclass
 
+#define SHOW(a) Rcout << #a << " = " << a << "\n";
 class Stats {
   private: 
   Stats();
@@ -20,7 +23,11 @@ class Stats {
   std::vector<uint8_t *> data;
   std::vector<int> snp_group;
   std::vector<int> nb_snp_in_group; // le nombre de snps à TRUE dans which_snp, pour chaque groupe de SNPs
-  
+
+  // concernant les individus 
+  int nb_ind_groups;          // nb de groupes
+  std::vector<int> ind_group;  // groupe des individus
+ 
   // pour les calculs exacts
   std::vector<int> no_var, some_var;
 
@@ -29,35 +36,50 @@ class Stats {
   // la fonction qui renvoie un vecteur de stats de longueur nb_snp_groups
   virtual void compute_stats() = 0;
 
-  // la fonction qui permute les phénotypes (les phénotypes et leur 
-  // permutations sont définis dans les classes dérivées)
-  virtual void permute_pheno() {} ;
-
-  Stats(const XPtr<matrix4> pA, LogicalVector which_snps, IntegerVector SNPgroup) : 
+  Stats(const XPtr<matrix4> pA, LogicalVector _which_snps, IntegerVector SNPgroup, IntegerVector _ind_group) : 
     full_data(pA->data), 
     ncol(pA->ncol), 
     true_ncol(pA->true_ncol), 
     full_nb_snps(pA->nrow), 
     full_snp_group(SNPgroup),
     nb_snp_groups(as<CharacterVector>(SNPgroup.attr("levels")).size()),
-    which_snps_orig(which_snps), 
+    which_snps_orig(_which_snps), 
     which_snps(full_nb_snps),
-    nb_snp_in_group(nb_snp_groups), 
+    nb_snp_in_group(nb_snp_groups),
+    nb_ind_groups(as<CharacterVector>(_ind_group.attr("levels")).size()),
+    ind_group(ncol),
     stats(nb_snp_groups)
   {
-      if(which_snps_orig.length() != full_nb_snps || SNPgroup.length() != full_nb_snps) {
-        stop("Dimensions mismatch\n");
-      }
-      for(int i = 0; i < full_nb_snps; i++)
-        which_snps[i] = which_snps_orig[i];
-      update_snps();
+   SHOW(nb_ind_groups);
+   SHOW(ncol);
+   if(which_snps_orig.length() != full_nb_snps || SNPgroup.length() != full_nb_snps || _ind_group.length() != ncol ) 
+     stop("Dimensions mismatch\n");
+ 
+    for(size_t i = 0; i < ncol; i++) 
+      ind_group[i] = _ind_group[i];
+ 
+    for(size_t i = 0; i < full_nb_snps; i++) 
+      which_snps[i] = which_snps_orig[i];
+
+    update_snps();
   }
 
+  // permutation aléatoire des groupes d'individus
+  void permute_pheno() {
+    for(int i = ncol - 1; i > 0; i--) {
+      int j = (int) std::floor(i*R::runif(0,1));
+      int tmp = ind_group[i];
+      ind_group[i] = ind_group[j];
+      ind_group[j] = tmp;
+    }
+  }
+
+  // comme son nom l'indique...
   virtual void update_snps() {
-    //Rcout << "original update\n";
+    // Rcout << "original update\n";
     // count 'true' in which_snps
     nb_snps = 0;
-    for(bool b : which_snps)
+    for(bool b : which_snps) 
       if(b) nb_snps++;
 
     data.resize(nb_snps);
@@ -128,13 +150,14 @@ class Stats {
    **********************************************/
 
   void keep_one_snp_group(int group) {
-    for(size_t i = 0; i < nb_snp_groups; i++) 
+    for(size_t i = 0; i < full_nb_snps; i++) 
       which_snps[i] = which_snps_orig[i] && ( full_snp_group[i] == group );
+
     update_snps();
   }
 
   // quels sont les individus qui portent des variants rares ?
-  void set_non_zero_inds() {
+  void set_no_var_some_var() {
     // stat Individus
     std::vector<int> stat_inds(16*true_ncol);
     for(uint8_t * da : data) {
@@ -160,6 +183,73 @@ class Stats {
         some_var.push_back(j);
     }
   }
+
+  List exact_p_value(int group) {
+    keep_one_snp_group(group);
+    set_no_var_some_var();
+
+    compute_stats();
+    double obs = stats[group - 1];
+
+    SHOW(stats); 
+
+    // il faut compter combien d'individus dans chaque groupe
+    std::vector<int> disp(nb_ind_groups);
+    for(int i : ind_group) disp[i-1]++;
+
+
+    // on va générer toutes les combinaisons pour les individus de some_var
+    comb CO(some_var.size(), disp);
+    while(CO.left()) {
+      CO.print_current();
+      CO.itere();
+    }
+/* 
+    for(int b = 0; b < B_max; b++) {
+      permute_pheno();
+      compute_stats();
+      // Rcout << "permutation = " << stats ;
+      bool flag = false; // ce drapeau se lèvera si A_target est atteint dans un groupe
+      for(int i = 0; i < nb_snp_groups; i++) {
+        if(!nb_snp_in_group[i]) continue;
+        B[i]++;
+       
+        if(stats[i] >= Obs[i]) {
+          A[i]++;
+          if(A[i] == A_target) flag = true;
+          if(stats[i] == Obs[i]) {
+            C[i]++;
+          } 
+        } 
+      }
+      // Rcout << " A = " << A << " B = " << B << "\n";
+      if(!flag) continue;
+      // mettre à jour which_snps si nécessaire (le drapeau est levé !)
+      for(int i = 0; i < full_nb_snps; i++) {
+        which_snps[i] = which_snps[i] && (A[ full_snp_group[i] - 1 ] < A_target); 
+      }
+      update_snps();
+      if(nb_snps == 0) break;
+    } */
+    List L;
+    L["no_var"] = wrap(no_var);
+    L["some_var"] = wrap(some_var);
+    L["stat"] = obs;
+    L["disp"] = wrap(disp);
+
+/*
+    L["nb.geq"] = A;
+    L["nb.eq"] = C;
+    L["nb.perms"] = B;
+    NumericVector p(nb_snp_groups);
+    for(int j = 0; j < nb_snp_groups; j++) {
+      p[j] = ((double) A[j] - 0.5* (double) C[j] + 1.0)/((double) B[j] + 1.0);
+    }
+    L["p.value"] = p; */
+    return L;
+  }
+
+
 };
 
 
