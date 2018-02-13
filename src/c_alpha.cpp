@@ -51,7 +51,11 @@ class Calpha : public Stats {
 
   void update_snps() {
     // Rcout << "derived update\n";
-    nb_snps = sum(which_snps);
+    // nb_snps = sum(which_snps);
+    nb_snps = 0;
+    for(bool b : which_snps)
+      if(b) nb_snps++;
+
     data.resize(nb_snps);
     snp_group.resize(nb_snps);
     inv.resize(nb_snps); 

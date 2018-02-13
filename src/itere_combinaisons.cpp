@@ -28,7 +28,7 @@ comb::comb(int n_, std::vector<int> disp) : n(n_), n_cat(disp.size()), cur_disp(
   anything_left = true;
 }
 
-std::vector<int> comb::current() const {
+std::vector<int> & comb::current() {
   return cur_comb;
 }
  

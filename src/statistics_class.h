@@ -20,6 +20,9 @@ class Stats {
   std::vector<uint8_t *> data;
   std::vector<int> snp_group;
   std::vector<int> nb_snp_in_group; // le nombre de snps à TRUE dans which_snp, pour chaque groupe de SNPs
+  
+  // pour les calculs exacts
+  std::vector<int> no_var, some_var;
 
   // output
   NumericVector stats;
@@ -102,7 +105,7 @@ class Stats {
       if(!flag) continue;
       // mettre à jour which_snps si nécessaire (le drapeau est levé !)
       for(int i = 0; i < full_nb_snps; i++) {
-        which_snps[i] &= (A[ full_snp_group[i] - 1 ] < A_target); 
+        which_snps[i] = which_snps[i] && (A[ full_snp_group[i] - 1 ] < A_target); 
       }
       update_snps();
       if(nb_snps == 0) break;
@@ -120,15 +123,18 @@ class Stats {
     return L;
   }
 
-  // des fonctions pour les tests exacts
-  keep_one_snp_group(int group) {
+  /**********************************************
+   * des fonctions pour les tests exacts
+   **********************************************/
+
+  void keep_one_snp_group(int group) {
     for(size_t i = 0; i < nb_snp_groups; i++) 
-      which_snps[i] = which_snps_orig[i] && ( full_snp_group[i] == g );
+      which_snps[i] = which_snps_orig[i] && ( full_snp_group[i] == group );
     update_snps();
   }
 
   // quels sont les individus qui portent des variants rares ?
-  std::vector<size_t> which_non_zero_inds() {
+  void set_non_zero_inds() {
     // stat Individus
     std::vector<int> stat_inds(16*true_ncol);
     for(uint8_t * da : data) {
@@ -140,13 +146,15 @@ class Stats {
         stat_inds[16*j + 12 + (int) ((d>>6)&3)]++;
       }
     }
-    std::vector<int> no_var, some_var;
+
+    no_var.clear();
+    some_var.clear();
     for(size_t j = 0; j < ncol; j++) {
       int N0  = stat_inds[4*j];
       int N1  = stat_inds[4*j+1];
       int N2  = stat_inds[4*j+2];
       int NAs = stat_inds[4*j+3];
-      if(N1 == 0 && (N2 == 0 || N0 == 0) && NAs < nb_snps)
+      if(N1 == 0 && (N2 == 0 || N0 == 0))
         no_var.push_back(j);
       else
         some_var.push_back(j);
