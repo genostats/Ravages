@@ -31,6 +31,10 @@ comb::comb(int n_, std::vector<int> disp) : n(n_), n_cat(disp.size()), cur_disp(
 std::vector<int> & comb::current() {
   return cur_comb;
 }
+
+std::vector<int> & comb::disp() {
+  return cur_disp;
+}
  
 bool comb::left() const {
   return anything_left;
@@ -43,7 +47,6 @@ void comb::itere() {
   int i = n-1;
   for(; i > -1; i--) {
     int c = cur_comb[i];
-    // cur_comb[i] = 0;
     cur_disp[c]++;  // on libere ça.
     // y a-t-il des dispos de c+1 à n_cat-1 ?
     bool found = false;

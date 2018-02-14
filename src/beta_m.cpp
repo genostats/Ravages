@@ -60,7 +60,7 @@ List beta_m(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector region, I
 }
 
 //[[Rcpp::export]]
-List ex_beta_m(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector region, IntegerVector group, int g) {
+List ex_beta_m(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector region, IntegerVector group, IntegerVector g) {
 
   Betam B(p_A, which_snps, region, group);
 
@@ -92,7 +92,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< LogicalVector >::type which_snps(which_snpsSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type region(regionSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type group(groupSEXP);
-    Rcpp::traits::input_parameter< int >::type g(gSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type g(gSEXP);
     rcpp_result_gen = Rcpp::wrap(ex_beta_m(p_A, which_snps, region, group, g));
     return rcpp_result_gen;
 END_RCPP

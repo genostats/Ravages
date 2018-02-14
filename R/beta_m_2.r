@@ -5,8 +5,14 @@ Beta.M <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.regio
   return(res)
 }
 
-ex_Beta.M <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, 
-                   which.snps = rep(TRUE, ncol(x)), groups) {
-  r <- .Call('oz_ex_beta_m', PACKAGE = 'oz', x@bed, which.snps, as.factor(genomic.region), as.factor(group), groups) 
-  r
+Beta.M.exact <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, 
+                   which.snps = rep(TRUE, ncol(x)), regions.to.test = levels(genomic.region)) {
+  if(!is.factor(genomic.region))
+    genomic.region <- as.factor(genomic.region)
+
+  g <- match(regions.to.test, levels(genomic.region))
+  if(any(is.na(g))) 
+    stop("Unknown region")
+  r <- .Call('oz_ex_beta_m', PACKAGE = 'oz', x@bed, which.snps, genomic.region, as.factor(group), g) 
+  data.frame( genomic.region = regions.to.test, r )
 }

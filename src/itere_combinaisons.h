@@ -19,6 +19,7 @@ class comb {
   // l'utilisateur passe n et disp = ce qui est disponible au total dans chaque categorie
   comb(int n_, std::vector<int> disp);
   std::vector<int> & current();
+  std::vector<int> & disp();
   bool left() const;
   void itere();
   

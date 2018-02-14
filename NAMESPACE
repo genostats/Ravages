@@ -15,7 +15,7 @@ export(region.by.pos, region.by.gene)
 export(count.singletons)
 export(Jaccard)
 export(C.ALPHA)
-export(Beta.M)
+export(Beta.M, Beta.M.exact)
 export(group.mafs, random.bed.matrix, random.bed.matrix.with.model, OR.matrix)
 export(filter.rare.variants)
 
