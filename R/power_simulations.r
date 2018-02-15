@@ -80,33 +80,65 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"), maf.thre
   x <- do.call(random.bed.matrix.with.model, model.pars)
   x <- filter.rare.variants(x, filter, maf.threshold)
   pheno.pooled <- ifelse(x@ped$pheno==0, 0, 1)
-
+  
+  if(CAST){
+    power.cast <- mean(CAST(x, maf.threshold = maf.threshold) < alpha)
+    se.cast <- sqrt((power.cast * (1-power.cast)) / nlevels(x@snps$genomic.region))
+    power.pooled.cast <- mean(CAST(x, group = pheno.pooled, maf.threshold = maf.threshold) < alpha)
+    se.pooled.cast <- sqrt((power.pooled.cast * (1-power.pooled.cast)) / nlevels(x@snps$genomic.region))
+  }
+  else {
+    power.cast <- NA ; se.cast <- NA
+    power.pooled.cast <- NA ; se.pooled.cast <- NA
+  }
+  
   if(WSS){
     power.wss <- mean( WSS(x)$p.value < alpha ) 
+    se.wss <- sqrt((power.wss*(1-power.wss))/nlevels(x@snps$genomic.region)) 
     power.pooled.wss <- mean( WSS(x, group=pheno.pooled)$p.value < alpha )
+    se.pooled.wss <- sqrt((power.pooled.wss*(1-power.pooled.wss))/nlevels(x@snps$genomic.region))
   }
   else{  
-    power.wss <- NA
-    power.pooled.wss <- NA
+    power.wss <- NA ; se.wss <- NA
+    power.pooled.wss <- NA ; se.pooled.wss <- NA
   }
 
   if(C.ALPHA){ 
     power.calpha <- mean( C.ALPHA(x, target=50, B.max = 50/alpha)$p.value < alpha ) 
+    se.calpha <- sqrt((power.calpha*(1-power.calpha))/nlevels(x@snps$genomic.region))
     power.pooled.calpha <- mean( C.ALPHA(x, group=pheno.pooled, target=50, B.max = 50/alpha)$p.value < alpha )
+    se.pooled.calpha <- sqrt((power.pooled.calpha*(1-power.pooled.calpha))/nlevels(x@snps$genomic.region))
   }
   else{  
-    power.calpha <- NA
-    power.pooled.calpha <- NA
+    power.calpha <- NA ; se.calpha <- NA
+    power.pooled.calpha <- NA ; se.pooled.calpha <- NA
   }
   
   if(Beta.M){
     power.betam <- mean( Beta.M(x, target = 50, B.max = 50/alpha)$p.value < alpha ) 
+    se.betam <- sqrt((power.betam * (1-power.betam))/nlevels(x@snps$genomic.region))
     power.pooled.betam <- mean( Beta.M(x, group=pheno.pooled, target=50, B.max = 50/alpha)$p.value < alpha )
+    se.pooled.betam <- sqrt((power.pooled.betam * (1-power.pooled.betam))/nlevels(x@snps$genomic.region))
   }
   else{  
     power.betam <- NA
     power.pooled.betam <- NA
   }
+  
+  if (SKAT){
+    obj.null <- SKAT_Null_Model(pheno.pooled ~ 1, out_type="D")
+    SKAT.p <- sapply(levels(x@snps$genomic.region), function(y) SKAT(as.matrix(select.snps(x, x@snps$genomic.region==y)), obj.null , r.corr=0)$p.value)
+    SKATO.p <- sapply(levels(x@snps$genomic.region), function(y) SKAT(as.matrix(select.snps(x, x@snps$genomic.region==y)), obj.null , method="SKATO")$p.value)
+    power.skat <- mean(SKAT.p<alpha)
+    power.skato <- mean(SKATO.p<alpha)
+    se.skat <- sqrt((power.skat * (1-power.skat))/nlevels(x@snps$genomic.region))
+    se.skato <- sqrt((power.skato * (1-power.skato))/nlevels(x@snps$genomic.region))
+  }
+  else{
+    power.skat <- NA ; se.skat <- NA
+    power.skato <- NA ; se.skato <- NA
+  }
+  
+  data.frame("power"=c(power.cast, power.pooled.cast, power.wss, power.pooled.wss, power.calpha, power.pooled.calpha, power.betam, power.pooled.betam, power.skat, power.skato, nlevels(x@snps$genomic.region)), "se"=c(se.cast, se.pooled.cast, se.wss, se.pooled.wss, se.calpha, se.pooled.calpha, se.betam, se.pooled.betam, se.skat, se.skato, NA), row.names=c("CAST", "pooled.CAST", "WSS", "pooled.WSS", "C.alpha", "pooled.C.alpha", "Beta.M", "pooled.Beta.M", "SKAT", "SKAT-O", "nb.replicates"))  
 
-  c("Power.WSS" = power.wss, "Power.pooled.WSS" = power.pooled.wss, "Power.C.ALPHA" = power.calpha, "Power.pooled.C.ALPHA" = power.pooled.calpha, "Power.Beta.M" = power.betam, "Power.pooled.Beta.M" = power.pooled.betam, "Nb.replicates" = nlevels(x@snps$genomic.region))
 }
