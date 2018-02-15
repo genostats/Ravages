@@ -82,9 +82,9 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"), maf.thre
   pheno.pooled <- ifelse(x@ped$pheno==0, 0, 1)
   
   if(CAST){
-    power.cast <- mean(CAST(x, maf.threshold = maf.threshold) < alpha)
+    power.cast <- mean(CAST(x, maf.threshold = maf.threshold)$p.value < alpha)
     se.cast <- sqrt((power.cast * (1-power.cast)) / nlevels(x@snps$genomic.region))
-    power.pooled.cast <- mean(CAST(x, group = pheno.pooled, maf.threshold = maf.threshold) < alpha)
+    power.pooled.cast <- mean(CAST(x, group = pheno.pooled, maf.threshold = maf.threshold)$p.value < alpha)
     se.pooled.cast <- sqrt((power.pooled.cast * (1-power.pooled.cast)) / nlevels(x@snps$genomic.region))
   }
   else {
