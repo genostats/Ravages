@@ -76,7 +76,7 @@ filter.rare.variants <- function(x, filter = c("whole", "controls", "any"), maf.
 }
 
 # model.pars doit contenir les arguments de random.bed.matrix.with.model
-Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"), maf.threshold = 0.01, WSS = TRUE, C.ALPHA = TRUE, Beta.M = TRUE, model.pars) {
+Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"), maf.threshold = 0.01, CAST=TRUE, WSS = TRUE, C.ALPHA = TRUE, Beta.M = TRUE, SKAT=TRUE, model.pars) {
   x <- do.call(random.bed.matrix.with.model, model.pars)
   x <- filter.rare.variants(x, filter, maf.threshold)
   pheno.pooled <- ifelse(x@ped$pheno==0, 0, 1)
