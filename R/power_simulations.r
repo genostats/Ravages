@@ -121,8 +121,8 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"), maf.thre
     se.pooled.betam <- sqrt((power.pooled.betam * (1-power.pooled.betam))/nlevels(x@snps$genomic.region))
   }
   else{  
-    power.betam <- NA
-    power.pooled.betam <- NA
+    power.betam <- NA ; se.betam <- NA
+    power.pooled.betam <- NA ; se.pooled.betam <- NA
   }
   
   if (SKAT){
