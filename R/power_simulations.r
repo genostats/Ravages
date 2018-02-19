@@ -8,11 +8,14 @@ random.bed.matrix.with.model <- function(pop.maf, size, baseline, replicates, OR
   x <- new.bed.matrix(nb_inds, nb_snps);
   for(b in 1:replicates) {
     if(scenario == 1){
+      set.seed(b)
       OR <- do.call( same.OR.matrix, OR.pars)
     } else {
+      set.seed(b)
       OR <- do.call( OR.matrix, OR.pars)
     }
     MAFS <- group.mafs(pop.maf, OR, baseline)
+    set.seed(b)
     .Call("oz_random_filling_bed_matrix", PACKAGE = "oz", x@bed, MAFS, size, (b-1)*OR.pars$n.variants)
   }
   x@ped$pheno <- rep.int( 1:length(size) - 1, size)

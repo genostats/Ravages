@@ -18,9 +18,7 @@ same.OR.matrix <- function(n.variants, OR.del, OR.pro = 1/OR.del, prob.del, prob
     stop("Dimensions mismatch")
   OR <- cbind(1, OR.del, OR.pro, deparse.level = 0)
   v <- replicate(length(OR.del), sample(1:3, n.variants, TRUE, c(1 - prob.del - prob.pro, prob.del, prob.pro)))
-  y <- matrix(rep(NA, n.variants*length(OR.del)), nrow=length(OR.del))
-  for (i in 1:length(OR.del)) {y[i,] <- OR[i,][v[,i]]}
-  return(y)
+  t(sapply(1:nrow(OR), function(x) OR[x,][v[,x]]))
   }
 #example
 #same.OR.matrix(20, c(2,2), c(0.5,0.5), 0.2, 0.1)
