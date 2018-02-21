@@ -1,21 +1,18 @@
 
 # il faut ajouter un argument pour la fonction à appeler pour générer les OR
 # (ici OR.matrix...)
-random.bed.matrix.with.model <- function(pop.maf, size, baseline, replicates, OR.pars, scenario=c(1,2)) {
+random.bed.matrix <- function(pop.maf, size, baseline, replicates, OR.pars, scenario=c(1,2)) {
   OR.pars$n.variants <- length(pop.maf)
   nb_snps <- OR.pars$n.variants * replicates
   nb_inds <- sum(size)
   x <- new.bed.matrix(nb_inds, nb_snps);
   for(b in 1:replicates) {
     if(scenario == 1){
-      set.seed(b)
       OR <- do.call( same.OR.matrix, OR.pars)
     } else {
-      set.seed(b)
       OR <- do.call( OR.matrix, OR.pars)
     }
     MAFS <- group.mafs(pop.maf, OR, baseline)
-    set.seed(b)
     .Call("oz_random_filling_bed_matrix", PACKAGE = "oz", x@bed, MAFS, size, (b-1)*OR.pars$n.variants)
   }
   x@ped$pheno <- rep.int( 1:length(size) - 1, size)
@@ -25,21 +22,6 @@ random.bed.matrix.with.model <- function(pop.maf, size, baseline, replicates, OR
   x
 }
 
-
-# pas inspiré pour trouver un nom
-fff <- function(pop.maf, size, baseline, replicates, OR.pars) {
-  OR.pars$n.variants <- length(pop.maf)
-  ff <- function() {
-    OR <- do.call( OR.matrix, OR.pars)
-    MAFS <- group.mafs(pop.maf, OR, baseline)
-    random.bed.matrix(MAFS, size)
-  }
-  x <- suppressWarnings(do.call( cbind, replicate(replicates, ff())))  # warnings à cause 
-  x <- set.stats(x, verbose = FALSE)
-  x@snps$genomic.region <- factor( rep(sprintf("R%d", 1:replicates), each = length(pop.maf)) )
-  x@snps$id <- paste( x@snps$genomic.region, x@snps$id, sep="_")
-  x
-}
 
 filter.rare.variants <- function(x, filter = c("whole", "controls", "any"), maf.threshold = 0.01, min.nb.snps) {
   filter <- match.arg(filter)
@@ -80,7 +62,7 @@ filter.rare.variants <- function(x, filter = c("whole", "controls", "any"), maf.
 
 # model.pars doit contenir les arguments de random.bed.matrix.with.model
 Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"), maf.threshold = 0.01, CAST=TRUE, WSS = TRUE, C.ALPHA = TRUE, Beta.M = TRUE, SKAT=TRUE, model.pars) {
-  x <- do.call(random.bed.matrix.with.model, model.pars)
+  x <- do.call(random.bed.matrix, model.pars)
   x <- filter.rare.variants(x, filter, maf.threshold)
   pheno.pooled <- ifelse(x@ped$pheno==0, 0, 1)
   
