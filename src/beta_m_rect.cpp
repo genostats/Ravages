@@ -5,7 +5,6 @@
 #include "gaston.h"
 #include "statistics_class.h"
 #include "allelecounter.h"
-
 using namespace Rcpp;
 using namespace RcppParallel;
 
@@ -31,15 +30,18 @@ class Betam_rect : public Stats {
     // std::cout << "parallelReduce ok\n";
  
     // calcul de beta_m rectifié
-    std::vector<double> U(nb_snps);
+    std::vector<double> U_phi(nb_snps);
+    // std::vector<double> U_pi(nb_snps), J_pi2(nb_snps), J_pi_phi(nb_snps);
     for(size_t i = 0; i < nb_snps; i++) { // boucle sur les SNP
+      double pi = p[i];
+      if(pi == 0 || pi == 1) continue; // variant monomorphe : ignorer
       for(size_t g = 0; g < nb_ind_groups; g++) { // sur les groupes d'invidus
         double n = (double) X.R[2*(i*nb_ind_groups + g)];   // = nb d'alleles 1 dans groupe g+1
         double m = (double) X.R[2*(i*nb_ind_groups + g)+1]; // = nb d'alleles 0 dans groupe g+1
-        double pi = p[i];
-        if(pi == 0 || pi == 1) continue; // variant monomorphe : ignorer
-        U[i] += n*(n-1)/pi + m*(m-1)/(1-pi) + (n+m)*(n+m-1) ; // le dernier terme pourrait être omis
-        U[i] += (n/pi - m/(1-pi))*( m*(m-1)/(1-pi)/(1-pi) - n*(n-1)/pi/pi)/(n/pi/pi+m/(1-pi)/(1-pi));
+        U_phi[i]    += 0.5*(n*(n-1)/pi + m*(m-1)/(1-pi) + (n+m)*(n+m-1)) ; // le dernier terme pourrait être omis
+        // U_pi[i]     += (n/pi - m/(1-pi));
+        // J_pi_phi[i] += 0.5*( m*(m-1)/(1-pi)/(1-pi) - n*(n-1)/pi/pi);
+        // J_pi2[i]    += -(n/pi/pi+m/(1-pi)/(1-pi));
       }
     }
     // std::cout << "U ok\n";
@@ -47,7 +49,10 @@ class Betam_rect : public Stats {
     // calcule la somme des stats beta_m par région génomique
     for(int i = 0; i < nb_snp_groups; i++) stats[i] = 0;
     for(int i = 0; i < nb_snps; i++) {
-      stats[ snp_group[i] - 1 ] += -U[i] / ncol;
+      if(p[i] == 0 || p[i] == 1) continue; // variant monomorphe : ignorer
+      // SHOW( U_pi[i] )  // --> 0
+      // stats[ snp_group[i] - 1 ] += ( U_phi[i] - U_pi[i]*J_pi_phi[i]/J_pi2[i] )/((double) ncol);
+      stats[ snp_group[i] - 1 ] +=  U_phi[i]/((double) ncol);
     }
   }
 
