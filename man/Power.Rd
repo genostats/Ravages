@@ -35,10 +35,10 @@ A data frame with the foloowing fields:
   This functions relies on the functions \code{random.bed.matrix.with.model} and \code{filter.rare.variants} used to generate the genotypes.
   OR.pars is a list of parameters containing \code{OR.del}=a vector of OR values for deleterious variants in each group of cases, \code{OR.prot}=a vector of OR values for protective variants in each group of cases, \code{prob.del}=the probability for each variant of being deleterious and \code{prob.pro}=the probability for each variant of being protective.
 }
-\authors{
+\author{
 Herve Perdry and Ozvan Bocher
 }
-\example{
+\examples{
 #List of OR parameters with one group of cases having deleterious variants with OR=3 and the other group of cases OR=6
 my.OR.pars <- list(OR.del=c(3,6), prob.del=0.2, prob.pro=0.05)
 #List of model parameters with 400 controls and two groups of 200 cases, each one with a baseline of 0.001
