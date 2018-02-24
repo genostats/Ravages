@@ -7,7 +7,7 @@ Beta.M <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.regio
 
 Beta.M.rect <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, 
                    which.snps = rep(TRUE, ncol(x)), target = 10, B.max = 1e6) {
-  r <- .Call('oz_beta_m', PACKAGE = 'oz', x@bed, which.snps, x@p, as.factor(genomic.region), as.factor(group), target, B.max) 
+  r <- .Call('oz_beta_m_rect', PACKAGE = 'oz', x@bed, which.snps, x@p, as.factor(genomic.region), as.factor(group), target, B.max) 
   res <- data.frame( genomic.region = levels(genomic.region), r )
   return(res)
 }

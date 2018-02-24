@@ -18,6 +18,7 @@ class Betam_rect : public Stats {
   : Stats(pA, which_snps, SNPgroup, Ind_group), full_p(p_), p(full_nb_snps) {
     for(size_t i = 0; i < full_nb_snps; i++) p[i] = full_p[i];
     update_snps(); // (le constructeur Stats() a appelé celui qui est défini dans la classe Stats) 
+    // std::cout << "ok\n";
   }
 
   void compute_stats() {
@@ -27,6 +28,7 @@ class Betam_rect : public Stats {
     // comptages alléliques
     allelecounter X(&data[0], ncol, true_ncol, nb_snps, nb_ind_groups, ind_group);
     parallelReduce(0, nb_snps, X);
+    // std::cout << "parallelReduce ok\n";
  
     // calcul de beta_m rectifié
     std::vector<double> U(nb_snps);
@@ -40,11 +42,12 @@ class Betam_rect : public Stats {
         U[i] += (n/pi - m/(1-pi))*( m*(m-1)/(1-pi)/(1-pi) - n*(n-1)/pi/pi)/(n/pi/pi+m/(1-pi)/(1-pi));
       }
     }
+    // std::cout << "U ok\n";
 
     // calcule la somme des stats beta_m par région génomique
     for(int i = 0; i < nb_snp_groups; i++) stats[i] = 0;
     for(int i = 0; i < nb_snps; i++) {
-      stats[ snp_group[i] - 1 ] += U[i];
+      stats[ snp_group[i] - 1 ] += -U[i] / ncol;
     }
   }
 
@@ -77,7 +80,7 @@ class Betam_rect : public Stats {
 
 //[[Rcpp::export]]
 List beta_m_rect(XPtr<matrix4> p_A, LogicalVector which_snps, NumericVector p, IntegerVector region, IntegerVector group, int A_target, int B_max) {
-
+  // Rcout << "ça va commencer\n";
   Betam_rect B(p_A, which_snps, region, group, p);
   if(B_max > 0) {
     return B.permute_stats(A_target,B_max);
