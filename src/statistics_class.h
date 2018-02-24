@@ -175,7 +175,7 @@ class Stats {
       int N0  = stat_inds[4*j];
       int N1  = stat_inds[4*j+1];
       int N2  = stat_inds[4*j+2];
-      int NAs = stat_inds[4*j+3];
+      //int NAs = stat_inds[4*j+3];
       if(N1 == 0 && (N2 == 0 || N0 == 0))
         no_var.push_back(j);
       else
@@ -206,7 +206,6 @@ class Stats {
   
       // on va générer toutes les combinaisons pour les individus de some_var
       comb CO(some_var.size(), disp);
-      int kk(0);
       while(CO.left()) {
         std::vector<int> & current = CO.current();
         std::vector<int> & disp = CO.disp();
