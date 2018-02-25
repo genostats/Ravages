@@ -61,7 +61,8 @@ filter.rare.variants <- function(x, filter = c("whole", "controls", "any"), maf.
 }
 
 # model.pars doit contenir les arguments de random.bed.matrix.with.model
-Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"), maf.threshold = 0.01, CAST=TRUE, WSS = TRUE, C.ALPHA = TRUE, Beta.M = TRUE, SKAT=TRUE, model.pars) {
+Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"), 
+                  maf.threshold = 0.01, CAST=TRUE, WSS = TRUE, C.ALPHA = TRUE, Beta.M = TRUE, SKAT=TRUE, FST = TRUE, model.pars) {
   x <- do.call(random.bed.matrix, model.pars)
   x <- filter.rare.variants(x, filter, maf.threshold)
   pheno.pooled <- ifelse(x@ped$pheno==0, 0, 1)
@@ -99,6 +100,16 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"), maf.thre
     power.pooled.calpha <- NA ; se.pooled.calpha <- NA
   }
   
+  if(FST){
+    power.fst <- mean( Sum.Fst(x, target = 50, B.max = 50/alpha)$p.value < alpha ) 
+    se.fst <- sqrt((power.fst * (1-power.fst))/nlevels(x@snps$genomic.region))
+    power.pooled.fst <- mean( Sum.Fst(x, group=pheno.pooled, target=50, B.max = 50/alpha)$p.value < alpha )
+    se.pooled.fst <- sqrt((power.pooled.fst * (1-power.pooled.fst))/nlevels(x@snps$genomic.region))
+  else{  
+    power.fst <- NA ; se.fst <- NA
+    power.pooled.fst <- NA ; se.pooled.fst <- NA
+  }
+   
   if(Beta.M){
     power.betam <- mean( Beta.M(x, target = 50, B.max = 50/alpha)$p.value < alpha ) 
     se.betam <- sqrt((power.betam * (1-power.betam))/nlevels(x@snps$genomic.region))
@@ -134,10 +145,10 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"), maf.thre
   data.frame(
     "power" = c(power.cast, power.pooled.cast, power.wss, power.pooled.wss, power.calpha, power.pooled.calpha, 
                 power.betam, power.pooled.betam, power.betam.rect, power.pooled.betam.rect, 
-                power.skat, power.skato, nlevels(x@snps$genomic.region)), 
+                power.skat, power.skato, power.fst, nlevels(x@snps$genomic.region)), 
         "se"= c(se.cast, se.pooled.cast, se.wss, se.pooled.wss, se.calpha, se.pooled.calpha, 
-                se.betam, se.pooled.betam, se.betam.rect, se.pooled.betam.rect, se.skat, se.skato, NA), 
+                se.betam, se.pooled.betam, se.betam.rect, se.pooled.betam.rect, se.skat, se.skato, se.fst, NA), 
   row.names= c("CAST", "pooled.CAST", "WSS", "pooled.WSS", "C.alpha", "pooled.C.alpha", "Beta.M", "pooled.Beta.M", 
-               "Beta.M.rect", "pooled.Beta.M.rect", "SKAT", "SKAT-O", "nb.replicates"))  
+               "Beta.M.rect", "pooled.Beta.M.rect", "SKAT", "SKAT-O", "Sum.Fst", "nb.replicates"))  
 
 }
