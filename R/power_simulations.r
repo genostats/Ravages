@@ -62,7 +62,8 @@ filter.rare.variants <- function(x, filter = c("whole", "controls", "any"), maf.
 
 # model.pars doit contenir les arguments de random.bed.matrix.with.model
 Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"), 
-                  maf.threshold = 0.01, CAST=TRUE, WSS = TRUE, C.ALPHA = TRUE, Beta.M = TRUE, SKAT=TRUE, FST = TRUE, model.pars) {
+                  maf.threshold = 0.01, CAST=TRUE, WSS = TRUE, C.ALPHA = TRUE, Beta.M = TRUE, 
+                  Beta.M.rect = TRUE, SKAT=TRUE, FST = TRUE, model.pars) {
   x <- do.call(random.bed.matrix, model.pars)
   x <- filter.rare.variants(x, filter, maf.threshold)
   pheno.pooled <- ifelse(x@ped$pheno==0, 0, 1)
@@ -115,15 +116,19 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"),
     se.betam <- sqrt((power.betam * (1-power.betam))/nlevels(x@snps$genomic.region))
     power.pooled.betam <- mean( Beta.M(x, group=pheno.pooled, target=50, B.max = 50/alpha)$p.value < alpha )
     se.pooled.betam <- sqrt((power.pooled.betam * (1-power.pooled.betam))/nlevels(x@snps$genomic.region))
-
+  }
+  else{  
+    power.betam <- NA ; se.betam <- NA
+    power.pooled.betam <- NA ; se.pooled.betam <- NA
+  }
+  
+  if(Beta.M.rect){
     power.betam.rect <- mean( Beta.M.rect(x, target = 50, B.max = 50/alpha)$p.value < alpha ) 
     se.betam.rect <- sqrt((power.betam.rect * (1-power.betam.rect))/nlevels(x@snps$genomic.region))
     power.pooled.betam.rect <- mean( Beta.M.rect(x, group=pheno.pooled, target=50, B.max = 50/alpha)$p.value < alpha )
     se.pooled.betam.rect <- sqrt((power.pooled.betam.rect * (1-power.pooled.betam.rect))/nlevels(x@snps$genomic.region))
   }
   else{  
-    power.betam <- NA ; se.betam <- NA
-    power.pooled.betam <- NA ; se.pooled.betam <- NA
     power.betam.rect <- NA ; se.betam.rect <- NA
     power.pooled.betam.rect <- NA ; se.pooled.betam.rect <- NA
   }
