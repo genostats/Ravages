@@ -105,7 +105,7 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"),
     se.fst <- sqrt((power.fst * (1-power.fst))/nlevels(x@snps$genomic.region))
     power.pooled.fst <- mean( Sum.Fst(x, group=pheno.pooled, target=50, B.max = 50/alpha)$p.value < alpha )
     se.pooled.fst <- sqrt((power.pooled.fst * (1-power.pooled.fst))/nlevels(x@snps$genomic.region))
-  else{  
+  } else {  
     power.fst <- NA ; se.fst <- NA
     power.pooled.fst <- NA ; se.pooled.fst <- NA
   }
