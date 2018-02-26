@@ -150,10 +150,10 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"),
   data.frame(
     "power" = c(power.cast, power.pooled.cast, power.wss, power.pooled.wss, power.calpha, power.pooled.calpha, 
                 power.betam, power.pooled.betam, power.betam.rect, power.pooled.betam.rect, 
-                power.skat, power.skato, power.fst, nlevels(x@snps$genomic.region)), 
+                power.skat, power.skato, power.fst, power.pooled.fst, nlevels(x@snps$genomic.region)), 
         "se"= c(se.cast, se.pooled.cast, se.wss, se.pooled.wss, se.calpha, se.pooled.calpha, 
-                se.betam, se.pooled.betam, se.betam.rect, se.pooled.betam.rect, se.skat, se.skato, se.fst, NA), 
+                se.betam, se.pooled.betam, se.betam.rect, se.pooled.betam.rect, se.skat, se.skato, se.fst, se.pooled.fst, NA), 
   row.names= c("CAST", "pooled.CAST", "WSS", "pooled.WSS", "C.alpha", "pooled.C.alpha", "Beta.M", "pooled.Beta.M", 
-               "Beta.M.rect", "pooled.Beta.M.rect", "SKAT", "SKAT-O", "Sum.Fst", "nb.replicates"))  
+               "Beta.M.rect", "pooled.Beta.M.rect", "SKAT", "SKAT-O", "Sum.Fst", "Sum.pooled.Fst", "nb.replicates"))  
 
 }
