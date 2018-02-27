@@ -63,7 +63,7 @@ filter.rare.variants <- function(x, filter = c("whole", "controls", "any"), maf.
 # model.pars doit contenir les arguments de random.bed.matrix.with.model
 Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"), 
                   maf.threshold = 0.01, CAST=TRUE, WSS = TRUE, C.ALPHA = TRUE, Beta.M = TRUE, 
-                  Beta.M.rect = TRUE, SKAT=TRUE, FST = TRUE, model.pars) {
+                  Beta.M.rect = TRUE, Beta.M.freq = TRUE, SKAT=TRUE, FST = TRUE, model.pars) {
   x <- do.call(random.bed.matrix, model.pars)
   x <- filter.rare.variants(x, filter, maf.threshold)
   pheno.pooled <- ifelse(x@ped$pheno==0, 0, 1)
@@ -133,6 +133,17 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"),
     power.pooled.betam.rect <- NA ; se.pooled.betam.rect <- NA
   }
   
+  if(Beta.M.freq){
+    power.betam.freq <- mean( Beta.M.freq(x, target = 50, B.max = 50/alpha)$p.value < alpha ) 
+    se.betam.freq <- sqrt((power.betam.freq * (1-power.betam.freq))/nlevels(x@snps$genomic.region))
+    power.pooled.betam.freq <- mean( Beta.M.freq(x, group=pheno.pooled, target=50, B.max = 50/alpha)$p.value < alpha )
+    se.pooled.betam.freq <- sqrt((power.pooled.betam.freq * (1-power.pooled.betam.freq))/nlevels(x@snps$genomic.region))
+  }
+  else{  
+    power.betam.freq <- NA ; se.betam.freq <- NA
+    power.pooled.betam.freq <- NA ; se.pooled.betam.freq <- NA
+  }
+  
   if (SKAT){
     obj.null <- SKAT_Null_Model(pheno.pooled ~ 1, out_type="D")
     SKAT.p <- sapply(levels(x@snps$genomic.region), function(y) SKAT(gaston:::as.matrix(select.snps(x, x@snps$genomic.region==y)), obj.null , r.corr=0)$p.value)
@@ -149,11 +160,13 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"),
   
   data.frame(
     "power" = c(power.cast, power.pooled.cast, power.wss, power.pooled.wss, power.calpha, power.pooled.calpha, 
-                power.betam, power.pooled.betam, power.betam.rect, power.pooled.betam.rect, 
-                power.skat, power.skato, power.fst,power.pooled.fst, nlevels(x@snps$genomic.region)), 
+                power.betam, power.pooled.betam, power.betam.rect, power.pooled.betam.rect,  power.betam.freq, power.pooled.betam.freq,
+                power.skat, power.skato, power.fst, power.pooled.fst, nlevels(x@snps$genomic.region)), 
         "se"= c(se.cast, se.pooled.cast, se.wss, se.pooled.wss, se.calpha, se.pooled.calpha, 
-                se.betam, se.pooled.betam, se.betam.rect, se.pooled.betam.rect, se.skat, se.skato, se.fst, se.pooled.fst, NA), 
-  row.names= c("CAST", "pooled.CAST", "WSS", "pooled.WSS", "C.alpha", "pooled.C.alpha", "Beta.M", "pooled.Beta.M", 
-               "Beta.M.rect", "pooled.Beta.M.rect", "SKAT", "SKAT-O", "Sum.Fst", "pooled.Sum.Fst", "nb.replicates"))  
+                se.betam, se.pooled.betam, se.betam.rect, se.pooled.betam.rect, se.betam.freq, se.pooled.betam.freq,
+                se.skat, se.skato, se.fst, se.pooled.fst, NA), 
+  row.names= c("CAST", "pooled.CAST", "WSS", "pooled.WSS", "C.alpha", "pooled.C.alpha", 
+               "Beta.M", "pooled.Beta.M", "Beta.M.rect", "pooled.Beta.M.rect", "Beta.M.freq", "pooled.Beta.M.freq",
+               "SKAT", "SKAT-O", "Sum.Fst", "pooled.Sum.Fst", "nb.replicates"))  
 
 }
