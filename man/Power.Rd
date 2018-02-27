@@ -40,9 +40,14 @@ Herve Perdry and Ozvan Bocher
 }
 \examples{
 #List of OR parameters with one group of cases having deleterious variants with OR=3 and the other group of cases OR=6
-my.OR.pars <- list(OR.del=c(3,6), prob.del=0.2, prob.pro=0.05)
+my.OR.pars <- list(OR.del = c(3,6), prob.del = 0.2, prob.pro = 0.05)
 #List of model parameters with 400 controls and two groups of 200 cases, each one with a baseline of 0.001
-my.pars <- list(Kryukov$maf[Kryukov$unit == "R1"], c(400,200,200), c(0.001,0.001), 1000, OR.pars=my.OR.pars, scenario=2)
+my.pars <- list(pop.maf = Kryukov$maf[Kryukov$unit == "R1"], 
+                size = c(400,200,200), 
+                baseline = c(0.001,0.001), 
+                replicates = 1000, 
+                OR.pars = my.OR.pars, 
+                scenario = 2)
 #Power simulation on these parameters with the scenario 2 and the filter "any"
-my.pow <- Power(alpha=0.05, filter="any", maf.threshold=0.01, WSS=TRUE, C.ALPHA=TRUE, Beta.M=TRUE, CAST=FALSE, SKAT=FALSE, model.pars=my.pars)
+my.pow <- Power(alpha=0.05, filter="any", maf.threshold=0.01, CAST=FALSE, SKAT=FALSE, model.pars=my.pars)
 }
