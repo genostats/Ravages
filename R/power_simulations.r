@@ -159,14 +159,15 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"),
   }
   
   data.frame(
-    "power" = c(power.cast, power.pooled.cast, power.wss, power.pooled.wss, power.calpha, power.pooled.calpha, 
-                power.betam, power.pooled.betam, power.betam.rect, power.pooled.betam.rect,  power.betam.freq, power.pooled.betam.freq,
-                power.skat, power.skato, power.fst, power.pooled.fst, nlevels(x@snps$genomic.region)), 
-        "se"= c(se.cast, se.pooled.cast, se.wss, se.pooled.wss, se.calpha, se.pooled.calpha, 
-                se.betam, se.pooled.betam, se.betam.rect, se.pooled.betam.rect, se.betam.freq, se.pooled.betam.freq,
-                se.skat, se.skato, se.fst, se.pooled.fst, NA), 
-  row.names= c("CAST", "pooled.CAST", "WSS", "pooled.WSS", "C.alpha", "pooled.C.alpha", 
-               "Beta.M", "pooled.Beta.M", "Beta.M.rect", "pooled.Beta.M.rect", "Beta.M.freq", "pooled.Beta.M.freq",
-               "SKAT", "SKAT-O", "Sum.Fst", "pooled.Sum.Fst", "nb.replicates"))  
+            "power" = c(power.cast, power.pooled.cast, power.wss, power.pooled.wss, power.calpha, power.pooled.calpha, 
+                        power.betam, power.pooled.betam, power.betam.rect, power.pooled.betam.rect,  power.betam.freq, power.pooled.betam.freq,
+                        power.skat, power.skato, power.fst, power.pooled.fst), 
+                "se"= c(se.cast, se.pooled.cast, se.wss, se.pooled.wss, se.calpha, se.pooled.calpha, 
+                        se.betam, se.pooled.betam, se.betam.rect, se.pooled.betam.rect, se.betam.freq, se.pooled.betam.freq,
+                        se.skat, se.skato, se.fst, se.pooled.fst), 
+    "nb.replicates" = nlevels(x@snps$genomic.region),
+          row.names = c("CAST", "pooled.CAST", "WSS", "pooled.WSS", "C.alpha", "pooled.C.alpha", 
+                        "Beta.M", "pooled.Beta.M", "Beta.M.rect", "pooled.Beta.M.rect", "Beta.M.freq", "pooled.Beta.M.freq",
+                        "SKAT", "SKAT-O", "Sum.Fst", "pooled.Sum.Fst"))  
 
 }

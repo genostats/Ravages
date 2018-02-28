@@ -4,7 +4,7 @@
   Creation of OR matrix
 }
 \description{
-  Generates an OR matrix based on OR values and proportions
+  Generates an OR matrix based on OR values and proportions of deleterious and protective variants
 }
 \usage{
   OR.matrix(n.variants, OR.del, OR.pro = 1/OR.del, prob.del, prob.pro)
@@ -27,7 +27,7 @@
 \author{
   Herve Perdry & Ozvan Bocher
 }
-\example{
-OR.matrix(20 , c(2,4), c(0.5,0.25), 0.2, 0.1)
+\examples{
+OR.matrix(n.variants = 20 , OR.del = c(2,4), OR.pro = c(0.5,0.25), prob.del = 0.2, prob.pro = 0.1)
 #Generates OR values for 20 variants for each OR values
 }

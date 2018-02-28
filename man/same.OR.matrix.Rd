@@ -27,7 +27,7 @@
 \author{
   Herve Perdry & Ozvan Bocher
 }
-\example{
+\examples{
 same.OR.matrix(20 , c(2,2), c(0.5,0.5), 0.2, 0.1)
 #Generates OR values for 20 variants
 #The deleterious, neutral and protective variants are different between the two groups but have the same OR values

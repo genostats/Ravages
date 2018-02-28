@@ -26,10 +26,10 @@
   In the scenario 2, the same variants are deleterious, neutral and protective in the different groups of cases but the OR values are different.
   This function relies on the function \code{OR.matrix} or \code{same.OR.matrix} depending on the scenario and on \code{group.mafs}.
 }
-\authors{
+\author{
   Herve Perdry and Ozvan Bocher
 }
-\example{
+\examples{
 #List of OR parameters
 my.pars <- list(OR.del=c(2, 4), prob.del=0.2, prob.pro=0.05)
 #Simulation of genotypes with 1000 replicates for 400 controls and two groups of case with the scenario 2

@@ -1,26 +1,32 @@
 \name{WSS}
 \alias{WSS}
-\title{ WSS score }
+\title{ WSS statistic}
 \description{
-Calculates a WSS score for each individual and creates a matrix using a bed.matrix 
+  Caluclates the WSS statistics and its p-value
 }
 \usage{
-WSS(x, genomic_region)
+WSS(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region)
 }
 \arguments{
   \item{x}{ A bed.matrix }
-  \item{genomic_region}{ A vector containing the genomic region of each SNP }
+  \item{group}{ A factor containing the group of each individual }
+  \item{genomic.region}{ A vector containing the genomic region of each SNP }
 }
 \details{
-This function gives the individual WSS score by genomic region but does not give the p-value associated to this score. To calculate this p-value, a Kruskall-Wallis test must be performed as stated in the example.
 }
 \value{
-A numeric matrix with one row per individual and one column per genomic region containing the WSS score
+A data frame containing the following fields:
+  \item{genomic.region){The name of the considered \code{genomic.region} }
+  \item{stat}{The WSS statistic for each genomic region }
+  \item{p.value}{ The p-value calculated with a kruskall test}
 }
 \examples{
-data(gene_positions_hg37)
-gpe_genes <- genes_gpe(x, hg37, include.all=TRUE)
-S <- WSS(x, gpe_genes$gpe)
-pval <- apply(S, 2, function(b)kruskall.test(b, x@ped$pheno)$p.value  #Performs a kruskall-wallis test between the different phenotypes in the bed matrix x for each genomic_region from the list gpe_genes 
-
+#List of OR parameters
+my.pars <- list(OR.del = c(2, 4), prob.del = 0.2, prob.pro = 0.05)
+#Simulation of genotypes with 10 replicates for 400 controls and two groups of 200 case with the scenario 2
+x <- random.bed.matrix(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], size = c(400, 200, 200), baseline = c(0.001, 0.001), replicates = 10, OR.pars = my.pars, scenario = 2)
+#Keep only variants with MAF<1% in one of the three groups
+x <- filter.rare.variants(x, filter = "any", maf.threshold = 0.01)
+#Compute the WSS score
+WSS(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region )
 }

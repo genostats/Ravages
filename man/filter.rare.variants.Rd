@@ -23,10 +23,10 @@
   If the filter "controls" is applied, only the SNPs having a MAF lower than the threshold in the controls group are kept.
   If the filter "any" is applied, only the SNPs having a MAF lower than the threshold in any of the groups are kept.
 }
-\authors{
+\author{
 Herve Perdry and Ozvan Bocher
 }
-\example{
+\examples{
 #List of OR parameters
 my.pars <- list(OR.del=c(2, 4), prob.del=0.2, prob.pro=0.05)
 #Simulation of genotypes with 1000 replicates for 400 controls and two groups of case with the scenario 2

@@ -1,5 +1,5 @@
-\name{Beta.M.2}
-\alias{Beta.M.2}
+\name{Beta.M}
+\alias{Beta.M}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Beta-M statistic
@@ -8,7 +8,7 @@ Beta-M statistic
 Calculates the Beta-M statistic and its p-value using a bed.matrix
 }
 \usage{
-Beta.M.2(x, group, genomic_region, which.snps = rep(TRUE, ncol(x)), target = 0, B.max = 0)
+Beta.M(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, which.snps = rep(TRUE, ncol(x)), target = 10, B.max = 1e+06)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,7 +18,7 @@ A bed.matrix
   \item{group}{
 A factor containing the group of each individual
 }
-  \item{genomic_region}{
+  \item{genomic.region}{
 A vector containing the genomic region of each SNP
 }
   \item{which.snps}{
@@ -37,17 +37,18 @@ To limit the number of permutations, we can decide to stop the program when a ce
 }
 \value{
 A data frame containing the following fields:
-  \item{genomic.region}{The name of the considered \code{genomic_region} }
+  \item{genomic.region}{The name of the considered \code{genomic.region} }
   \item{stat}{The Beta-M statistic associated to each genomic region}
-  \item{A}{The number of times the observed Beta-M statistic is exceeded by a permutated statistic}
-  \item{B}{\code{B.max} if the \code{target} is not reached or the number of permutations used to reach the \code{target}}
-  \item{p}{The p-value associated to the Beta-M test}
+  \item{nb.geq}{The number of times the observed statistic is equal or exceeded by a permutated statistic}
+  \item{nb.eq}{The number of times the observed statistic is equal to a permutated statistic}
+  \item{nb.perms}{\code{B.max} if the \code{target} is not reached or the number of permutations used to reach the \code{target}}
+  \item{p.value}{The p-value calculated as (\code{nb.geq} - 0.5*\code{nb.eq} + 1) / (\code{nb.perms} + 1) 
 }
 \references{
 %% ~put references to the literature/web site here ~
 }
 \author{
-Herv Perdry and Ozvan Bocher
+Herve Perdry and Ozvan Bocher
 }
 \note{
 %%  ~~further notes~~
@@ -59,7 +60,12 @@ Herv Perdry and Ozvan Bocher
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+#List of OR parameters
+my.pars <- list(OR.del = c(2, 4), prob.del = 0.2, prob.pro = 0.05)
+#Simulation of genotypes with 10 replicates for 400 controls and two groups of 200 case with the scenario 2
+x <- random.bed.matrix(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], size = c(400, 200, 200), baseline = c(0.001, 0.001), replicates = 10, OR.pars = my.pars, scenario = 2)
+#Keep only variants with MAF<1% in one of the three groups
+x <- filter.rare.variants(x, filter = "any", maf.threshold = 0.01)
+#Compute the Beta.M statistic
+Beta.M(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, which.snps = rep(TRUE, ncol(x)), target = 10, B.max = 1e6)
 }
