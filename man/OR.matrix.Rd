@@ -25,7 +25,7 @@
   A matrix containing OR values for each variant with one variant per column and one OR couple values per row.
 } 
 \author{
-  Herve Perdry & Ozvan Bocher
+  Herve Perdry and Ozvan Bocher
 }
 \examples{
 OR.matrix(n.variants = 20 , OR.del = c(2,4), OR.pro = c(0.5,0.25), prob.del = 0.2, prob.pro = 0.1)

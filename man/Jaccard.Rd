@@ -27,7 +27,9 @@ A squared matrix giving the Jaccard index for each pair of individuals
 \references{
 %% ~put references to the literature/web site here ~
 }
-
+\author{
+Herve Perdry and Ozvan Bocher
+}
 \examples{
 #List of OR parameters
 my.pars <- list(OR.del = c(2, 4), prob.del = 0.2, prob.pro = 0.05)

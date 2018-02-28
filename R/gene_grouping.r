@@ -2,10 +2,9 @@ region.by.pos <- function(x, nb.groups){
   if(any(x@snps$pos == 0)) {
     stop("position equal to 0")
   }
-  
+  x <- select.snps(x, is.autosome(x))
   dist <- c(abs(diff(x@snps$pos)),0)
   pos_d <- data.frame(chr=x@snps$chr,id=x@snps$id,pos=x@snps$pos,d=dist)
-  pos_d <- pos_d[which(pos_d$chr!=23 & pos_d$chr!=24 & pos_d$chr!=26),]
        
   seuil <- 1000
   while(length(which(pos_d$d>seuil)) > nb.groups){

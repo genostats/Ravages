@@ -1,5 +1,5 @@
-\name{pos_gpe}
-\alias{pos_gpe}
+\name{region.by.pos}
+\alias{region.by.pos}
 \title{
 Gene grouping based on SNP positions
 }
@@ -7,13 +7,13 @@ Gene grouping based on SNP positions
 Performs a gene grouping using a bed.matrix based on the SNP positions
 }
 \usage{
-pos_gpe(x, nb_groups)
+region.by.pos(x, nb.groups)
 }
 \arguments{
   \item{x}{
 A bed.matrix
 }
-  \item{nb_groups}{
+  \item{nb.groups}{
 The maximum number of groups to make
 }
 }
@@ -25,9 +25,11 @@ A data frame containing:
   \item{chr}{The chromosome of the SNP}
   \item{id}{The name of the SNP}
   \item{pos}{The position of the SNP}
-  \item{gpe}{The computed group of the SNP being the a number between 1 and \code{nb_groups}}
+  \item{gpe}{The computed group of the SNP being the a number between 1 and \code{nb.groups}}
+}
+\author{
+Herve Perdry and Ozvan Bocher
 }
 \examples{
-pos <- pos_gpe(x, 20000) #Separation of the SNP in 20000 groups at the most
-
+pos <- region.by.pos(x, 20000) #Separation of the SNP in 20000 groups at the most
 }

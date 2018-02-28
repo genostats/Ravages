@@ -42,7 +42,7 @@ A data frame containing the following fields:
   \item{nb.geq}{The number of times the observed statistic is equal or exceeded by a permutated statistic}
   \item{nb.eq}{The number of times the observed statistic is equal to a permutated statistic}
   \item{nb.perms}{\code{B.max} if the \code{target} is not reached or the number of permutations used to reach the \code{target}}
-  \item{p.value}{The p-value calculated as (\code{nb.geq} - 0.5*\code{nb.eq} + 1) / (\code{nb.perms} + 1)        
+  \item{p.value}{The p-value calculated as (\code{nb.geq} - 0.5*\code{nb.eq} + 1) / (\code{nb.perms} + 1)}        
 }
 \author{
 Herve Perdry and Ozvan Bocher

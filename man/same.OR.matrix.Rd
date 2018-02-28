@@ -25,7 +25,7 @@
   A matrix containing OR values for each variant with one variant per column and one OR couple values per row.
 }
 \author{
-  Herve Perdry & Ozvan Bocher
+  Herve Perdry and Ozvan Bocher
 }
 \examples{
 same.OR.matrix(20 , c(2,2), c(0.5,0.5), 0.2, 0.1)

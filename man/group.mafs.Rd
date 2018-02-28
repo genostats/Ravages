@@ -24,5 +24,5 @@ Herve Perdry and Ozvan Bocher
 #Creation of an OR matrix
 OR <- OR.matrix(20 , c(2,4), c(0.5,0.25), 0.2, 0.1)
 #Creation of the MAF matrix
-MAF <- group.mafs(Kryukov$maf[Kryukov$unit=="R1"], OR, baseline=c(0.001,0.001))
+MAF <- group.mafs(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], OR = OR, baseline = c(0.001,0.001))
 }

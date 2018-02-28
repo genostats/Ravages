@@ -17,8 +17,8 @@ CAST.0 <- function(x, genomic.region = x@snps$genomic.region, maf.threshold = 0.
 
 CAST <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, maf.threshold = 0.01) {
   B <- CAST.0(x, genomic.region, maf.threshold)
-  R <- data.frame(t(apply(B, 2, Chi2, group=group)))
-  colnames(R) <- c("statistic", "p.value")
+  R <- data.frame(levels(genomic.region), t(apply(B, 2, Chi2, group=group)))
+  colnames(R) <- c("genomic.region", "stat", "p.value")
   R
 }
 

@@ -1,11 +1,11 @@
-\name{genes_gpe}
-\alias{genes_gpe}
+\name{region.by.gene}
+\alias{region.by.gene}
 \title{ Gene grouping based on known genes }
 \description{
 Performs a gene grouping using a bed.matrix based on the positions of known genes
 }
 \usage{
-genes_gpe(x, genes, include.all = FALSE)
+region.by.genes(x, genes, include.all = FALSE)
 }
 \arguments{
   \item{x}{ A bed.matrix }
@@ -28,12 +28,14 @@ A data frame containing:
   \item{pos}{The position of the SNP}
   \item{gpe}{The computed group of the SNP being the \code{genes$Gene_Name}}
 }
+\author{
+Herve Perdry and Ozvan Bocher
+}
 %\data
-%The files gene_positions_hg37.RData and gene_positions_hg38.RData can be used as the \code{genes} argument
+%The files hg37.RData and hg38.RData can be used as the \code{genes} argument
 \examples{
-data(gene_positions_hg37)
-gpe_genes <- genes_gpe(x, hg37, include.all=TRUE) #Attribution of all the SNP in the genes from the list hg37
-head(gpe_genes, 20)
+data(hg37)
+gpe_genes <- region.by.gene(x, hg37, include.all=TRUE) #Attribution of all the SNP in the genes from the list hg37
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

@@ -1,5 +1,5 @@
-\name{random.bed.matrix.with.model}
-\alias{random.bed.matrix.with.model}
+\name{random.bed.matrix}
+\alias{random.bed.matrix}
 \title{
   Creation of a bed.matrix
 }
@@ -7,7 +7,7 @@
   Generates a bed.matrix with genotypes for cases and controls based on OR values
 }
 \usage{
-  random.bed.matrix.with.model(pop.maf, size, baseline, replicates, OR.pars, scenario=c(1,2))
+  random.bed.matrix.(pop.maf, size, baseline, replicates, OR.pars, scenario = c(1,2))
 }
 \arguments{
   \item{pop.maf}{ A vector containing the MAF in the general population for each variant }
@@ -31,10 +31,10 @@
 }
 \examples{
 #List of OR parameters
-my.pars <- list(OR.del=c(2, 4), prob.del=0.2, prob.pro=0.05)
-#Simulation of genotypes with 1000 replicates for 400 controls and two groups of case with the scenario 2
-x <- random.bed.matrix.with.model(Kryukov$maf[Kryukov$unit=="R1"], c(400, 200, 200), c(0.001, 0.001), 1000, OR.pars=my.pars, scenario=2)
+my.pars <- list(OR.del = c(2, 4), prob.del = 0.2, prob.pro = 0.05)
+#Simulation of genotypes with 10 replicates for 400 controls and two groups of case with the scenario 2
+x <- random.bed.matrix(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], size = c(400, 200, 200), baseline = c(0.001, 0.001), replicates = 10, OR.pars = my.pars, scenario = 2)
 #With the scenario 1
-my.OR.pars <- list(OR.del=c(2, 2), prob.del=0.2, prob.pro=0.05)
-x <- random.bed.matrix.with.model(Kryukov$maf[Kryukov$unit=="R1"], c(400, 200, 200), c(0.001, 0.001), 1000, OR.pars=my.OR.pars, scenario=1)
+my.pars <- list(OR.del = c(2, 2), prob.del = 0.2, prob.pro = 0.05)
+x <- random.bed.matrix(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], size = c(400, 200, 200), baseline = c(0.001, 0.001), replicates = 10, OR.pars = my.OR.pars, scenario = 1)
 }
