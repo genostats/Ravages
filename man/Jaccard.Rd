@@ -33,8 +33,8 @@ Herve Perdry and Ozvan Bocher
 \examples{
 #List of OR parameters
 my.pars <- list(OR.del = c(2, 4), prob.del = 0.2, prob.pro = 0.05)
-#Simulation of genotypes with 1 replicate for 400 controls and two groups of 200 case with the scenario 2
-x <- random.bed.matrix(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], size = c(400, 200, 200), baseline = c(0.001, 0.001), replicates = 1, OR.pars = my.pars, scenario = 2)
+#Simulation of genotypes with 1 replicate for 400 controls and two groups of 200 case with the same variants being deleterious, neutral or protective between the two groups of cases but different OR values.
+x <- random.bed.matrix(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], size = c(400, 200, 200), baseline = c(0.001, 0.001), replicates = 1, OR.pars = my.pars, OR.function = OR.matrix.same.variant)
 #Keep only variants with MAF<1% in one of the three groups
 x <- filter.rare.variants(x, filter = "any", maf.threshold = 0.01)
 #Calculate the Jaccard matrix

@@ -38,7 +38,7 @@ class Betam_rect : public Stats {
       for(size_t g = 0; g < nb_ind_groups; g++) { // sur les groupes d'invidus
         double n = (double) X.R[2*(i*nb_ind_groups + g)];   // = nb d'alleles 1 dans groupe g+1
         double m = (double) X.R[2*(i*nb_ind_groups + g)+1]; // = nb d'alleles 0 dans groupe g+1
-        U_phi[i]    += 0.5*(n*(n-1)/pi + m*(m-1)/(1-pi) + (n+m)*(n+m-1)) ; // le dernier terme pourrait être omis
+        U_phi[i]    += 0.5*(n*(n-1)/pi + m*(m-1)/(1-pi) + (n+m)*(n+m-1))/(n+m) ; // le dernier terme pourrait être omis
         // U_pi[i]     += (n/pi - m/(1-pi));
         // J_pi_phi[i] += 0.5*( m*(m-1)/(1-pi)/(1-pi) - n*(n-1)/pi/pi);
         // J_pi2[i]    += -(n/pi/pi+m/(1-pi)/(1-pi));

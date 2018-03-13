@@ -1,8 +1,8 @@
 \name{region.by.gene}
 \alias{region.by.gene}
-\title{ Gene grouping based on known genes }
+\title{ Gene grouping based on gene positions }
 \description{
-Performs a gene grouping using a bed.matrix based on the positions of known genes
+Performs a gene grouping based on the positions of known genes
 }
 \usage{
 region.by.genes(x, genes, include.all = FALSE)
@@ -11,16 +11,15 @@ region.by.genes(x, genes, include.all = FALSE)
   \item{x}{ A bed.matrix }
   \item{genes}{
     A list containing the fields : \code{Gene_Name} (the name of the gene),a
-    \code{Start} (the start position of the gene), \code{End} (the end of the gene) 
-    and \code{Chr} (the chromosome number)
+    \code{Start} (the start position of the gene), \code{End} (the end position of the gene) 
+    and \code{Chr} (the chromosome of the gene)
   }
-  \item{include.all}{ Logical. If \code{TRUE}, all SNPs are included in the grouping.  }
+  \item{include.all}{ Logical, whether or not to assigne all the SNP into a genomic region. }
 }
 \details{ 
 If \code{include.all == FALSE}, only the SNPs having their position between the 
 \code{genes$Start} and the \code{genes$End} of a gene will be attributed to the 
-corresponding gene. If \code{include.all == TRUE}, all the SNPs will be included,
-based on midpoints between genes.}
+corresponding gene. If \code{include.all == TRUE}, all the SNPs will be included to the nearest gene.}
 \value{
 A data frame containing:
   \item{chr}{The chromosome of the SNP}
@@ -32,10 +31,10 @@ A data frame containing:
 Herve Perdry and Ozvan Bocher
 }
 %\data
-%The files hg37.RData and hg38.RData can be used as the \code{genes} argument
+%The files hg37.RData and hg38.RData can be used as \code{genes} argument
 \examples{
 data(hg37)
-gpe_genes <- region.by.gene(x, hg37, include.all=TRUE) #Attribution of all the SNP in the genes from the list hg37
+gpe_genes <- region.by.gene(x, genes = hg37, include.all = TRUE) #Attribution of all the SNP in the genes from the list hg37
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
