@@ -22,7 +22,7 @@ Herve Perdry and Ozvan Bocher
 }
 \examples{
 #Creation of an OR matrix with the same variants being deleterious, neutral and protective in the two groups of cases
-OR <- OR.matrix.same.variant(20 , c(2,4), c(0.5,0.25), 0.2, 0.1)
+OR <- OR.matrix.same.variant(length(Kryukov$maf[Kryukov$unit=="R1"], c(2,4), c(0.5,0.25), 0.2, 0.1)
 #Creation of the MAF matrix
 MAF <- group.mafs(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], OR = OR, baseline = c(0.001,0.001))
 }
