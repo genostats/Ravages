@@ -1,0 +1,180 @@
+---
+title: "Package oz"
+author: "Herve Perdry and Ozvan Bocher"
+date: "`r Sys.Date()`"
+output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r message=FALSE, warning=FALSE}
+library("knitr")
+library(oz)
+``` 
+## Introduction
+
+Oz can be used for rare-variant association tests and genetics data simulation. Oz relies on the package Gaston developped by Herve Perdry and Claire Dandine-Roulland. Most functions are written in C++ thanks to the packages Rcpp, RcppParallel and RcppEigen.
+Functions of this package use bed.matrix as in the package Gaston (see documentation of this package for more details).
+In this vignette, we show how to simulate genetics data and we illustrate association tests using these simulated data.
+To learn more about all options of the functions, the reader is advised to look at the manual pages.
+
+##Defining genomic regions
+For rare variant association tests, the unit of analysis is not a single variant but a genomic region, typically a gene. The difficulty in this type of study is therefore to define the genomic region. In this package, two methods are proposed to group SNP into genomic regions.
+The first one, called by **region.by.pos()** groups the SNPs based on the distance between them and on the maximum number of groups we want to make. Indeed, the distance between each adjacent SNP pair is calculated and the maximum distance between two SNP within a genomic region increases until we have less groups than the allowed maximum number of groups.
+The second one, called by **region.by.gene()** uses positions of known genes to group SNP into genomic regions. If the option *include.all=FALSE* is used, only SNP within known genes will be assigned to a genomic region, the other SNP being left out. If the option *include.all=TRUE*, each SNP will be assigned to the nearest gene.
+
+##Simulation of genetic data
+Genetic data can be simulated using the package oz. The procedure is similar to the one from Suzanne Leal et al used in the programm SeqX. Using functions from oz package, it is possible to compute mafs in groups of cases based on mafs in the general population and OR values. It is also possible to simulate genotype data based on mafs in each group.
+
+###Compute OR
+It is possible to generate a group of controls and one or more groups of cases with different OR values. Indeed, by giving the probability for each variant of being deleterious or protective and the corresponding OR values in each group of cases, an OR matrix can be computed. Two functions can be called depending on the desired design, both returning a matrix containing one row per group of cases and one column per variant.
+If the function **OR.matrix.same.variant()** is called, the same variants will be deleterious or protective in the different groups of cases. If the function **OR.matrix()** is called, different variants will be deleteirous or protective in the different groups of cases. In the first example below, 10 variants are simulated, each one having a probability of 20% of being deleterious and a probability of 10% of being protective. In the first group of cases, deleterious and protective variants have respectively OR values of 2 and 0.5. In the second group of cases, deleterious and protective variants have respectively OR values of 4 and 0.25. The same variants are deleterious, neutral and protective in the two groups of cases.
+In the second example, 10 variants are simulated, each one having a probability of 20% of being deleterious and a probability of 10% of being protective. In the two groups of cases, deleterious and protective variants have respectively OR values of 2 and 0.5 but different variants are deleterious, neutral and protective between the two groups of cases.
+```{r}
+OR.matrix.same.variant(n.variants = 10 , OR.del = c(2,4), OR.pro = c(0.5,0.25),
+                       prob.del = 0.2, prob.pro = 0.1)
+OR.matrix(n.variants = 10 , OR.del = c(2,2), OR.pro = c(0.5,0.5),
+          prob.del = 0.2, prob.pro = 0.1)
+```
+
+###Compute mafs
+It is possible using the function **group.mafs()** to simulate with a second degree equation maf values in groups of individuals based on mafs in the general population and OR values. The output matrix will have one row per group of individuals (the first one being the control group) and one column by variant. Output from **OR.matrix()** and **OR.matrix.same.variant()** can be used as input for this function.
+An example is presented below using the data from Kryukov et al. available in the package oz. In this example, 10 variants in two groups of cases are simulated with the same variants being deleterious, neutral and protective. In the first group of cases, deleterious variants have OR=2 and protective variants have OR=0.5 whereas in the second one, deleterious variants have OR=4 and protective variants have OR=0.25.
+```{r}
+OR <- OR.matrix.same.variant(n.variants = length(Kryukov$maf[Kryukov$unit=="R1"]) ,
+                             OR.del = c(2,4), OR.pro = c(0.5,0.25), 
+                             prob.del = 0.2, prob.pro = 0.1)
+MAF <- group.mafs(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], OR = OR,
+                  baseline = c(0.001,0.001))
+MAF[,1:5]
+```
+
+###Compute genotypes
+Finally, we can simulate genotypes based on maf values, group sizes, OR values and a study design using the function **random.bed.matrix()**. If the function *OR.matrix* is called as the argument *OR.function*, different variants will be deleterious and protective in the different groups of cases. However, if the function *OR.matrix.same.variant* is chosen, the same variants will be deleterious and protective in the different groups of cases. Moreover, the argument *replicates* asks for the number of replicates corresponding to the number of genomic regions that will be generated. The argument *OR.pars* needs to be a list containing at least OR values for deleterious variants in each group and the probabilities for a variant of being deleterious or protective.
+**random.bed.matrix()** will return a bed.matrix with the group of each individual in the field *@ped$pheno*, and the replicate number corresponding to the genomic region in the field *@snps$genomic.region*. 
+Output from previous simulation functions can be used as inputs for **random.bed.matrix()** as showed in the examples.
+By default, the first group of individual will be the group of controls.
+```{r}
+#Simulation of genotypes with 10 replicates for 400 controls and two groups of 200 cases
+#with the same variants being deleterious or protective but with different OR values
+my.pars <- list(OR.del = c(2, 4), prob.del = 0.2, prob.pro = 0.05)
+x <- random.bed.matrix(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], size = c(400, 200, 200),
+                       baseline = c(0.001, 0.001), replicates = 10, OR.pars = my.pars,
+                       OR.function = OR.matrix.same.variant)
+x
+#Simulation of genotypes with 10 replicates for 400 controls and two groups of 200 cases 
+#with the different variants being deleterious or protective but with the same OR values
+my.pars <- list(OR.del = c(2, 2), prob.del = 0.2, prob.pro = 0.05)
+x <- random.bed.matrix(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], size = c(400, 200, 200), 
+                       baseline = c(0.001, 0.001), replicates = 10, OR.pars = my.pars,
+                       OR.function = OR.matrix)
+x
+```
+
+
+##Rare variant definition
+To perform rare variant analysis, it is important to define what is a rare variant in order to leave out common ones. We therefore computed a function **filter.rare.variants()** which enables to keep only SNP of interest based on a given maf threshold. This function uses and returns a bed.matrix with three filters are available. If the filter *"whole"* is used, all the SNPs with a maf lower than the threshold in the entire sample will be kept. If the filter *"controls"* is chosen, all the SNPs with a maf lower than the threshold in the control groups will be kept. Finally, if the filter *"any"* is used, all the SNP with a maf lower than the threshold in any of the groups will be kept. Monomorphic SNP are also filtered out using this function.
+All the genomic regions having less SNPs than the parameter *min.nb.snps* will also be removed.
+```{r}
+my.pars <- list(OR.del=c(2, 4), prob.del=0.2, prob.pro=0.05)
+#Simulation of genotypes with 100 replicates for 400 controls and two groups of 200 cases
+#with the the same variants being deleterious or protective but with different OR values
+x <- random.bed.matrix(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], size = c(400, 200, 200), 
+                       baseline = c(0.001, 0.001), 100, OR.pars = my.pars,
+                       OR.function = OR.matrix.same.variant)
+x
+#Filter of rare variants based on the maf in the controls group,
+#only the genomic regions with at least 5 variants are kept
+x.filter <- filter.rare.variants(x, filter = "controls", maf.threshold = 0.01,
+                                 min.nb.snps = 5)
+x.filter
+```
+
+
+##Rare variant association tests
+We have implemented the generalisation of three rare variant association tests: CAST, WSS and C.alpha. We also implemented a new test, Beta-M. All the functions use bed.matrix.
+All the examples will use the bed.matrix x which was simulated using previous simulation commands and Kryukov's maf in the general population. x contains a group of 400 controls and two groups of 200 cases. The same variants are deleterious, neutral and protective in the two groups of cases, with deleterious variants having OR=2 and OR=4 and protective variants having OR=0.5 and OR=0.25 in the two groups of cases respectively. 5 replicates corresponding to 5 genomic regions have been simulated under this scenario. Finally, only the variants having a maf lower than 1% in any of the three groups will be kept for the analysis.
+```{r}
+my.pars <- list(OR.del = c(2, 4), prob.del = 0.2, prob.pro = 0.05)
+#Simulation of genotypes with 5 replicates for 400 controls and two groups of 200 cases
+#with the the the same variants being deleterious or protective but different OR values
+x <- random.bed.matrix(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], size = c(400, 200, 200),
+                       baseline = c(0.001, 0.001), replicates = 5, OR.pars = my.pars,
+                       OR.function = OR.matrix.same.variant)
+#Keep only variants with MAF<1% in one of the three groups
+x <- filter.rare.variants(x, filter = "any", maf.threshold = 0.01)
+x
+table(x@snps$genomic.region)
+```
+
+###Burden tests
+
+####CAST
+The statistic for CAST which computes a binary score based on the presence or absence of at least one allele in the genomic region can be calculated with the function **CAST()**. The p-value is calculated using a Chi-square with Monte-Carlo simulations when the expected counts are lower than five and with an asymptotic p-value otherwise. When all the cases are put in a single group, we have the classical CAST test.
+Examples using the simulated data x are showed below.
+```{r}
+#Compute the CAST score on 3 groups
+CAST(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region )
+#Compute the CAST score by considering all the cases as one group
+CAST(x, group = ifelse(x@ped$pheno==0, 0, 1), genomic.region = x@snps$genomic.region )
+```
+
+
+####WSS
+The weighted Sum Statistic (WSS) and its p-value can be calculated using the function **WSS()**. The score is calculated as follow: 
+$$WSS_j = \sum_{i=1}^{R} I_{ij} * w_{i}$$ with $$w_{i} = \frac{1}{\sqrt(t_{i} * q_{i} * 1-q{i})}$$ and $$q_{i} = \frac{n_{i} + 1}{2*t_{i}+1}$$
+$n_{i}$ is the total number of minor alleles genotyped for SNP $i$, $t_{i}$ is the total number of alleles genotyped for SNP $i$ and $I_{ij}$ is the number of minor alleles of SNP $i$ for the invidual $j$. In the original method, each SNP is weighted according to its frequency in the controls group and scores between the two groups are compared with a rank test. In our version of WSS, the weights depend on allele frequency calculated on the entire sample. Therefore, a Kruskall-Wallis test is used to compare the different groups.
+
+```{r}
+#Compute the WSS score on three groups
+WSS(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region )
+#Compute the WSS score by considering all the cases as one group
+WSS(x, group = ifelse(x@ped$pheno==0, 0, 1), genomic.region = x@snps$genomic.region )
+```
+
+###Variance-component tests
+
+####C-alpha
+The C-alpha statistic and its p-value can be calculated using the function **C.ALPHA()**. The score for each genomic region is calculated as follow:
+$$C_{\alpha} = \sum_{i=1}^{R} \sum_{c=1}^{C} [(n_{ic} - n_{i} * \alpha_{c})^2 - (n_{i} * \alpha_{c} * (1-\alpha_{c}))]$$ where $R$ is the number of SNP in the genomic region, $C$ is the number of groups to compare, $\alpha_{c}$ represents the proportion of group $c$ in the population, $n_{ic}$ and $n_{i}$ the number of minor alleles for the SNP $i$ in the group $c$ and in the entire population respectively.
+Permutations are then performed to compute the p-value which is calculated by the number of times the observed statistic is exceeded plus the number of times a permutated statistic is equal to the observed one divided by the total number of permutations.
+
+```{r}
+#Compute the C-alpha score on 3 groups
+C.ALPHA(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region,
+        which.snps = rep(TRUE, ncol(x)), target = 10, B.max = 1e6)
+#Compute the C-alpha score by considering all the cases as one group
+C.ALPHA(x, group = ifelse(x@ped$pheno==0, 0, 1), genomic.region = x@snps$genomic.region,
+        which.snps = rep(TRUE, ncol(x)), target = 10, B.max = 1e6)
+```
+
+
+####Beta-M
+We developed a new statistic, Beta-M, which is a variance-component test and which can be calculated using the function **Beta.M()**. In this model, we suppose that each $p_{ic}$, the maf of SNP $i$ in group $c$, is drawn in a Beta distribution with espected value $\pi_{i}$ and variance:$\pi_{i} * (1-\pi_{i}) * \frac{\phi}{1-\phi}$.
+Where $\pi_{i}$ represents the average frequency of the rare variant for SNP $i$ and $\phi$ the dispersion parameter which is the same for all the SNP in one considered genomic region. 
+The null hypothesis corresponding to $\phi=0$ and $p_{ic}=\pi_{i}$ for each group can be tested with the score:
+$$\beta_{M} = \sum_{i=1}^R [\frac{\sum_{c=1}^{C}n_{ic}^2}{\sum_{c=1}^{C}n_{ic}} + \frac{\sum_{c=1}^{C} m_{ic}^2}{\sum_{c=1}^{C} m_{ic}}]$$
+With $n_{ic}$ and $m_{ic}$ being respectively the number of rare and frequent alleles of SNP $i$ in group $c$.
+Permutations are then performed to compute the p-value which is calculated by the number of times the observed statistic is exceeded plus the number of times a permutated statistic is equal to the observed one divided by the total number of permutations.
+
+```{r}
+#Compute the Beta-M score on three groups
+Beta.M(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region,
+       which.snps = rep(TRUE, ncol(x)), target = 10, B.max = 1e6)
+#Compute the Beta-M score by considering all the cases as one group
+Beta.M(x, group = ifelse(x@ped$pheno==0, 0, 1), genomic.region = x@snps$genomic.region,
+       which.snps = rep(TRUE, ncol(x)), target = 10, B.max = 1e6)
+```
+
+
+##Jaccard similarity index
+It is possible to calculate the Jaccard similarity index by using a bed.matrix and the function **Jaccard()**. The maf threshold indicating the MAF used for the definition of a rare variant should be specified with the argument *maf.threshold*. An example of this function is illustrated bellow on a simulated data set.
+
+```{r}
+#Selection of the first genomic region of x
+x1 <- select.snps(x, x@snps$genomic.region == "R1")
+J <- Jaccard(x1, maf.threshold=0.01)
+J[1:5,1:5] ; dim(J)
+```

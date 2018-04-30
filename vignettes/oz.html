@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Herve Perdry and Ozvan Bocher" />
+
+<meta name="date" content="2018-03-13" />
+
+<title>Package oz</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Package oz</h1>
+<h4 class="author"><em>Herve Perdry and Ozvan Bocher</em></h4>
+<h4 class="date"><em>2018-03-13</em></h4>
+
+
+
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;knitr&quot;</span>)
+<span class="kw">library</span>(oz)</code></pre></div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Oz can be used for rare-variant association test and genetics data simulation. Oz relies on the package Gaston developped by Herve Perdry and Claire Dandine-Roulland. Most functions are written in C++. Functions of this package use bed.matrix as in the package Gaston (see documentation of this package for more details).</p>
+</div>
+<div id="defining-genomic-regions" class="section level2">
+<h2>Defining genomic regions</h2>
+<p>For rare variant association, the unit of analysis is a genomic region, typically a gene. The difficulty in this type of study is therefore to define this genomic region. In this package, two methods are proposed to group SNP into genomic region. The first one groups the SNPs based on the distance between them and on the maximum number of groups we want to make. Indeed, in <strong>region.by.pos()</strong>, the distance between each adjacent SNP pair is calculated and the maximum distance between two SNP increases until we have less groups than the allowed maximum number of groups. The second one called by <strong>region.by.gene()</strong> uses positions of known genes to group SNP into genomic regions. If the option <em>include.all=FALSE</em> is used, only SNP within known genes will be assigned to a genomic region, the other SNP being left out.</p>
+</div>
+<div id="simulation-of-genetic-data" class="section level2">
+<h2>Simulation of genetic data</h2>
+<p>Genetic data can be simulated using the package oz. The procedure is similar to the one from Suzanne Leal et al used in the programm SeqX.</p>
+<div id="compute-or" class="section level3">
+<h3>Compute OR</h3>
+<p>It is possible to generate a group of controls and one or more groups of cases with different OR values. Indeed, by giving the probability for each variant of being deleterious or protective and the corresponding OR values in each group of cases, an OR matrix can be computed. Two functions can be used depending on the desired design, both returning a matrix containing one row per group of cases and one column per variant. If the function <strong>OR.matrix()</strong> is used, the same variants will be deleterious or protective in the different groups of cases. If the function <strong>same.OR.matrix()</strong> is used, different variants will be deleteirous or protective in the different groups of cases. Examples of these two functions are presented below.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">OR.matrix</span>(<span class="dt">n.variants =</span> <span class="dv">10</span> , <span class="dt">OR.del =</span> <span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">4</span>), <span class="dt">OR.pro =</span> <span class="kw">c</span>(<span class="fl">0.5</span>,<span class="fl">0.25</span>), <span class="dt">prob.del =</span> <span class="fl">0.2</span>, <span class="dt">prob.pro =</span> <span class="fl">0.1</span>)</code></pre></div>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+## [1,]    2    1    1    1    2    1    1 0.50    1     1
+## [2,]    4    1    1    1    4    1    1 0.25    1     1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">oz<span class="op">:::</span><span class="kw">same.OR.matrix</span>(<span class="dt">n.variants =</span> <span class="dv">10</span> , <span class="dt">OR.del =</span> <span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">2</span>), <span class="dt">OR.pro =</span> <span class="kw">c</span>(<span class="fl">0.5</span>,<span class="fl">0.5</span>), <span class="dt">prob.del =</span> <span class="fl">0.2</span>, <span class="dt">prob.pro =</span> <span class="fl">0.1</span>)</code></pre></div>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+## [1,]    1    1    1    1    1    1    1  2.0  1.0   0.5
+## [2,]    2    1    1    1    1    1    2  0.5  0.5   1.0</code></pre>
+</div>
+<div id="compute-mafs" class="section level3">
+<h3>Compute mafs</h3>
+<p>It is possible using the function <strong>group.mafs()</strong> to simulate with a second degree equation maf values in groups of individuals based on mafs in the general population and OR values. Examples are presented below, they use the data from Kryukov et al. available in the package. Output from <strong>OR.matrix()</strong> and <strong>same.OR.matrix()</strong> can be used as input for this function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">OR &lt;-<span class="st"> </span><span class="kw">OR.matrix</span>(<span class="dt">n.variants =</span> <span class="dv">20</span> , <span class="dt">OR.del =</span> <span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">4</span>), <span class="dt">OR.pro =</span> <span class="kw">c</span>(<span class="fl">0.5</span>,<span class="fl">0.25</span>), <span class="dt">prob.del =</span> <span class="fl">0.2</span>, <span class="dt">prob.pro =</span> <span class="fl">0.1</span>)
+MAF &lt;-<span class="st"> </span><span class="kw">group.mafs</span>(<span class="dt">pop.maf =</span> Kryukov<span class="op">$</span>maf[Kryukov<span class="op">$</span>unit<span class="op">==</span><span class="st">&quot;R1&quot;</span>], <span class="dt">OR =</span> OR, <span class="dt">baseline =</span> <span class="kw">c</span>(<span class="fl">0.001</span>,<span class="fl">0.001</span>))
+MAF[,<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</code></pre></div>
+<pre><code>##             [,1]      [,2]         [,3]         [,4]     [,5]
+## controls 9.5e-05 2.833e-05 5.600000e-07 3.316733e-06 6.11e-06
+## cases_1  9.5e-05 2.833e-05 1.119999e-06 6.633444e-06 6.11e-06
+## cases_2  9.5e-05 2.833e-05 2.239996e-06 1.326680e-05 6.11e-06</code></pre>
+</div>
+<div id="compute-genotypes" class="section level3">
+<h3>Compute genotypes</h3>
+<p>Finally, we can simulate genotypes based on maf values, group sizes, OR values and a study design using the function <strong>random.bed.matrix()</strong>. If the option <em>scenario=1</em> is chosen, different variants will be deleterious and protective in the different groups of cases. However, if the option <em>scenario=2</em> is chosen, the same variants will be deleterious and protective in the different groups of cases. In this function, the option replicates asks for the number of replicates corresponding to the number of genomic region that will be generated. <strong>random.bed.matrix()</strong> will return a bed.matrix with the group of each individual present in the field <em><span class="citation">@ped$pheno</span></em>, and the replicate corresponding to the genomic region present in the field <em><span class="citation">@snps$genomic.region</span></em>. Output from previous simulation functions can be used as inputs for <strong>random.bed.matrix()</strong> as showed in the examples. By default, the first group of individual will be the group of controls.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Simulation of genotypes with 10 replicates for 400 controls and two groups of 200 cases with the same variants being deleterious or protective but with different OR values</span>
+my.pars &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">OR.del =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>), <span class="dt">prob.del =</span> <span class="fl">0.2</span>, <span class="dt">prob.pro =</span> <span class="fl">0.05</span>)
+x &lt;-<span class="st"> </span><span class="kw">random.bed.matrix</span>(<span class="dt">pop.maf =</span> Kryukov<span class="op">$</span>maf[Kryukov<span class="op">$</span>unit<span class="op">==</span><span class="st">&quot;R1&quot;</span>], <span class="dt">size =</span> <span class="kw">c</span>(<span class="dv">400</span>, <span class="dv">200</span>, <span class="dv">200</span>), <span class="dt">baseline =</span> <span class="kw">c</span>(<span class="fl">0.001</span>, <span class="fl">0.001</span>), <span class="dt">replicates =</span> <span class="dv">10</span>, <span class="dt">OR.pars =</span> my.pars, <span class="dt">scenario =</span> <span class="dv">2</span>)
+x</code></pre></div>
+<pre><code>## A bed.matrix with 800 individuals and 3830 markers.
+## snps stats are set
+##   There are  3666  monomorphic SNPs
+## ped stats are set</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Simulation of genotypes with 10 replicates for 400 controls and two groups of 200 cases with the different variants being deleterious or protective but with the same OR values</span>
+my.pars &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">OR.del =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="dt">prob.del =</span> <span class="fl">0.2</span>, <span class="dt">prob.pro =</span> <span class="fl">0.05</span>)
+x &lt;-<span class="st"> </span><span class="kw">random.bed.matrix</span>(<span class="dt">pop.maf =</span> Kryukov<span class="op">$</span>maf[Kryukov<span class="op">$</span>unit<span class="op">==</span><span class="st">&quot;R1&quot;</span>], <span class="dt">size =</span> <span class="kw">c</span>(<span class="dv">400</span>, <span class="dv">200</span>, <span class="dv">200</span>), <span class="dt">baseline =</span> <span class="kw">c</span>(<span class="fl">0.001</span>, <span class="fl">0.001</span>), <span class="dt">replicates =</span> <span class="dv">10</span>, <span class="dt">OR.pars =</span> my.pars, <span class="dt">scenario =</span> <span class="dv">1</span>)
+x</code></pre></div>
+<pre><code>## A bed.matrix with 800 individuals and 3830 markers.
+## snps stats are set
+##   There are  3671  monomorphic SNPs
+## ped stats are set</code></pre>
+</div>
+</div>
+<div id="rare-variant-definition" class="section level2">
+<h2>Rare variant definition</h2>
+<p>To perform rare variant analysis, it is important to define what is a rare variant in order to leave out common variants. We therefore computed a function <strong>filter.rare.variants()</strong> which enables to keep only SNP of interest based on a given maf threshold. This functions uses and returns a bed.matrix. Three filters are available. If the filter <em>“whole”</em> is used, all the SNP with a maf lower than the threshold in the entire sample will be kept. If the filter <em>“controls”</em> is chosen, all the SNP with a maf lower than the threshold in the controls will be kept. Finally, if the filter <em>“any”</em> is used, all the SNP with a maf lower than the threshold in any of the different groups of controls or cases will be kept. Monomorphic SNP are also filtered out using this function. All the genomic regions having less SNP than the parameter <em>min.nb.snps</em> will also be removed.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">my.pars &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">OR.del=</span><span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>), <span class="dt">prob.del=</span><span class="fl">0.2</span>, <span class="dt">prob.pro=</span><span class="fl">0.05</span>)
+<span class="co">#Simulation of genotypes with 100 replicates for 400 controls and two groups of 200 cases with the the same variants being deleterious or protective but with different OR values</span>
+x &lt;-<span class="st"> </span><span class="kw">random.bed.matrix</span>(<span class="dt">pop.maf =</span> Kryukov<span class="op">$</span>maf[Kryukov<span class="op">$</span>unit<span class="op">==</span><span class="st">&quot;R1&quot;</span>], <span class="dt">size =</span> <span class="kw">c</span>(<span class="dv">400</span>, <span class="dv">200</span>, <span class="dv">200</span>), <span class="kw">c</span>(<span class="fl">0.001</span>, <span class="fl">0.001</span>), <span class="dv">100</span>, <span class="dt">OR.pars =</span> my.pars, <span class="dt">scenario =</span> <span class="dv">2</span>)
+x</code></pre></div>
+<pre><code>## A bed.matrix with 800 individuals and 38300 markers.
+## snps stats are set
+##   There are  36694  monomorphic SNPs
+## ped stats are set</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Filter of rare variants based on the controls group, only the genomic regions with 5 variants are kept</span>
+x.filter &lt;-<span class="st"> </span><span class="kw">filter.rare.variants</span>(x, <span class="dt">filter =</span> <span class="st">&quot;controls&quot;</span>, <span class="dt">maf.threshold =</span> <span class="fl">0.01</span>, <span class="dt">min.nb.snps =</span> <span class="dv">5</span>)
+x.filter</code></pre></div>
+<pre><code>## A bed.matrix with 800 individuals and 1487 markers.
+## snps stats are set
+## ped stats are set</code></pre>
+</div>
+<div id="rare-variant-association-tests" class="section level2">
+<h2>Rare variant association tests</h2>
+<p>We have implemented the generalisation of three rare variant association tests: CAST, WSS and C.alpha. We also implemented a new test, Beta-M. All the functions use bed.matrix. All the examples will use the bed.matrix x which was simulated using the previous commands and Kryukov’s maf in the general population. x contains a group of 400 controls and two groups of 200 cases. The same variants are deleterious and protective in the two groups of cases, with deleterious variants having OR=2 and OR=4 and protective variants having OR=0.5 and OR=0.25 in the two groups of cases respectively. 10 replicates corresponding to 10 genomic regions have been simulated under this scenario. Finally, only the variants having a maf lower than 1% in any of the three groups were kept for the analysis.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">my.pars &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">OR.del =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>), <span class="dt">prob.del =</span> <span class="fl">0.2</span>, <span class="dt">prob.pro =</span> <span class="fl">0.05</span>)
+<span class="co">#Simulation of genotypes with 5 replicates for 400 controls and two groups of 200 case with the the the same variants being deleterious or protective but with different OR values</span>
+x &lt;-<span class="st"> </span><span class="kw">random.bed.matrix</span>(<span class="dt">pop.maf =</span> Kryukov<span class="op">$</span>maf[Kryukov<span class="op">$</span>unit<span class="op">==</span><span class="st">&quot;R1&quot;</span>], <span class="dt">size =</span> <span class="kw">c</span>(<span class="dv">400</span>, <span class="dv">200</span>, <span class="dv">200</span>), <span class="dt">baseline =</span> <span class="kw">c</span>(<span class="fl">0.001</span>, <span class="fl">0.001</span>), <span class="dt">replicates =</span> <span class="dv">5</span>, <span class="dt">OR.pars =</span> my.pars, <span class="dt">scenario =</span> <span class="dv">2</span>)
+<span class="co">#Keep only variants with MAF&lt;1% in one of the three groups</span>
+x &lt;-<span class="st"> </span><span class="kw">filter.rare.variants</span>(x, <span class="dt">filter =</span> <span class="st">&quot;any&quot;</span>, <span class="dt">maf.threshold =</span> <span class="fl">0.01</span>)
+x</code></pre></div>
+<pre><code>## A bed.matrix with 800 individuals and 79 markers.
+## snps stats are set
+## ped stats are set</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(x<span class="op">@</span>snps<span class="op">$</span>genomic.region)</code></pre></div>
+<pre><code>## 
+## R1 R2 R3 R4 R5 
+## 15 14 14 18 18</code></pre>
+<div id="burden-tests" class="section level3">
+<h3>Burden tests</h3>
+<div id="cast" class="section level4">
+<h4>CAST</h4>
+<p>The statistic for CAST which computes a binary score based on the presence or absence of at least one allele in the genomic region can be calculated with the function <strong>CAST()</strong>. The p-value is calculated using a Chi-square with Monte-Carlo simulations when the expected numbers of lower than five and with an asymptotic p-value otherwise.Examples using simulated data are showed below.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Compute the CAST score</span>
+<span class="kw">CAST</span>(x, <span class="dt">group =</span> x<span class="op">@</span>ped<span class="op">$</span>pheno, <span class="dt">genomic.region =</span> x<span class="op">@</span>snps<span class="op">$</span>genomic.region )</code></pre></div>
+<pre><code>##    genomic.region     stat    p.value
+## R1             R1 3.828436 0.14745710
+## R2             R2 0.781250 0.67663385
+## R3             R3 1.043025 0.59362208
+## R4             R4 7.925050 0.01901504
+## R5             R5 4.976194 0.08306789</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Compute the CAST score by considering all the cases as one group</span>
+<span class="kw">CAST</span>(x, <span class="dt">group =</span> <span class="kw">ifelse</span>(x<span class="op">@</span>ped<span class="op">$</span>pheno<span class="op">==</span><span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="dt">genomic.region =</span> x<span class="op">@</span>snps<span class="op">$</span>genomic.region )</code></pre></div>
+<pre><code>##    genomic.region      stat     p.value
+## R1             R1 0.1431191 0.705199684
+## R2             R2 0.2929688 0.588324336
+## R3             R3 0.0000000 1.000000000
+## R4             R4 6.9113807 0.008564883
+## R5             R5 3.7167870 0.053867935</code></pre>
+</div>
+<div id="wss" class="section level4">
+<h4>WSS</h4>
+<p>The weighted Sum Statistic (WSS) and its p-value can be calculated using the function <strong>WSS()</strong>. The score is calculated as follow: <span class="math display">\[WSS_j = \sum_{i=1}^{R} I_{ij} * w_{i}\]</span> with <span class="math display">\[w_{i} = \frac{1}{\sqrt(t_{i} * q_{i} * 1-q{i})}\]</span> and <span class="math display">\[q_{i} = \frac{n_{i} + 1}{2*t_{i}+1}\]</span> <span class="math inline">\(n_{i}\)</span> is the total number of minor alleles genotyped for SNP <span class="math inline">\(i\)</span>, <span class="math inline">\(t_{i}\)</span> is the total number of alleles genotyped for SNP <span class="math inline">\(i\)</span> and <span class="math inline">\(I_{ij}\)</span> is the number of minor alleles in the SNP <span class="math inline">\(i\)</span> for the invidual <span class="math inline">\(j\)</span>. In the original method, each SNP is weighted according to its frequency in the controls group and score between the two groups are compared with a rank test. In our version of WSS, the weights depend on allele frequency calculated on the entire sample. Therefore, a Kruskall-Wallis test is used to compare the different groups.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Compute the WSS score</span>
+<span class="kw">WSS</span>(x, <span class="dt">group =</span> x<span class="op">@</span>ped<span class="op">$</span>pheno, <span class="dt">genomic.region =</span> x<span class="op">@</span>snps<span class="op">$</span>genomic.region )</code></pre></div>
+<pre><code>##    genomic.region     stat    p.value
+## R1             R1 3.889720 0.14300723
+## R2             R2 0.805758 0.66839298
+## R3             R3 1.047050 0.59242870
+## R4             R4 7.898596 0.01926822
+## R5             R5 5.190400 0.07463094</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Compute the WSS score by considering all the cases as one group</span>
+<span class="kw">WSS</span>(x, <span class="dt">group =</span> <span class="kw">ifelse</span>(x<span class="op">@</span>ped<span class="op">$</span>pheno<span class="op">==</span><span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="dt">genomic.region =</span> x<span class="op">@</span>snps<span class="op">$</span>genomic.region )</code></pre></div>
+<pre><code>##    genomic.region       stat     p.value
+## R1             R1 0.31243967 0.576186951
+## R2             R2 0.56368313 0.452780047
+## R3             R3 0.02160424 0.883144795
+## R4             R4 7.82506613 0.005152656
+## R5             R5 4.60109246 0.031951590</code></pre>
+</div>
+</div>
+<div id="variance-component-tests" class="section level3">
+<h3>Variance-component tests</h3>
+<div id="c-alpha" class="section level4">
+<h4>C-alpha</h4>
+<p>The C-alpha statistic and its p-value can be calculated using the function <strong>C.ALPHA()</strong>. The score for each genomic region is calculated as follow: <span class="math display">\[C_{\alpha} = \sum_{i=1}^{R} \sum_{c=1}^{C} [(n_{ic} - n_{i} * \alpha_{c})^2 - (n_{i} * \alpha_{c} * (1-\alpha_{c}))]\]</span> where <span class="math inline">\(R\)</span> is the number of SNP in the genomic region, <span class="math inline">\(C\)</span> is the number of groups to compare, <span class="math inline">\(\alpha_{c}\)</span> represents the proportion of group <span class="math inline">\(c\)</span> in the population, <span class="math inline">\(n_{ic}\)</span> and <span class="math inline">\(n_{i}\)</span> the number of minor alleles for the SNP <span class="math inline">\(i\)</span> in the group <span class="math inline">\(c\)</span> and in the entire population respectively. Permutations are then performed to compute the p-value which is calculated by the number of times the observed statistic is exceeded plus the number of times a permutated statistic is equal to the observed one divided by the total number of permutations.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Compute the C-alpha score</span>
+<span class="kw">C.ALPHA</span>(x, <span class="dt">group =</span> x<span class="op">@</span>ped<span class="op">$</span>pheno, <span class="dt">genomic.region =</span> x<span class="op">@</span>snps<span class="op">$</span>genomic.region, <span class="dt">which.snps =</span> <span class="kw">rep</span>(<span class="ot">TRUE</span>, <span class="kw">ncol</span>(x)), <span class="dt">target =</span> <span class="dv">10</span>, <span class="dt">B.max =</span> <span class="fl">1e6</span>)</code></pre></div>
+<pre><code>##   genomic.region  stat nb.geq nb.eq nb.perms     p.value
+## 1             R1  0.25     10     0       23 0.458333333
+## 2             R2  3.50     10     0       33 0.323529412
+## 3             R3 19.50     10     2      426 0.023419204
+## 4             R4 22.00     10     3     2534 0.003747535
+## 5             R5  1.50     10     1       25 0.403846154</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Compute the C-alpha score by considering all the cases as one group</span>
+<span class="kw">C.ALPHA</span>(x, <span class="dt">group =</span> <span class="kw">ifelse</span>(x<span class="op">@</span>ped<span class="op">$</span>pheno<span class="op">==</span><span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="dt">genomic.region =</span> x<span class="op">@</span>snps<span class="op">$</span>genomic.region, <span class="dt">which.snps =</span> <span class="kw">rep</span>(<span class="ot">TRUE</span>, <span class="kw">ncol</span>(x)), <span class="dt">target =</span> <span class="dv">10</span>, <span class="dt">B.max =</span> <span class="fl">1e6</span>)</code></pre></div>
+<pre><code>##   genomic.region stat nb.geq nb.eq nb.perms     p.value
+## 1             R1    1     10     4       35 0.250000000
+## 2             R2    6     10     1       39 0.262500000
+## 3             R3   13     10     3       66 0.141791045
+## 4             R4   24     10     8     3829 0.001827676
+## 5             R5   -2     10     3       22 0.413043478</code></pre>
+</div>
+<div id="beta-m" class="section level4">
+<h4>Beta-M</h4>
+<p>We developed a new statistic, Beta-M, which is a variance-component test and which can be calculated using the function <strong>Beta.M()</strong>. In this model, we suppose that each <span class="math inline">\(p_{ic}\)</span>, the maf of SNP <span class="math inline">\(i\)</span> in group <span class="math inline">\(c\)</span>, is drawn in a Beta distribution with espected value <span class="math inline">\(\pi_{i}\)</span> and variance: <span class="math display">\[\pi_{i} * (1-\pi_{i}) * \frac{\phi}{1-\phi}\]</span> Where <span class="math inline">\(\pi_{i}\)</span> represents the average frequency of the rare variant for SNP <span class="math inline">\(i\)</span> and <span class="math inline">\(\phi\)</span> the dispersion parameter which is the same for all the SNP of the considered genomic region. The null hypothesis corresponding to <span class="math inline">\(\phi=0\)</span> and <span class="math inline">\(p_{ic}=\pi_{i}\)</span> for each group can be tested with the score: <span class="math display">\[\beta_{M} = \sum_{i=1}^R [\frac{\sum_{c=1}^{C}n_{ic}^2}{\sum_{c=1}^{C}n_{ic}} + \frac{\sum_{c=1}^{C} m_{ic}^2}{\sum_{c=1}^{C} m_{ic}}]\]</span> With <span class="math inline">\(n_{ic}\)</span> and <span class="math inline">\(m_{ic}\)</span> being respectively the number of rare and frequent alleles of SNP <span class="math inline">\(i\)</span> in group <span class="math inline">\(c\)</span>. Permutations are then performed to compute the p-value which is calculated by the number of times the observed statistic is exceeded plus the number of times a permutated statistic is equal to the observed one divided by the total number of permutations.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Compute the Beta-M score</span>
+<span class="kw">Beta.M</span>(x, <span class="dt">group =</span> x<span class="op">@</span>ped<span class="op">$</span>pheno, <span class="dt">genomic.region =</span> x<span class="op">@</span>snps<span class="op">$</span>genomic.region, <span class="dt">which.snps =</span> <span class="kw">rep</span>(<span class="ot">TRUE</span>, <span class="kw">ncol</span>(x)), <span class="dt">target =</span> <span class="dv">10</span>, <span class="dt">B.max =</span> <span class="fl">1e6</span>)</code></pre></div>
+<pre><code>##   genomic.region      stat nb.geq nb.eq nb.perms      p.value
+## 1             R1  9010.353     10     0       52 0.2075471698
+## 2             R2  8409.758     10     0       60 0.1803278689
+## 3             R3  8411.710     10     0      507 0.0216535433
+## 4             R4 10817.544     10     0    19441 0.0005657854
+## 5             R5 10814.729     10     0      464 0.0236559140</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Compute the Beta-M score by considering all the cases as one group</span>
+<span class="kw">Beta.M</span>(x, <span class="dt">group =</span> <span class="kw">ifelse</span>(x<span class="op">@</span>ped<span class="op">$</span>pheno<span class="op">==</span><span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="dt">genomic.region =</span> x<span class="op">@</span>snps<span class="op">$</span>genomic.region, <span class="dt">which.snps =</span> <span class="kw">rep</span>(<span class="ot">TRUE</span>, <span class="kw">ncol</span>(x)), <span class="dt">target =</span> <span class="dv">10</span>, <span class="dt">B.max =</span> <span class="fl">1e6</span>)</code></pre></div>
+<pre><code>##   genomic.region     stat nb.geq nb.eq nb.perms     p.value
+## 1             R1 12008.56     10     0       35 0.305555556
+## 2             R2 11207.82     10     0       45 0.239130435
+## 3             R3 11208.16     10     0       44 0.244444444
+## 4             R4 14414.09     10     6     4981 0.001605781
+## 5             R5 14409.83     10     1       36 0.283783784</code></pre>
+</div>
+</div>
+</div>
+<div id="jaccard-similarity-index" class="section level2">
+<h2>Jaccard similarity index</h2>
+<p>It is possible to calculate the Jaccard similarity index by using a bed.matrix and the function <strong>Jaccard()</strong>. The maf threshold indicating the MAF used for the definition of a rare variant should be specified with the option <em>maf.threshold</em>. An example of this function is illustrated bellow on a simulated data set.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Selection of the first genomic region of x</span>
+x1 &lt;-<span class="st"> </span><span class="kw">select.snps</span>(x, x<span class="op">@</span>snps<span class="op">$</span>genomic.region <span class="op">==</span><span class="st"> &quot;R01&quot;</span>)
+J &lt;-<span class="st"> </span><span class="kw">Jaccard</span>(x1, <span class="dt">maf.threshold=</span><span class="fl">0.01</span>)
+J[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>,<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>] ; <span class="kw">dim</span>(J)</code></pre></div>
+<pre><code>##      A001 A002 A003 A004 A005
+## A001    0    0    0    0    0
+## A002    0    0    0    0    0
+## A003    0    0    0    0    0
+## A004    0    0    0    0    0
+## A005    0    0    0    0    0</code></pre>
+<pre><code>## [1] 800 800</code></pre>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

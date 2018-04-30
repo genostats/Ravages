@@ -1,15 +1,5 @@
-score.reg <- function(x, pheno = x@ped$pheno, genomic.region = x@snps$genomic.region, class.ref, burden.score = c("CAST", "WSS", "Other"), other.score = NULL, covariates = NULL, print.err = TRUE){
-  if(!is.factor(pheno)){
-    warnings("pheno is converted to a factor")
-    pheno <- as.factor(pheno)
-  }
-  
-  if(!is.null(covariates)){
-    if(nrow(covariates)!=length(pheno)){
-      stop("Covariates as wrong dimensions")
-    }
-  }
-  
+######Utilisation de mlogit
+score.reg.mlogit <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, burden.score = c("CAST", "WSS", "Other"), other.score = NULL, reflevel, covariates=NULL, alpha=0.05){
   if(burden.score == "CAST"){
     score <- oz:::CAST.0(x, genomic.region)
   }
@@ -26,60 +16,72 @@ score.reg <- function(x, pheno = x@ped$pheno, genomic.region = x@snps$genomic.re
     score <- other.score
   }
   
-  #LRT and df for each genomic region, one genomic region by line
-  model.parameters <- t(apply(score, 2, function(z) get.model.parameters(pheno=pheno, score=z, class.ref = class.ref, covariates = covariates, print.err = print.err)))
-  colnames(model.parameters)=c("LRT", "nb.df", "is.err")
+  if(!is.null(covariates)){
+    if(nrow(covariates)!=length(pheno)){
+      stop("Covariates has wrong dimensions")
+    }
+  }
   
-  #P-value
-  pval <- apply(model.parameters, 1, function(z) pchisq(z["LRT"], z["nb.df"], lower.tail=FALSE))
+  if(!is.factor(group)){
+    group <- as.factor(group)
+  }
   
-  #Results
-  R <- data.frame("LRT" = model.parameters[,"LRT"], "df" = model.parameters[,"nb.df"], "p.value" = pval, is.err = model.parameters[,"is.err"])
-  R
+  alt.levels <- levels(group)[!(levels(group) %in% reflevel)]
+  
+  pval <- as.data.frame(t(sapply(unique(genomic.region), function(z) get.model.parameters.mlogit(pheno = group, score = score, region=z, reflevel=reflevel, alt.levels=alt.levels, covariates=covariates, alpha=alpha))))
+  colnames(pval) <- c("p.value", "is.err", paste("OR", alt.levels, sep="."), paste("l.lower", alt.levels, sep="."), paste("l.upper", alt.levels, sep="."))
+  rownames(pval) <- unique(genomic.region)
+  return(pval)
 }
-  
-  
-  
-get.model.parameters <- function(pheno = pheno, score, class.ref = calss.ref, covariates = NULL, print.err){
+
+
+get.model.parameters.mlogit <- function(pheno = group, score = score, region, reflevel, alt.levels, covariates, alpha){
   assign("last.warning", NULL, envir = baseenv())
-  #Null model H0
-  if(is.null(covariates)){
-    null.model <- vglm(pheno ~ 1, family=multinomial(refLevel=class.ref))
+  
+  #Model
+  score.pheno <- cbind(score[,region], pheno, covariates)
+  score.pheno <- as.data.frame(score.pheno)
+  ifelse(is.null(covariates), colnames(score.pheno) <- c("region", "ind.pheno"), colnames(score.pheno) <- c("region", "ind.pheno", paste("covar", 1:ncol(covariates), sep="")))
+  rownames(score.pheno) <- 1:nrow(score.pheno)
+  score.mlogit <- mlogit.data(score.pheno, varying=NULL, shape="wide", choice="ind.pheno", alt.levels=levels(pheno))
+  
+  #Formula for the model
+  if(is.null(covariates)){ 
+    my.formula <- mFormula(ind.pheno ~ 0 | region)
   }
   else{
-    null.model <- vglm(pheno ~ ., data=covariates, family=multinomial(refLevel=class.ref))
+    if(ncol(covariates)==1){ my.formula <- mFormula(ind.pheno ~ 0 | region + covar1) ; my.formula.H0 <- mFormula(ind.pheno ~ 0 | covar1) }
+    if(ncol(covariates)==2){ my.formula <- mFormula(ind.pheno ~ 0 | region + covar1 + covar2) ; my.formula.H0 <- mFormula(ind.pheno ~ 0 | covar1 + covar2) }
+    if(ncol(covariates)==3){ my.formula <- mFormula(ind.pheno ~ 0 | region + covar1 + covar2 + covar3) ; my.formula.H0 <- mFormula(ind.pheno ~ 0 | covar1 + covar2 + covar3) }
+    if(ncol(covariates)==4){ my.formula <- mFormula(ind.pheno ~ 0 | region + covar1 + covar2 + covar3 + covar4) ; my.formula.H0 <- mFormula(ind.pheno ~ 0 | covar1 + covar2 + covar3 + covar4) }
+    if(ncol(covariates)==5){ my.formula <- mFormula(ind.pheno ~ 0 | region + covar1 + covar2 + covar3 + covar4 + covar5) ; mFormula.H0(ind.pheno ~ 0 | covar1 + covar2 + covar3 + covar4 + covar5) }
   }
   
-  #Model to test
-  if(is.null(covariates)){
-    score.model <- vglm(pheno ~ score, family=multinomial(refLevel=class.ref))
+  #Test if Error
+  if(is(tryCatch(mlogit(my.formula, data=score.mlogit, reflevel = reflevel), error=function(w) w, warning=function(y) y), "error")){
+    pval <- NA ; is.err <- 1
   }
   else{
-    score.model <- vglm(pheno ~ score + ., data=covariates, family=multinomial(refLevel=class.ref))
-  }
-  
-  #Error
-  #sans covariables
-  if(print.err==TRUE){
     if(is.null(covariates)){
-      is.err <- ifelse(is(tryCatch(vglm(pheno ~ score, family=multinomial(refLevel=class.ref)), warning=function(w) w), "warning"), 1, 0)
+      my.model <- summary(mlogit(my.formula, data=score.mlogit, reflevel = reflevel))
+      pval <- as.numeric(my.model$lratio$p.value)
+      OR.values <- my.model$CoefTable
     }
     else{
-      is.err <- ifelse(is(tryCatch(vglm(pheno ~ score + ., data=covariates, family=multinomial(refLevel=class.ref)), warning=function(w) w), "warning"), 1, 0)
+      my.model.H0 <- summary(mlogit(my.formula.H0, data=score.mlogit, reflevel = reflevel))
+      my.model.H1 <- summary(mlogit(my.formula, data=score.mlogit, reflevel = reflevel))
+      pval <- pchisq(-2*as.numeric(my.model.H0$logLik) + 2*as.numeric(my.model.H1$logLik), nlevels(pheno)-1, lower.tail=FALSE)
+      OR.values <- my.model.H1$CoefTable
     }
+    is.err <- 0
   }
-  else{
-    is.err <- NA
-  }
-  
-  #LRT
-  LRT <- null.model@criterion$deviance - score.model@criterion$deviance
-  
-  #Number of df
-  nb.df <- null.model@df.residual - score.model@df.residual
-  
-  return(c(LRT, nb.df, is.err))
+
+  quantile.alpha <- qnorm(alpha/2, lower.tail=FALSE)
+
+  return(c(pval, is.err, 
+        as.numeric(exp(OR.values[paste(alt.levels, "region", sep=":"),1])), 
+        as.numeric(exp(OR.values[paste(alt.levels, "region", sep=":"),1]-quantile.alpha*OR.values[paste(alt.levels, "region", sep=":"),2])), 
+        as.numeric(exp(OR.values[paste(alt.levels, "region", sep=":"),1]+quantile.alpha*OR.values[paste(alt.levels, "region", sep=":"),2]))
+        ))
 }
-
-
   
