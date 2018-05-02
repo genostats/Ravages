@@ -169,10 +169,45 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"),
 }
 
 
-power.burden <- function(alpha = 0.05, filter=c("whole", "controls", "any"), maf.threshold = 0.01, CAST = TRUE, WSS = TRUE, burden = FALSE, regression = TRUE, model.pars){
-  if(is.character(model.pars[[1]])){
-  	model.pars[[1]] <- GnomADgenes$maf[GnomADgenes$gene==model.pars[[1]]]
+power.burden <- function(alpha = 0.05, filter=c("whole", "controls", "any"), maf.threshold = 0.01, CAST = TRUE, WSS = TRUE, burden = FALSE, regression = TRUE, scenario = 1:4,
+						 OR.del, OR.pro = 1/OR.del, prob.del, prob.pro, pop.maf, size, baseline, replicates = 1000, reflevel = NULL, get.OR.value = NULL){
+  
+  if(is.character(pop.maf)){
+    pop.maf <- GnomADgenes$maf[GnomADgenes$gene==pop.maf]
   }
+  
+  if(scenario == 1){
+    if(OR.del == "variable"){
+      OR.del <- matrix(rep(exp(0.402*abs(log10(pop.maf))), length(size)-1), nrow=length(size)-1, byrow=TRUE)
+    }
+    OR.pars <- list(OR.del = OR.del, OR.pro = OR.pro, prob.del = prob.del, prob.pro = prob.pro)
+    model.pars <- list(pop.maf = pop.maf, size = size, baseline = baseline, replicates = replicates, OR.pars = OR.pars, OR.function = OR.matrix.fix)
+  }
+  
+  if(scenario == 2){
+    if(OR.del == "variable"){
+      OR.del <- matrix(c(exp(0.402*abs(log10(pop.maf))), exp(0.402*abs(log10(pop.maf)))*2), nrow=length(size)-1, byrow=TRUE)
+    }
+    OR.pars <- list(OR.del = OR.del, OR.pro = OR.pro, prob.del = prob.del, prob.pro = prob.pro)
+    model.pars <- list(pop.maf = pop.maf, size = size, baseline = baseline, replicates = replicates, OR.pars = OR.pars, OR.function = OR.matrix.same.fix.variant)
+  }
+  
+  if(scenario == 3){
+    if(OR.del == "variable"){
+      OR.del <- matrix(rep(exp(0.402*abs(log10(pop.maf))), length(size)-1), nrow=length(size)-1, byrow=TRUE)
+    }
+    OR.pars <- list(OR.del = OR.del, OR.pro = OR.pro, prob.del = prob.del, prob.pro = prob.pro)
+    model.pars <- list(pop.maf = pop.maf, size = size, baseline = baseline, replicates = replicates, OR.pars = OR.pars, OR.function = OR.matrix.same.fix.variant)
+  }
+  
+  if(scenario == 4){
+    if(OR.del == "variable"){
+      OR.del <- matrix(c(rep(1, length(pop.maf)), exp(0.402*abs(log10(pop.maf)))), nrow=length(size)-1, byrow=TRUE)
+    }
+    OR.pars <- list(OR.del = OR.del, OR.pro = OR.pro, prob.del = prob.del, prob.pro = prob.pro)
+    model.pars <- list(pop.maf = pop.maf, size = size, baseline = baseline, replicates = replicates, OR.pars = OR.pars, OR.function = OR.matrix.same.fix.variant)
+  }
+
   x <- do.call(random.bed.matrix, model.pars)
   x <- filter.rare.variants(x, filter, maf.threshold)
   pheno.pooled <- ifelse(x@ped$pheno==0, 0, 1)
@@ -188,12 +223,12 @@ power.burden <- function(alpha = 0.05, filter=c("whole", "controls", "any"), maf
     }
     
     if(regression){
-      CAST.regression <- score.reg.mlogit(x, reflevel = "1", burden.score = "CAST", get.OR.value = FALSE)
+      CAST.regression <- score.reg.mlogit(x, reflevel = reflevel, burden.score = "CAST", get.OR.value = get.OR.value)
       power.CAST.regression <- mean(CAST.regression[CAST.regression$is.err == 0, "p.value"] < alpha)
-      se.CAST.regression <- sqrt(power.CAST.regression * (1-power.CAST.regression)) / nrow(CAST.regression[CAST.regression$is.err == 0]))
-      pooled.CAST.regression <- score.reg.mlogit(x, group = pheno.pooled, reflevel = "1", burden.score = "CAST", get.OR.value = FALSE)
-      power.pooled.CAST.regresion <- mean(pooled.CAST.regression[pooled.CAST.regression$is.err==0, "p.value"] < alpha)
-      se.pooled.CAST.regression <- sqrt((power.pooled.CAST.regression * (1-power.pooled.CAST.regression)) / nrow(pooled.CAST.regression[pooled.CAST.regression$is.err == 0]))
+      se.CAST.regression <- sqrt((power.CAST.regression * (1-power.CAST.regression)) / nrow(CAST.regression[CAST.regression$is.err == 0,]))
+      pooled.CAST.regression <- score.reg.mlogit(x, group = pheno.pooled, reflevel = reflevel, burden.score = "CAST", get.OR.value = get.OR.value)
+      power.pooled.CAST.regression <- mean(pooled.CAST.regression[pooled.CAST.regression$is.err==0, "p.value"] < alpha)
+      se.pooled.CAST.regression <- sqrt((power.pooled.CAST.regression * (1-power.pooled.CAST.regression)) / nrow(pooled.CAST.regression[pooled.CAST.regression$is.err == 0,]))
     }else{
       power.CAST.regression <- se.CAST.regression <- power.pooled.CAST.regression <- se.pooled.CAST.regression <- NA
     }
@@ -205,21 +240,21 @@ power.burden <- function(alpha = 0.05, filter=c("whole", "controls", "any"), maf
   
   if(WSS){
     if(burden){
-      power.WSS.burden <- mean(WSS(x, maf.threshold = maf.threshold)$p.value < alpha)
+      power.WSS.burden <- mean(WSS(x)$p.value < alpha)
       se.WSS.burden <- sqrt((power.WSS.burden * (1-power.WSS.burden)) / nlevels(x@snps$genomic.region))
-      power.pooled.WSS.burden <- mean(WSS(x, maf.threshold = maf.threshold, group = pheno.pooled)$p.value < alpha)
+      power.pooled.WSS.burden <- mean(WSS(x, group = pheno.pooled)$p.value < alpha)
       se.pooled.WSS.burden <- sqrt((power.pooled.WSS.burden * (1-power.pooled.WSS.burden)) / nlevels(x@snps$genomic.region))
     }else{
       power.WSS.burden <- se.WSS.burden <- power.pooled.WSS.burden <- se.pooled.WSS.burden <- NA
     }
     
     if(regression){
-      WSS.regression <- score.reg.mlogit(x, reflevel = "1", burden.score = "WSS", get.OR.value = FALSE)
+      WSS.regression <- score.reg.mlogit(x, reflevel = reflevel, burden.score = "WSS", get.OR.value = get.OR.value)
       power.WSS.regression <- mean(WSS.regression[WSS.regression$is.err == 0, "p.value"] < alpha)
-      se.WSS.regression <- sqrt(power.WSS.regression * (1-power.WSS.regression)) / nrow(WSS.regression[WSS.regression$is.err == 0]))
-      pooled.WSS.regression <- score.reg.mlogit(x, group = pheno.pooled, reflevel = "1", burden.score = "WSS", get.OR.value = FALSE)
-      power.pooled.WSS.regresion <- mean(pooled.WSS.regression[pooled.WSS.regression$is.err==0, "p.value"] < alpha)
-      se.pooled.WSS.regression <- sqrt((power.pooled.WSS.regression * (1-power.pooled.WSS.regression)) / nrow(pooled.WSS.regression[pooled.WSS.regression$is.err == 0]))
+      se.WSS.regression <- sqrt((power.WSS.regression * (1-power.WSS.regression)) / nrow(WSS.regression[WSS.regression$is.err == 0,]))
+      pooled.WSS.regression <- score.reg.mlogit(x, group = pheno.pooled, reflevel = reflevel, burden.score = "WSS", get.OR.value = get.OR.value)
+      power.pooled.WSS.regression <- mean(pooled.WSS.regression[pooled.WSS.regression$is.err==0, "p.value"] < alpha)
+      se.pooled.WSS.regression <- sqrt((power.pooled.WSS.regression * (1-power.pooled.WSS.regression)) / nrow(pooled.WSS.regression[pooled.WSS.regression$is.err == 0,]))
     }else{
       power.WSS.regression <- se.WSS.regression <- power.pooled.WSS.regression <- se.pooled.WSS.regression <- NA
     }
@@ -232,8 +267,8 @@ power.burden <- function(alpha = 0.05, filter=c("whole", "controls", "any"), maf
   						 power.WSS.burden, power.pooled.WSS.burden, power.WSS.regression, power.pooled.WSS.regression),
   			 "se" = c(se.CAST.burden, se.pooled.CAST.burden, se.CAST.regression, se.pooled.CAST.regression, 
   			 		  se.WSS.burden, se.pooled.WSS.burden, se.WSS.regression, se.pooled.WSS.regression),
-  			 nb.replicates = c(rep(nlevels(x@snps$genomic.region), 2), nrow(CAST.regression[CAST.regression$is.err == 0]), nrow(pooled.CAST.regression[pooled.CAST.regression$is.err == 0]),
-  			 				   rep(nlevels(x@snps$genomic.region), 2), nrow(WSS.regression[WSS.regression$is.err == 0]), nrow(pooled.WSS.regression[pooled.WSS.regression$is.err == 0]) ),
+  			 nb.replicates = c(rep(nlevels(x@snps$genomic.region), 2), nrow(CAST.regression[CAST.regression$is.err == 0,]), nrow(pooled.CAST.regression[pooled.CAST.regression$is.err == 0,]),
+  			 				   rep(nlevels(x@snps$genomic.region), 2), nrow(WSS.regression[WSS.regression$is.err == 0,]), nrow(pooled.WSS.regression[pooled.WSS.regression$is.err == 0,]) ),
   			 row.names = c("CAST.burden", "pooled.CAST.burden", "CAST.regression", "pooled.CAST.regression",
   			 			   "WSS.burden", "pooled.WSS.burden", "WSS.regression", "pooled.WSS.regression")
  			)

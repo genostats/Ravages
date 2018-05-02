@@ -1,5 +1,5 @@
 ######Utilisation de mlogit
-score.reg.mlogit <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, burden.score = c("CAST", "WSS", "Other"), other.score = NULL, reflevel, covariates=NULL, alpha=0.05){
+score.reg.mlogit <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, burden.score = c("CAST", "WSS", "Other"), other.score = NULL, reflevel, covariates=NULL, alpha=0.05, get.OR.value=FALSE){
   if(burden.score == "CAST"){
     score <- oz:::CAST.0(x, genomic.region)
   }
@@ -28,14 +28,16 @@ score.reg.mlogit <- function(x, group = x@ped$pheno, genomic.region = x@snps$gen
   
   alt.levels <- levels(group)[!(levels(group) %in% reflevel)]
   
-  pval <- as.data.frame(t(sapply(unique(genomic.region), function(z) get.model.parameters.mlogit(pheno = group, score = score, region=z, reflevel=reflevel, alt.levels=alt.levels, covariates=covariates, alpha=alpha))))
-  colnames(pval) <- c("p.value", "is.err", paste("OR", alt.levels, sep="."), paste("l.lower", alt.levels, sep="."), paste("l.upper", alt.levels, sep="."))
+  pval <- as.data.frame(t(sapply(unique(genomic.region), function(z) get.model.parameters.mlogit(pheno = group, score = score, region=z, reflevel=reflevel, alt.levels=alt.levels, covariates=covariates, alpha=alpha, get.OR.value = get.OR.value))))
+  ifelse(get.OR.value == TRUE,
+  		colnames(pval) <- c("p.value", "is.err", paste("OR", alt.levels, sep="."), paste("l.lower", alt.levels, sep="."), paste("l.upper", alt.levels, sep=".")),
+  		colnames(pval) <- c("p.value", "is.err"))
   rownames(pval) <- unique(genomic.region)
   return(pval)
 }
 
 
-get.model.parameters.mlogit <- function(pheno = group, score = score, region, reflevel, alt.levels, covariates, alpha){
+get.model.parameters.mlogit <- function(pheno = group, score = score, region, reflevel, alt.levels, covariates, alpha, get.OR.value){
   assign("last.warning", NULL, envir = baseenv())
   
   #Model
@@ -65,23 +67,26 @@ get.model.parameters.mlogit <- function(pheno = group, score = score, region, re
     if(is.null(covariates)){
       my.model <- summary(mlogit(my.formula, data=score.mlogit, reflevel = reflevel))
       pval <- as.numeric(my.model$lratio$p.value)
-      OR.values <- my.model$CoefTable
+      if(get.OR.value == TRUE){ OR.values <- my.model$CoefTable }
     }
     else{
       my.model.H0 <- summary(mlogit(my.formula.H0, data=score.mlogit, reflevel = reflevel))
       my.model.H1 <- summary(mlogit(my.formula, data=score.mlogit, reflevel = reflevel))
       pval <- pchisq(-2*as.numeric(my.model.H0$logLik) + 2*as.numeric(my.model.H1$logLik), nlevels(pheno)-1, lower.tail=FALSE)
-      OR.values <- my.model.H1$CoefTable
+      if(get.OR.value == TRUE){ OR.values <- my.model.H1$CoefTable }
     }
     is.err <- 0
   }
 
   quantile.alpha <- qnorm(alpha/2, lower.tail=FALSE)
 
-  return(c(pval, is.err, 
+  ifelse(get.OR.value == TRUE, results <- c(pval, is.err, 
         as.numeric(exp(OR.values[paste(alt.levels, "region", sep=":"),1])), 
         as.numeric(exp(OR.values[paste(alt.levels, "region", sep=":"),1]-quantile.alpha*OR.values[paste(alt.levels, "region", sep=":"),2])), 
         as.numeric(exp(OR.values[paste(alt.levels, "region", sep=":"),1]+quantile.alpha*OR.values[paste(alt.levels, "region", sep=":"),2]))
-        ))
+        ),
+        results <- c(pval, is.err))
+  
+  return(results)
 }
   
