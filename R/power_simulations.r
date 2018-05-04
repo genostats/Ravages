@@ -177,7 +177,7 @@ power.burden <- function(alpha = 0.05, filter=c("whole", "controls", "any"), maf
   }
   
   if(scenario == 1){
-    if(OR.del == "variable"){
+    if(is.character(OR.del)){
       OR.del <- matrix(rep(exp(0.402*abs(log10(pop.maf))), length(size)-1), nrow=length(size)-1, byrow=TRUE)
     }
     OR.pars <- list(OR.del = OR.del, OR.pro = OR.pro, prob.del = prob.del, prob.pro = prob.pro)
@@ -185,7 +185,7 @@ power.burden <- function(alpha = 0.05, filter=c("whole", "controls", "any"), maf
   }
   
   if(scenario == 2){
-    if(OR.del == "variable"){
+    if(is.character(OR.del)){
       OR.del <- matrix(c(exp(0.402*abs(log10(pop.maf))), exp(0.402*abs(log10(pop.maf)))*2), nrow=length(size)-1, byrow=TRUE)
     }
     OR.pars <- list(OR.del = OR.del, OR.pro = OR.pro, prob.del = prob.del, prob.pro = prob.pro)
@@ -193,7 +193,7 @@ power.burden <- function(alpha = 0.05, filter=c("whole", "controls", "any"), maf
   }
   
   if(scenario == 3){
-    if(OR.del == "variable"){
+    if(is.character(OR.del)){
       OR.del <- matrix(rep(exp(0.402*abs(log10(pop.maf))), length(size)-1), nrow=length(size)-1, byrow=TRUE)
     }
     OR.pars <- list(OR.del = OR.del, OR.pro = OR.pro, prob.del = prob.del, prob.pro = prob.pro)
@@ -201,7 +201,7 @@ power.burden <- function(alpha = 0.05, filter=c("whole", "controls", "any"), maf
   }
   
   if(scenario == 4){
-    if(OR.del == "variable"){
+    if(is.character(OR.del)){
       OR.del <- matrix(c(rep(1, length(pop.maf)), exp(0.402*abs(log10(pop.maf)))), nrow=length(size)-1, byrow=TRUE)
     }
     OR.pars <- list(OR.del = OR.del, OR.pro = OR.pro, prob.del = prob.del, prob.pro = prob.pro)
@@ -267,8 +267,12 @@ power.burden <- function(alpha = 0.05, filter=c("whole", "controls", "any"), maf
   						 power.WSS.burden, power.pooled.WSS.burden, power.WSS.regression, power.pooled.WSS.regression),
   			 "se" = c(se.CAST.burden, se.pooled.CAST.burden, se.CAST.regression, se.pooled.CAST.regression, 
   			 		  se.WSS.burden, se.pooled.WSS.burden, se.WSS.regression, se.pooled.WSS.regression),
-  			 nb.replicates = c(rep(nlevels(x@snps$genomic.region), 2), nrow(CAST.regression[CAST.regression$is.err == 0,]), nrow(pooled.CAST.regression[pooled.CAST.regression$is.err == 0,]),
-  			 				   rep(nlevels(x@snps$genomic.region), 2), nrow(WSS.regression[WSS.regression$is.err == 0,]), nrow(pooled.WSS.regression[pooled.WSS.regression$is.err == 0,]) ),
+  			 nb.replicates = c(rep(nlevels(x@snps$genomic.region), 2), 
+  			 				 ifelse(CAST & regression, nrow(CAST.regression[CAST.regression$is.err == 0,]), NA),
+  			 				 ifelse(CAST & regression, nrow(pooled.CAST.regression[pooled.CAST.regression$is.err == 0,]), NA),
+  			 				 rep(nlevels(x@snps$genomic.region), 2),
+  			 				 ifelse(WSS & regression, nrow(WSS.regression[WSS.regression$is.err == 0,]),NA),
+  			 				 ifelse(WSS & regression, nrow(pooled.WSS.regression[pooled.WSS.regression$is.err == 0,]), NA)),
   			 row.names = c("CAST.burden", "pooled.CAST.burden", "CAST.regression", "pooled.CAST.regression",
   			 			   "WSS.burden", "pooled.WSS.burden", "WSS.regression", "pooled.WSS.regression")
  			)
