@@ -1,3 +1,10 @@
 
 -- est-ce que partout on pourrait ajouter dans les fonctions une ligne
    pour que which.snps vire les variants monomorphes ?
+
+-- refaire en C++ les fonctions d'annotation, avec une table de hashage ?
+
+-- attention aux NA dans les facteurs !! (fctions C++)
+
+-- Il serait bon que dans les jeux de données les niveaux des facteurs 
+   soient dans l'ordre du génome
