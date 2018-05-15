@@ -157,9 +157,9 @@ class Stats {
       for(int i = 0; i < nb_snp_groups; i++) {
         if(!nb_snp_in_group[i]) continue;
         Heaps[i].push_back( stats[i] );
-        std::push_heap(Heaps[i].begin(), Heaps[i].end(), std::greater<int>());
+        std::push_heap(Heaps[i].begin(), Heaps[i].end(), std::greater<double>());
         if(b >= n_keep) {
-          std::pop_heap(Heaps[i].begin(),Heaps[i].end(), std::greater<int>());
+          std::pop_heap(Heaps[i].begin(),Heaps[i].end(), std::greater<double>());
           Heaps[i].pop_back();
         }
       }
