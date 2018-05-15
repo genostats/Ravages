@@ -144,6 +144,38 @@ class Stats {
     return L;
   }
 
+
+  // Pour garder les n_keep plus hautes valeurs permutées parmi B 
+  List higher_permuted_stats(int n_keep, int B) {
+    std::vector< std::vector<double> > Heaps(nb_snp_groups);
+
+    compute_stats();
+    NumericVector Obs = clone(stats);
+    for(int b = 0; b < B; b++) {
+      permute_pheno();
+      compute_stats();
+      for(int i = 0; i < nb_snp_groups; i++) {
+        if(!nb_snp_in_group[i]) continue;
+        Heaps[i].push_back( stats[i] );
+        std::push_heap(Heaps[i].begin(), Heaps[i].end(), std::greater<int>());
+        if(b >= n_keep) {
+          std::pop_heap(Heaps[i].begin(),Heaps[i].end(), std::greater<int>());
+          Heaps[i].pop_back();
+        }
+      }
+    }
+    // List L;
+    for(int i = 0; i < nb_snp_groups; i++) {
+     if(!nb_snp_in_group[i]) continue;
+      Heaps[i].push_back( Obs[i] );
+      // L[i+1] = wrap( Heaps[i] );
+    }
+    // return L;
+    return wrap(Heaps);
+  }
+
+
+
   /**********************************************
    * des fonctions pour les tests exacts
    **********************************************/

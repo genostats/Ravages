@@ -58,6 +58,11 @@ List sum_fst(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector region, 
 }
 
 //[[Rcpp::export]]
+List sum_fst_max_perm(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector region, IntegerVector group, int n_keep, int B) {
+  sumfst X(p_A, which_snps, region, group);
+  return X.higher_permuted_stats(n_keep, B);
+}
+
 List ex_sum_fst(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector region, IntegerVector group, IntegerVector g) {
 
   sumfst B(p_A, which_snps, region, group);
@@ -92,6 +97,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type group(groupSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type g(gSEXP);
     rcpp_result_gen = Rcpp::wrap(ex_sum_fst(p_A, which_snps, region, group, g));
+    return rcpp_result_gen;
+END_RCPP
+}
+
+RcppExport SEXP oz_sum_fst_max_perm(SEXP p_ASEXP, SEXP which_snpsSEXP, SEXP regionSEXP, SEXP groupSEXP, SEXP n_keepSEXP, SEXP BSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtr<matrix4> >::type p_A(p_ASEXP);
+    Rcpp::traits::input_parameter< LogicalVector >::type which_snps(which_snpsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type region(regionSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type group(groupSEXP);
+    Rcpp::traits::input_parameter< int >::type n_keep(n_keepSEXP);
+    Rcpp::traits::input_parameter< int >::type B(BSEXP);
+    rcpp_result_gen = Rcpp::wrap(sum_fst_max_perm(p_A, which_snps, region, group, n_keep, B));
     return rcpp_result_gen;
 END_RCPP
 }
