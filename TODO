@@ -8,3 +8,10 @@
 
 -- Il serait bon que dans les jeux de données les niveaux des facteurs 
    soient dans l'ordre du génome
+
+-- Statistic class devrait être améliorée de façon à permettre d'avoir
+   des données additionnelles sans avoir à redéfinir totalement update_snps()
+   Il suffirait d'avoir une fonction virtuelle update_snps_extra() qui
+   serait appelée par update_snps() pour compléter l'update.
+   cf dans Sum_fst j'ai trop eu la flemme de redéfinir update_snps() 
+
