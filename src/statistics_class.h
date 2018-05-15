@@ -73,6 +73,10 @@ class Stats {
     }
   }
 
+  // pour ne pas avoir à tout redéfinir dans la classe dérivée
+  virtual void extra_update_snps() {
+  }
+
   // comme son nom l'indique...
   virtual void update_snps() {
     // Rcout << "original update\n";
@@ -96,6 +100,7 @@ class Stats {
         nb_snp_in_group[ full_snp_group[i] - 1 ]++;
       }
     }
+    extra_update_snps();
   }
 
   List permute_stats(int A_target, int B_max) {
