@@ -9,6 +9,6 @@ Sum.Fst.higher.perms <-  function(x, group = x@ped$pheno, genomic.region = x@snp
                    which.snps = rep(TRUE, ncol(x)), n.keep = 500, B = 1e6) {
   r <- .Call('oz_sum_fst_max_perm', PACKAGE = 'oz', x@bed, which.snps, as.factor(genomic.region), as.factor(group), n.keep, B)
   names(r) <- levels(genomic.region)
-  return(r)
+  r[ sapply(r, length) > 0 ] 
 }
 
