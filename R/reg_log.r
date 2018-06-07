@@ -17,7 +17,7 @@ score.reg.mlogit <- function(x, group = x@ped$pheno, genomic.region = x@snps$gen
   }
   
   if(!is.null(covariates)){
-    if(nrow(covariates)!=length(pheno)){
+    if(nrow(covariates)!=length(group)){
       stop("Covariates has wrong dimensions")
     }
   }
@@ -56,7 +56,7 @@ get.model.parameters.mlogit <- function(pheno = group, score = score, region, re
     if(ncol(covariates)==2){ my.formula <- mFormula(ind.pheno ~ 0 | region + covar1 + covar2) ; my.formula.H0 <- mFormula(ind.pheno ~ 0 | covar1 + covar2) }
     if(ncol(covariates)==3){ my.formula <- mFormula(ind.pheno ~ 0 | region + covar1 + covar2 + covar3) ; my.formula.H0 <- mFormula(ind.pheno ~ 0 | covar1 + covar2 + covar3) }
     if(ncol(covariates)==4){ my.formula <- mFormula(ind.pheno ~ 0 | region + covar1 + covar2 + covar3 + covar4) ; my.formula.H0 <- mFormula(ind.pheno ~ 0 | covar1 + covar2 + covar3 + covar4) }
-    if(ncol(covariates)==5){ my.formula <- mFormula(ind.pheno ~ 0 | region + covar1 + covar2 + covar3 + covar4 + covar5) ; my.formula.H0 <- mFormula.H0(ind.pheno ~ 0 | covar1 + covar2 + covar3 + covar4 + covar5) }
+    if(ncol(covariates)==5){ my.formula <- mFormula(ind.pheno ~ 0 | region + covar1 + covar2 + covar3 + covar4 + covar5) ; my.formula.H0 <- mFormula(ind.pheno ~ 0 | covar1 + covar2 + covar3 + covar4 + covar5) }
   }
   
   #Test if Error
