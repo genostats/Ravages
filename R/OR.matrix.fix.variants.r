@@ -1,6 +1,21 @@
-OR.matrix.fix <- function (n.variants, OR.del, OR.pro = 1/OR.del, prob.del, prob.pro){
+OR.matrix.fix <- function (n.variants, n.groups, OR.del, OR.pro = 1/OR.del, prob.del, prob.pro){
     if (length(OR.del) != length(OR.pro))
         stop("Dimensions mismatch")
+    
+    if(!is.matrix(OR.del)){
+    	if(length(OR.del)==n.variants){
+    		OR.del <- matrix(OR.del, nrow=1)
+    		OR.pro <- matrix(OR.pro, nrow=1)
+    	}
+    	else if(length(OR.del)==n.groups){
+    		OR.del <- matrix( rep_len(OR.del, n.variants*length(OR.del)), nrow=n.groups)
+    		OR.pro <- matrix( rep_len(OR.pro, n.variants*length(OR.pro)), nrow=n.groups)
+    	}
+    	else
+    		stop("OR Dimensions mismatch")
+    }
+    	
+    
     OR <- cbind(1, OR.del, OR.pro, deparse.level = 0)
     v <- 1:n.variants
     v.del <- list()
