@@ -1,6 +1,6 @@
-Package: oz
+Package: Ravages
 Type: Package
-Title: Genetic Data Handling (QC, GRM, LD, PCA) & Linear Mixed Models
+Title: Rare Variant Analysis and Genetic Simulations
 Version: 0.1
 Date: 2017-02-22
 Encoding: UTF-8
