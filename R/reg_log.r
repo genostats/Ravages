@@ -61,7 +61,7 @@ get.model.parameters.mlogit <- function(pheno = group, score = score, region, re
   
   #Test if Error
   if(is(tryCatch(mlogit(my.formula, data=score.mlogit, reflevel = reflevel), error=function(w) w, warning=function(y) y), "error")){
-    pval <- NA ; is.err <- 1
+    pval <- NA ; is.err <- 1 ; OR.values <- data.frame("Estimate"=rep(NA, nlevels(pheno)-1), "sd"=rep(NA, nlevels(pheno)-1)) ; rownames(OR.values) <- paste(alt.levels, "region", sep=":")
   }
   else{
     if(is.null(covariates)){

@@ -63,7 +63,7 @@ group.mafs.GRR <- function(pop.maf, GRR.1, GRR.2=NULL, baseline, model=c("genera
   p.t <- numeric(ncol(GRR.1))
   for (i in 1:ncol(GRR.1)){
     p.c[,i] <- p.case(pop.maf[i], GRR.1[,i], GRR.2[,i])
-    p.t[i] <- p.tem(pop.maf[i], GRR.1[,i], GRR.2[,i], baseline=baseline)
+    p.t[i] <- p.tem.GRR(pop.maf[i], GRR.1[,i], GRR.2[,i], baseline=baseline)
   }
   
   F <- rbind(p.t, p.c)
@@ -81,7 +81,7 @@ p.case <- function(p, GRR.1, GRR.2){
   return(freq.homo.alt + 0.5*freq.het)
 }
 
-p.tem <- function(p, GRR.1, GRR.2, baseline){
+p.tem.GRR <- function(p, GRR.1, GRR.2, baseline){
   f <- baseline / (GRR.2*p**2 + GRR.1*2*p*(1-p) + (1-p)**2) #Frequence des cas chez les homo de ref
   
   freq.homo.alt <- (p**2 * (1-sum(f*GRR.2))) / (1-sum(baseline))
