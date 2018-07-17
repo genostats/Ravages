@@ -49,7 +49,7 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
   }else{
     GRR.2.pars <- NULL
   }
-##Si même variants: prendre fonction correspondante
+##Si meme variants: prendre fonction correspondante
   if(same.variant==FALSE){
     variant.function <- oz:::OR.matrix.fix
   }else{
@@ -57,7 +57,7 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
   }
   model.pars <- list(pop.maf=pop.maf, size=size, baseline=baseline, replicates=replicates, GRR.pars=GRR.1.pars, GRR.pars.2=GRR.2.pars, OR.function=variant.function, model=genetic.model)
   
-##Simulations des données
+##Simulations des donnees
   x <- do.call(random.bed.matrix.GRR, model.pars)
   x <- filter.rare.variants(x, filter=filter, maf.threshold=maf.threshold)
   pheno.pooled <- ifelse(x@ped$pheno==0, 0, 1)
@@ -115,7 +115,7 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
   
   data.frame("power" = c(power.CAST, power.cases.CAST, power.pooled.CAST, power.WSS, power.cases.WSS, power.pooled.WSS),
   			 "se" = c(se.CAST, se.cases.CAST, se.pooled.CAST, se.WSS, se.cases.WSS, se.pooled.WSS),
-  			 #Nb replicates: NA si analyse non demandé, sinon nombre de simus ayant convergé
+  			 #Nb replicates: NA si analyse non demandee, sinon nombre de simus ayant converge
          nb.replicates = c(ifelse(CAST & non.pooled.analysis, nrow(CAST.pval[CAST.pval$is.err == 0,]), NA), 
                            if(CAST & analysis.by.group) unlist(lapply(cases.CAST.pval, function(z) nrow(z[z$is.err==0,]))) else power.cases.CAST,
                            ifelse(CAST & pooled.analysis, nrow(pooled.CAST.pval[pooled.CAST.pval$is.err == 0,]), NA),
@@ -127,6 +127,3 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
 }
 		
    
-colnames(Kryukov)[1] <- "gene"
-a <- matrix(c(exp(0.402*abs(log10(Kryukov$maf[Kryukov$gene == "R1"]))),exp(0.402*abs(log10(Kryukov$maf[Kryukov$gene == "R1"])))*2), nrow=2, byrow=TRUE)
-power.burden(analysis.by.group=TRUE,select.gene="R1",GRR.matrix=a)

@@ -30,7 +30,7 @@
   The GRR can be the same between the different groups of cases (\code{same.GRR}=TRUE) or different. In this situation, the user needs to define the multiplicative factor in each group of cases compared to the first group of cases: \code{n.case.groups}-1 values need to be specified.
   If the GRR depend on the MAF in the general population, a file need to be passed to the argument \code{file.pop.maf}. This file should contain at least a column "gene" and a column "maf". By default, the file Kryukov is used, but the file GnomADgenes which contains MAF in the NFE population can also be used.
 }
-\authors{
+\author{
   Ozvan Bocher and Herve Perdry
 }
 \examples{
