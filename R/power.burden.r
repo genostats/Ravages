@@ -1,8 +1,8 @@
 power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), maf.threshold = 0.01, 
               CAST = TRUE, WSS = TRUE, pooled.analysis=TRUE, non.pooled.analysis=TRUE, analysis.by.group=TRUE,
               file.pop.maf=Kryukov, size=c(1000, 500, 500), baseline=c(0.001, 0.001), replicates=1000, select.gene=NULL, 
-              same.variant=FALSE, genetic.model="additive",
-              GRR.matrix, prop.del=0.5, prop.pro=0,              
+              same.variant=FALSE, genetic.model=c("additive", "general", "recessive", "dominant"),
+              GRR.matrix, GRR.matrix.pro, prop.del=0.5, prop.pro=0,              
               covariates=NULL, OR.alpha=NULL, reflevel="0", get.OR.value=FALSE){
 
 ##Select MAF from the file given by the user  
@@ -41,11 +41,49 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
     }
   }
 
+#Same for protective GRR
+  if(!is.null(GRR.matrix.pro)){
+    if(!is.list(GRR.matrix.pro)){
+      if(is.matrix(GRR.matrix.pro)){
+        GRR.matrix.pro <- list(GRR.matrix.pro)
+      }else{
+        stop("GRR.matrix.pro should be a list or a matrix")
+      }
+    }
+    if(is.list(GRR.matrix.pro)){
+      if(length(GRR.matrix.pro)==1){
+        if(genetic.model=="general"){
+          stop("Needs two GRR matrices in the general model")
+        }else{
+          GRR.pro <- GRR.matrix.pro[[1]]
+          GRR.2.pro <- NULL
+        }
+      }else{
+        if(genetic.model=="general"){
+          GRR.pro <- GRR.matrix.pro[[1]]
+          GRR.2.pro <- GRR.matrix.pro[[2]]
+        }else{
+          warning("Only one GRR matrix needed for this model, only the first one is used")
+          GRR.pro <- GRR.matrix.pro[[1]]
+          GRR.2.pro <- NULL
+        }
+      }
+    }
+  }else{
+    GRR.pro <- 1/GRR
+    GRR.2.pro <- 1/GRR.2
+  }                       
+
+#Test if GRR values are coherent
+  if(any(GRR<1) | any(GRR.2<1)) stop("Matrix of deleterious GRR has GRR values lower than 1")
+  if(!is.null(GRR.matrix.pro)){
+    if(any(GRR.pro>1) | any(GRR.2.pro>1)) stop("Matrix of protective GRR has GRR values greater than 1")
+  }
   
 ##Order arguments
-  GRR.1.pars <- list(OR.del=GRR, OR.pro=1/GRR, prob.del=prop.del, prob.pro=prop.pro)
+  GRR.1.pars <- list(OR.del=GRR, OR.pro=GRR.pro, prob.del=prop.del, prob.pro=prop.pro)
   if(!is.null(GRR.2)){
-    GRR.2.pars <- list(OR.del=GRR.2, OR.pro=1/GRR.2, prob.del=prop.del, prob.pro=prop.pro)
+    GRR.2.pars <- list(OR.del=GRR.2, OR.pro=GRR.2.pro, prob.del=prop.del, prob.pro=prop.pro)
   }else{
     GRR.2.pars <- NULL
   }
