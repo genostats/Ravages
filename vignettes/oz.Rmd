@@ -11,7 +11,7 @@ vignette: >
 
 ```{r message=FALSE, warning=FALSE}
 library("knitr")
-library(oz)
+require(oz)
 ``` 
 ## Introduction
 

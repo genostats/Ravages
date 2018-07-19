@@ -1,12 +1,13 @@
 power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), maf.threshold = 0.01, 
               CAST = TRUE, WSS = TRUE, pooled.analysis=TRUE, non.pooled.analysis=TRUE, analysis.by.group=TRUE,
               file.pop.maf=Kryukov, size=c(1000, 500, 500), baseline=c(0.001, 0.001), replicates=1000, select.gene=NULL, 
-              same.variant=FALSE, genetic.model=c("additive", "general", "recessive", "dominant"),
+              same.variant=FALSE, genetic.model=c("multiplicative", "general", "recessive", "dominant"),
               GRR.matrix, GRR.matrix.pro, prop.del=0.5, prop.pro=0,              
               covariates=NULL, OR.alpha=NULL, reflevel="0", get.OR.value=FALSE){
 
 ##Select MAF from the file given by the user  
   if(nlevels(file.pop.maf$gene)>1){
+    if(is.null(select.gene)) warning("More than one gene in the file")
     pop.maf <- subset(file.pop.maf, file.pop.maf$gene %in% select.gene)$maf
   }else{
     pop.maf <- file.pop.maf$maf
@@ -20,24 +21,22 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
       stop("GRR.matrix should be a list or a matrix")
     }
   }
-  if(is.list(GRR.matrix)){
   #Error if general model but only one value for GRR
-    if(length(GRR.matrix)==1){
-      if(genetic.model=="general"){
-        stop("Needs two GRR matrices in the general model")
-      }else{
-        GRR <- GRR.matrix[[1]]
-        GRR.2 <- NULL
-      }
+  if(length(GRR.matrix)==1){
+    if(genetic.model=="general"){
+      stop("Needs two GRR matrices in the general model")
     }else{
-      if(genetic.model=="general"){
-        GRR <- GRR.matrix[[1]]
-        GRR.2 <- GRR.matrix[[2]]
-      }else{
-        warning("Only one GRR matrix needed for this model, only the first one is used")
-        GRR <- GRR.matrix[[1]]
-        GRR.2 <- NULL
-      }
+      GRR <- GRR.matrix[[1]]
+      GRR.2 <- NULL
+    }
+  }else{
+    if(genetic.model=="general"){
+      GRR <- GRR.matrix[[1]]
+      GRR.2 <- GRR.matrix[[2]]
+    }else{
+      warning("Only one GRR matrix needed for this model, only the first one is used")
+      GRR <- GRR.matrix[[1]]
+      GRR.2 <- NULL
     }
   }
 
@@ -50,23 +49,21 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
         stop("GRR.matrix.pro should be a list or a matrix")
       }
     }
-    if(is.list(GRR.matrix.pro)){
-      if(length(GRR.matrix.pro)==1){
-        if(genetic.model=="general"){
-          stop("Needs two GRR matrices in the general model")
-        }else{
-          GRR.pro <- GRR.matrix.pro[[1]]
-          GRR.2.pro <- NULL
-        }
+    if(length(GRR.matrix.pro)==1){
+      if(genetic.model=="general"){
+        stop("Needs two GRR matrices in the general model")
       }else{
-        if(genetic.model=="general"){
-          GRR.pro <- GRR.matrix.pro[[1]]
-          GRR.2.pro <- GRR.matrix.pro[[2]]
-        }else{
-          warning("Only one GRR matrix needed for this model, only the first one is used")
-          GRR.pro <- GRR.matrix.pro[[1]]
-          GRR.2.pro <- NULL
-        }
+        GRR.pro <- GRR.matrix.pro[[1]]
+        GRR.2.pro <- NULL
+      }
+    }else{
+      if(genetic.model=="general"){
+        GRR.pro <- GRR.matrix.pro[[1]]
+        GRR.2.pro <- GRR.matrix.pro[[2]]
+      }else{
+        warning("Only one GRR matrix needed for this model, only the first one is used")
+        GRR.pro <- GRR.matrix.pro[[1]]
+        GRR.2.pro <- NULL
       }
     }
   }else{
@@ -88,11 +85,7 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
     GRR.2.pars <- NULL
   }
 ##Si meme variants: prendre fonction correspondante
-  if(same.variant==FALSE){
-    variant.function <- oz:::OR.matrix.fix
-  }else{
-    variant.function <- oz:::OR.matrix.same.fix.variant
-  }
+  variant.function <- ifelse(same.variant==FALSE, OR.matrix.fix, OR.matrix.same.fix.variant)
   model.pars <- list(pop.maf=pop.maf, size=size, baseline=baseline, replicates=replicates, GRR.pars=GRR.1.pars, GRR.pars.2=GRR.2.pars, OR.function=variant.function, model=genetic.model)
   
 ##Simulations des donnees

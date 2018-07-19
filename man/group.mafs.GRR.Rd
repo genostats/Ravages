@@ -10,11 +10,12 @@
   group.mafs.GRR(pop.maf, GRR, GRR.2 = NULL, baseline, model = c("general", "additive", "dominant", "recessive"))
 }
 \arguments{
-  \item{pop.maf}{ A vector of MAF in the general population }
+  \item{file.pop.maf}{ A file containing the MAF in the general population (column maf) for variants within a gene (column gene), by default the file Kryukov from the package is used}
   \item{GRR}{ A matrix giving the GRR of the heterozygous compared to the homozygous for the reference allele with one row per cases group and one column per variant }
   \item{GRR.2}{ A matrix giving the GRR of the heterozygous compared to the homozygous for the reference allele with one row per cases group and one column per variant, only need if \code{model}="general"}
   \item{baseline}{ A vector containing the baseline values for each group of cases}
   \item{model}{ The genetic model of the disease }
+  \item{select.gene}{ Which gene to choose in the column "gene" from \code{file.pop.maf} if multiple genes are present}
 }
 \value{
   A matrix of MAF values with one column per variant and one row per group (the first one being the controls group)
