@@ -1,5 +1,5 @@
 #We only accept matrices of good dimensions
-group.mafs.GRR <- function(file.pop.maf, GRR, GRR.2=NULL, baseline, model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
+group.mafs.GRR <- function(file.pop.maf = Kryukov, GRR, GRR.2=NULL, baseline, model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
   #Selection of maf
   if (nlevels(file.pop.maf$gene) > 1) {
     if(is.null(select.gene)) warning("More than one gene in the file")
@@ -82,8 +82,8 @@ p.tem.GRR <- function(p, GRR, GRR.2, baseline){
 
 
 ##random.bed.matrix with GRR
-random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.matrix, GRR.matrix.pro=NULL, prop.del, prop.pro, same.variant=FALSE, 
-								  genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
+random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.matrix, GRR.matrix.pro=NULL, prop.del = 0.5, prop.pro = 0, same.variant=FALSE, 
+								  genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene="R1") {
   
   if (nlevels(file.pop.maf$gene) > 1){ 
     if(is.null(select.gene)) warning("More than one gene in the file")
@@ -150,6 +150,8 @@ random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.
   if (!is.null(GRR.matrix.pro)) {
     if (any(GRR.pro > 1) | any(GRR.2.pro > 1)) stop("Matrix of protective GRR has GRR values greater than 1")
   }
+
+  ##Order arguments
   GRR.pars <- list(OR.del = GRR, OR.pro = GRR.pro, prob.del = prop.del, prob.pro = prop.pro)
   if (!is.null(GRR.2)) {
     GRR.2.pars <- list(OR.del = GRR.2, OR.pro = GRR.2.pro)
@@ -162,7 +164,7 @@ random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.
     if(nrow(GRR) != nrow(GRR.2.pars$OR.del) |  ncol(GRR) != ncol(GRR.2.pars$OR.del)) stop("GRR and GRR.2 have different dimensions")
   }
   
-  ##Choose de OR function
+  ##Choose the OR function
   variant.function <- ifelse(same.variant == FALSE, OR.matrix.fix, OR.matrix.same.fix.variant)
   
   GRR.pars$n.variants <- length(pop.maf)

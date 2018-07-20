@@ -10,9 +10,13 @@ score.reg.mlogit <- function(x, group = x@ped$pheno, genomic.region = x@snps$gen
     if(is.null(other.score)){
       stop("ERROR, need to specify a score if the score is different from CAST or WSS")
       }
-    if(!is.matrix(other.score) | ncol(other.score) != nlevels(x@snps$genomic.region) | nrow(other.score) != nrow(x@ped) ){
-      stop("Score is not a matrix or has wrong dimensions")
+    if(!is.matrix(other.score)){
+      stop("Score is not a matrix")
+    }else{
+      if(ncol(other.score) != nlevels(x@snps$genomic.region) | nrow(other.score) != nrow(x@ped)){
+        stop("Score has wrong dimensions")
       }
+    }
     score <- other.score
   }
   

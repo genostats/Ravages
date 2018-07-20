@@ -1,4 +1,4 @@
-compute.GRR.matrix <- function(file.pop.maf=Kryukov, n.case.groups=2, GRR=c("constant", "SKAT", "variable"), GRR.value=NULL, GRR.formula=NULL, GRR.multiplicative.factor=NULL, select.gene=NULL){
+compute.GRR.matrix <- function(file.pop.maf=Kryukov, n.case.groups=2, GRR=c("constant", "SKAT", "variable"), GRR.value=NULL, GRR.formula=NULL, GRR.multiplicative.factor=2, select.gene="R1"){
   ##Select MAF from the file given by the user  
   if(nlevels(file.pop.maf$gene)>1){
     if(is.null(select.gene)) warning("More than one gene in the file")

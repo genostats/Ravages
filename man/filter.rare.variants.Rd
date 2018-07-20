@@ -4,7 +4,7 @@
   Filter rare variants
 }
 \description{
-  Filter rare variants based on a MAF threshold
+  Filter rare variants based on a MAF threshold and a given number of SNP per genomic region
 }
 \usage{
   filter.rare.variants(x, filter=c("whole", "controls", "any"), maf.threshold=0.01, min.nb.snps)
@@ -27,10 +27,12 @@
 Herve Perdry and Ozvan Bocher
 }
 \examples{
-#List of OR parameters
-my.pars <- list(OR.del=c(2, 4), prob.del=0.2, prob.pro=0.05)
-#Simulation of genotypes with 1000 replicates for 400 controls and two groups of case with the same variants being deleterious, neutral or protective in the two groups of cases but different OR values
-x <- random.bed.matrix.with.model(Kryukov$maf[Kryukov$unit=="R1"], c(400, 200, 200), c(0.001, 0.001), 1000, OR.pars=my.pars, OR.function = OR.matrix.same.variant)
-#Filter of rare variants based on the controls group, only the genomic regions with at least 5 variants are kept
-x.filter <- filter.rare.variants(x, filter="controls", maf.threshold=0.01, min.nb.snps=5)
+  #Simulation of one group of 1,000 controls and two groups of 500 cases, each one with a prevalence of 0.001.
+  #50% of deleterious variants having a GRR calculated with the SKAT formula based on MAF in the file Kryukov are present and they are different between the two groups of cases.
+  #5 genomic regions are simulated.
+  x <- random.bed.matrix.GRR(file.pop.maf = Kryukov, size = c(1000, 500, 500), baseline = c(0.001, 0.001), GRR.matrix = GRR.del, prop.del = 0.5, prop.pro = 0, same.variant = FALSE, genetic.model = "multiplicative", select.gene = "R1", replicates = 5)
+  x
+  #Filter of rare variants: only non-monomorphic variants with a MAF lower than 1% in any of the groups are kept. Only regions with at least 5 variants are kept.
+  x.filter <- filter.rare.variants(x, filter = "any", maf.threshold = 0.01, min.nb.snps = 5)
+  x.filter
 }
