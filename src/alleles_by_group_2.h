@@ -2,7 +2,6 @@
 #include <RcppParallel.h>
 #include <iostream>
 #include <ctime>
-#include "gaston.h"
 
 #ifndef plic
 #define plic

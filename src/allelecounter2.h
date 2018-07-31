@@ -2,7 +2,6 @@
 #include <RcppParallel.h>
 #include <iostream>
 #include <ctime>
-#include "gaston.h"
 
 #ifndef COUNTALLELES2
 #define COUNTALLELES2

@@ -2,7 +2,7 @@
 #include <RcppParallel.h>
 #include <iostream>
 #include <ctime>
-#include "gaston.h"
+#include "gaston/matrix4.h"
 #include "allelecounter2.h"
 
 using namespace Rcpp;
