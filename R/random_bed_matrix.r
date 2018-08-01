@@ -3,7 +3,7 @@
 # size = un vecteur donnant la taille de chaque groupe
 
 new.bed.matrix <- function(nb_inds, nb_snps) {
-  bed <- .Call('oz_new_bed_matrix', PACKAGE = "oz", nb_snps, nb_inds)
+  bed <- .Call('oz_new_bed_matrix', PACKAGE = "Ravages", nb_snps, nb_inds)
 
   ids <- sprintf("A%0*d", log10(nb_inds) + 1, 1:nb_inds)
   ped <- data.frame(famid = ids,  id = ids, father = 0, mother = 0, sex = 0,

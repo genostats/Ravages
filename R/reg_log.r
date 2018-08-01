@@ -1,10 +1,10 @@
 ######Utilisation de mlogit
 score.reg.mlogit <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, burden.score = c("CAST", "WSS", "Other"), other.score = NULL, maf.threshold = 0.01, reflevel, covariates=NULL, alpha=0.05, get.OR.value=FALSE){
   if(burden.score == "CAST"){
-    score <- oz:::CAST.0(x, genomic.region, maf.threshold)
+    score <- CAST.0(x, genomic.region, maf.threshold)
   }
   if(burden.score == "WSS"){
-    score <- oz:::WSS.0(x, genomic.region)
+    score <- WSS.0(x, genomic.region)
   }
   if(burden.score == "Other"){
     if(is.null(other.score)){

@@ -170,7 +170,7 @@ random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.
   GRR.pars$n.variants <- length(pop.maf)
   nb_snps <- GRR.pars$n.variants * replicates
   nb_inds <- sum(size)
-  x <- oz:::new.bed.matrix(nb_inds, nb_snps);
+  x <- new.bed.matrix(nb_inds, nb_snps);
   for(b in 1:replicates) {
     GRR <- do.call( variant.function, GRR.pars)
     if(!is.null(GRR.2.pars)){
@@ -182,8 +182,8 @@ random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.
     }else{
       GRR.2=NULL
     }    
-    MAFS <- Ravages:::group.mafs.GRR(file.pop.maf=file.pop.maf, GRR=GRR, GRR.2=GRR.2, baseline=baseline, select.gene=select.gene, model=genetic.model)
-    .Call("oz_random_filling_bed_matrix", PACKAGE = "oz", x@bed, MAFS, size, (b-1)*GRR.pars$n.variants)
+    MAFS <- group.mafs.GRR(file.pop.maf=file.pop.maf, GRR=GRR, GRR.2=GRR.2, baseline=baseline, select.gene=select.gene, model=genetic.model)
+    .Call("oz_random_filling_bed_matrix", PACKAGE = "Ravages", x@bed, MAFS, size, (b-1)*GRR.pars$n.variants)
   }
   x@ped$pheno <- rep.int( 1:length(size) - 1, size)
   x@snps$genomic.region <- factor( rep( sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = GRR.pars$n.variants) )

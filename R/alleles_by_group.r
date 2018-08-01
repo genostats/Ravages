@@ -8,7 +8,7 @@ minor.alleles.by.group <- function(x, group, which.snps = rep(TRUE, ncol(x))) {
 
   inverse <- (x@p > 0.5)
  
-  C <- .Call('oz_alt_alleles_by_factor', PACKAGE = 'oz', x@bed, which.snps, group, inverse)
+  C <- .Call('oz_alt_alleles_by_factor', PACKAGE = "Ravages", x@bed, which.snps, group, inverse)
   rownames(C) <- levels(group)
   id <- x@snps$id[which.snps]
   if(!anyDuplicated(id)) colnames(C) <- id
@@ -24,7 +24,7 @@ major.alleles.by.group <- function(x, group, which.snps = rep(TRUE, ncol(x))) {
 
   inverse <- (x@p <= 0.5)
  
-  C <- .Call('oz_alt_alleles_by_factor', PACKAGE = 'oz', x@bed, which.snps, group, inverse)
+  C <- .Call('oz_alt_alleles_by_factor', PACKAGE = "Ravages", x@bed, which.snps, group, inverse)
   rownames(C) <- levels(group)
   id <- x@snps$id[which.snps]
   if(!anyDuplicated(id)) colnames(C) <- id
@@ -41,7 +41,7 @@ alleles.by.group <- function(x, group, which.snps = rep(TRUE, ncol(x))) {
 
   inverse <- (x@p > 0.5)
 
-  C <- .Call('oz_alleles_by_factor', PACKAGE = 'oz', x@bed, which.snps, group, inverse)
+  C <- .Call('oz_alleles_by_factor', PACKAGE = "Ravages", x@bed, which.snps, group, inverse)
   rownames(C$minor) <- rownames(C$major) <- levels(group)
   id <- x@snps$id[which.snps]
   if(!anyDuplicated(id)) colnames(C$minor) <- colnames(C$major) <- id

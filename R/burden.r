@@ -9,7 +9,7 @@ CAST.0 <- function(x, genomic.region = x@snps$genomic.region, maf.threshold = 0.
   }
   genomic.region <- as.factor(genomic.region)
                 
-  B <- .Call('oz_burden2', PACKAGE = 'oz', x@bed, nlevels(genomic.region), genomic.region, weights.0, weights.1, weights.2)
+  B <- .Call('oz_burden2', PACKAGE = "Ravages", x@bed, nlevels(genomic.region), genomic.region, weights.0, weights.1, weights.2)
   colnames(B) <- levels(genomic.region)
   rownames(B) <- x@ped$id
   (B>0)+0
@@ -57,7 +57,7 @@ WSS.0 <- function(x, genomic.region = x@snps$genomic.region) {
   }
   genomic.region <- as.factor(genomic.region)
                             
-  B <- .Call('oz_burden2', PACKAGE = 'oz', x@bed, nlevels(genomic.region), genomic.region, weights.0, weights.1, weights.2)
+  B <- .Call('oz_burden2', PACKAGE = "Ravages", x@bed, nlevels(genomic.region), genomic.region, weights.0, weights.1, weights.2)
   colnames(B) <- levels(genomic.region)
   rownames(B) <- x@ped$id
   return(B)

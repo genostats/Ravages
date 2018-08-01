@@ -9,7 +9,7 @@ random.bed.matrix <- function(pop.maf, size, baseline, replicates, OR.pars, OR.f
   for(b in 1:replicates) {
     OR <- do.call( OR.function, OR.pars)
     MAFS <- group.mafs(pop.maf, OR, baseline)
-    .Call("oz_random_filling_bed_matrix", PACKAGE = "oz", x@bed, MAFS, size, (b-1)*OR.pars$n.variants)
+    .Call("oz_random_filling_bed_matrix", PACKAGE = "Ravages", x@bed, MAFS, size, (b-1)*OR.pars$n.variants)
   }
   x@ped$pheno <- rep.int( 1:length(size) - 1, size)
   x@snps$genomic.region <- factor( rep( sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = OR.pars$n.variants) )
