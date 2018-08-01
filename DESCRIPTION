@@ -6,10 +6,10 @@ Date: 2017-02-22
 Encoding: UTF-8
 Author: Hervé Perdry and Ozvan Bocher
 Maintainer: Hervé Perdry <herve.perdry@u-psud.fr>
-Description: essai
+Description: Rare variant analysis: burden tests, etc.
 License: GPL-3
 LinkingTo: Rcpp, RcppParallel, RcppEigen, gaston
-Depends: Rcpp, RcppParallel, methods, gaston
+Depends: Rcpp, RcppParallel, methods, gaston, mlogit, SKAT
 NeedsCompilation: yes
 LazyLoad: yes
 LazyData: yes

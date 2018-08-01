@@ -2,12 +2,14 @@ import(methods)
 
 importFrom("grDevices", "heat.colors", "dev.off", "pdf", "rgb")
 importFrom("graphics", "contour", "image", "legend", "par", "plot", "polygon", "rect", "segments", "strheight", "strwidth", "text")
-importFrom("stats", "pchisq", "quantile", "rnorm", "kmeans", "glm", "binomial", "pt")
-importFrom("utils", "read.table", "write.table")
+importFrom("stats", "pchisq", "quantile", "rnorm", "kmeans", "glm", "binomial", "pt", "chisq.test", "kruskal.test", "qnorm", "uniroot")
+importFrom("utils", "read.table", "write.table", "head", "tail")
 importFrom("Rcpp", "evalCpp") # just to avoid << function 'enterRNGScope' not provided by package 'Rcpp' >> error
 importFrom("RcppParallel", "setThreadOptions", "defaultNumThreads")
-importFrom("gaston", "rbind", "cbind")
+importFrom("gaston", "rbind", "cbind", "select.snps", "select.inds", "set.stats", "is.autosome")
 
+importFrom("SKAT", "SKAT_Null_Model")
+importFrom("mlogit", "mFormula", "mlogit", "mlogit.data")
 useDynLib(Ravages)
 
 export(CAST, Chi2, WSS)
@@ -24,3 +26,4 @@ export(OR.matrix, OR.matrix.same.variant)
 export(score.reg.mlogit, get.model.parameters.mlogit)
 export(group.mafs.GRR, random.bed.matrix.GRR, compute.GRR.matrix)
 export(power.burden)
+
