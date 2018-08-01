@@ -142,8 +142,8 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"),
   
   if (SKAT){
     obj.null <- SKAT_Null_Model(pheno.pooled ~ 1, out_type="D")
-    SKAT.p <- sapply(levels(x@snps$genomic.region), function(y) SKAT(gaston:::as.matrix(select.snps(x, x@snps$genomic.region==y)), obj.null , r.corr=0)$p.value)
-    SKATO.p <- sapply(levels(x@snps$genomic.region), function(y) SKAT(gaston:::as.matrix(select.snps(x, x@snps$genomic.region==y)), obj.null , method="SKATO")$p.value)
+    SKAT.p <- sapply(levels(x@snps$genomic.region), function(y) SKAT(gaston::as.matrix(select.snps(x, x@snps$genomic.region==y)), obj.null , r.corr=0)$p.value)
+    SKATO.p <- sapply(levels(x@snps$genomic.region), function(y) SKAT(gaston::as.matrix(select.snps(x, x@snps$genomic.region==y)), obj.null , method="SKATO")$p.value)
     power.skat <- mean(SKAT.p<alpha)
     power.skato <- mean(SKATO.p<alpha)
     se.skat <- sqrt((power.skat * (1-power.skat))/nlevels(x@snps$genomic.region))

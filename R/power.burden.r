@@ -1,6 +1,6 @@
 power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), min.nb.snps = NULL, maf.threshold = 0.01, 
               CAST = TRUE, WSS = TRUE, other.score=NULL, pooled.analysis=TRUE, non.pooled.analysis=TRUE, analysis.by.group=TRUE,
-              file.pop.maf=Kryukov, size=c(1000, 500, 500), baseline=c(0.001, 0.001), replicates=1000, select.gene=NULL, 
+              file.pop.maf=Ravages::Kryukov, size=c(1000, 500, 500), baseline=c(0.001, 0.001), replicates=1000, select.gene=NULL, 
               same.variant=FALSE, genetic.model=c("multiplicative", "general", "recessive", "dominant"),
               GRR.matrix, GRR.matrix.pro=NULL, prop.del=0.5, prop.pro=0,              
               covariates=NULL, reflevel="0"){
