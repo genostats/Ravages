@@ -11,5 +11,7 @@ License: GPL-3
 LinkingTo: Rcpp, RcppParallel, RcppEigen, gaston
 Depends: Rcpp, RcppParallel, methods, gaston, mlogit, SKAT
 NeedsCompilation: yes
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
 LazyLoad: yes
 LazyData: yes
