@@ -1,61 +1,4 @@
 
-# il faut ajouter un argument pour la fonction à appeler pour générer les OR
-# (ici OR.matrix...)
-random.bed.matrix <- function(pop.maf, size, baseline, replicates, OR.pars, OR.function) {
-  OR.pars$n.variants <- length(pop.maf)
-  nb_snps <- OR.pars$n.variants * replicates
-  nb_inds <- sum(size)
-  x <- new.bed.matrix(nb_inds, nb_snps);
-  for(b in 1:replicates) {
-    OR <- do.call( OR.function, OR.pars)
-    MAFS <- group.mafs(pop.maf, OR, baseline)
-    .Call("oz_random_filling_bed_matrix", PACKAGE = "Ravages", x@bed, MAFS, size, (b-1)*OR.pars$n.variants)
-  }
-  x@ped$pheno <- rep.int( 1:length(size) - 1, size)
-  x@snps$genomic.region <- factor( rep( sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = OR.pars$n.variants) )
-  x@snps$id <- paste( x@snps$genomic.region, x@snps$id, sep="_")
-  x <- set.stats(x, verbose = FALSE)
-  x
-}
-
-
-filter.rare.variants <- function(x, filter = c("whole", "controls", "any"), maf.threshold = 0.01, min.nb.snps) {
-  filter <- match.arg(filter)
-  if(filter == "controls") {
-    which.controls <- if(is.factor(x@ped$pheno)) x@ped$pheno == 1 else x@ped$pheno == 0
-    st <- .Call('gg_geno_stats_snps', PACKAGE = "gaston", x@bed, rep(TRUE, ncol(x)), which.controls)$snps
-    p <- (st$N0.f + 0.5*st$N1.f)/(st$N0.f + st$N1.f + st$N2.f)
-    maf <- pmin(p, 1-p)
-    w <- (maf < maf.threshold)
-  }
-  if(filter == "any"){
-    # filter = any
-    w <- rep(FALSE, ncol(x))
-    for(i in unique(x@ped$pheno)) {
-      which.c <- (x@ped$pheno == i)
-      st <- .Call('gg_geno_stats_snps', PACKAGE = "gaston", x@bed, rep(TRUE, ncol(x)), which.c)$snps
-      p <- (st$N0.f + 0.5*st$N1.f)/(st$N0.f + st$N1.f + st$N2.f)
-      maf <- pmin(p, 1-p)
-      w <- w | (maf < maf.threshold)
-    }
-  }
-  if(filter == "whole"){
-      ##Filter = whole
-      w <- (x@snps$maf < maf.threshold)
-  }
-
-  x <- select.snps(x, w & x@snps$maf > 0)
-  if(is.factor(x@snps$genomic.region)) {
-    if(!missing(min.nb.snps)) {
-      nb.snps <- table(x@snps$genomic.region)
-      keep <- names(nb.snps)[nb.snps >= min.nb.snps]
-      x <- select.snps(x, x@snps$genomic.region %in% keep)
-    }
-    x@snps$genomic.region <- droplevels(x@snps$genomic.region)
-  }
-  x
-}
-
 # model.pars doit contenir les arguments de random.bed.matrix.with.model
 Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"), 
                   maf.threshold = 0.01, CAST=TRUE, WSS = TRUE, C.ALPHA = TRUE, Beta.M = TRUE, 
@@ -168,5 +111,3 @@ Power <- function(alpha = 0.05, filter = c("whole", "controls", "any"),
 
 }
 
-
-		
