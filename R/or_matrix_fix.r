@@ -1,4 +1,4 @@
-OR.matrix.fix <- function (n.variants, n.groups, OR.del, OR.pro = 1/OR.del, prob.del, prob.pro){
+OR.matrix.fix <- function (n.variants, n.groups, OR.del, OR.pro = 1/OR.del, prob.del, prob.pro) {
     if (length(OR.del) != length(OR.pro))
         stop("Dimensions mismatch")
     
@@ -22,7 +22,7 @@ OR.matrix.fix <- function (n.variants, n.groups, OR.del, OR.pro = 1/OR.del, prob
     v.pro <- list()
     v.neutres <- list()
     OR.tot <- matrix(rep(NA, n.variants*nrow(OR.del)), nrow=nrow(OR.del))
-    for (i in 1:nrow(OR.del)){
+    for (i in 1:nrow(OR.del)) {
       v.del[[i]] <- sample(v, prob.del*n.variants)
       ifelse(length(v.del[[i]])==0, v.pro[[i]] <- sample(v, prob.pro*n.variants), v.pro[[i]] <- sample(v[-v.del[[i]]], prob.pro*n.variants))
       #On estime qu'on a toujours plus qu'un variant protecteur
@@ -32,5 +32,5 @@ OR.matrix.fix <- function (n.variants, n.groups, OR.del, OR.pro = 1/OR.del, prob
       if(prob.pro>0){OR.tot[i,v.pro[[i]]] <- OR[i,v.pro[[i]]+1+n.variants]}
     }
     return(OR.tot)
-    }
+}
 

@@ -1,17 +1,25 @@
 
--- est-ce que partout on pourrait ajouter dans les fonctions une ligne
-   pour que which.snps vire les variants monomorphes ?
+Notes après réunion du 12 sept:
 
--- refaire en C++ les fonctions d'annotation, avec une table de hashage ?
+* WSS.0 et CAST.0 (calcul des stats uniquement) ont remplacé
+  WSS et CAST : corriger la documentation 
 
--- attention aux NA dans les facteurs !! (fctions C++)
+* il faudra revoir ensemble la paramétrisation de 
+  compute.GRR.matrix et de group.mafs.GRR
 
--- Il serait bon que dans les jeux de données les niveaux des facteurs 
-   soient dans l'ordre du génome
+* on garde les 4 fichiers or_matrix*
+  Du coup il faudrait ajouter un paramètre, par exemple
+  fixed.variants.prop dans random.bed.matrix.GRR et power.burden
 
--- Statistic class devrait être améliorée de façon à permettre d'avoir
-   des données additionnelles sans avoir à redéfinir totalement update_snps()
-   Il suffirait d'avoir une fonction virtuelle update_snps_extra() qui
-   serait appelée par update_snps() pour compléter l'update.
-   cf dans Sum_fst j'ai trop eu la flemme de redéfinir update_snps() 
+* les deux fichiers random_bed_matrix sont "à fusionner"
 
+* examiner en détail region.by.gen region.by.pos (peut-être ne 
+  conserver que le premier)
+
+* score.reg.mlogit et get.model.etc : à revoir ensemble
+  Note : le pb de get.model.parameters.mlogit c'est la construction
+  d'une formule avec les nomes des colonnes de 'covariates'
+
+* on a garder sum_fst mais on ne va rien exporter
+
+* Dans data/ il faut faire du ménage dans les hg** ...

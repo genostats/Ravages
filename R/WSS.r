@@ -1,4 +1,4 @@
-WSS.0 <- function(x, genomic.region = x@snps$genomic.region) {
+WSS <- function(x, genomic.region = x@snps$genomic.region) {
   # MAF calculée comme dans le papier princeps
   Q <- (2*x@snps$N2+x@snps$N1 + 1) / ( 2*(x@snps$N0+x@snps$N1+x@snps$N2) +2 )
   W <- sqrt((nrow(x)-x@snps$NAs) * Q * (1-Q))
@@ -18,10 +18,3 @@ WSS.0 <- function(x, genomic.region = x@snps$genomic.region) {
 }
 
 
-WSS <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region) {
-  B <- WSS.0(x, genomic.region)
-  R <- apply(B, 2, function(b) {k <- kruskal.test(b, g = group); c(k$statistic, k$p.value) })
-  R <- data.frame(levels(genomic.region), t(R))
-  colnames(R) <- c("genomic.region", "stat", "p.value")
-  R
-}
