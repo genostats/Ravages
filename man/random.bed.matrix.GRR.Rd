@@ -7,7 +7,7 @@
   Generates a bed.matrix with genotypes for cases and controls based on simulation parameters
 }
 \usage{
-  random.bed.matrix.(file.pop.maf, size, baseline, replicates, GRR.matrix, GRR.matrix.pro=NULL, prop.del = 0.5, prop.pro = 0, same.variant = FALSE, genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene = "R1")
+  random.bed.matrix.(file.pop.maf, size, baseline, replicates, GRR.matrix, GRR.matrix.pro=NULL, prop.del = 0.5, prop.pro = 0, same.variant = FALSE, genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene = levels(file.pop.maf$gene)[[1]])
 }
 \arguments{
   \item{file.pop.maf}{ A file containing the MAF in the general population (column maf) for variants within a gene (column gene), by default the file Kryukov from the package is used}
@@ -41,5 +41,5 @@
   #Simulation of one group of 1,000 controls and two groups of 500 cases, each one with a prevalence of 0.001.
   #50% of deleterious variants having a GRR calculated with the SKAT formula based on MAF in the file Kryukov are present and they are different between the two groups of cases. 
   #5 genomic regions are simulated.
-  x <- random.bed.matrix.GRR(file.pop.maf = Kryukov, size = c(1000, 500, 500), baseline = c(0.001, 0.001), GRR.matrix = GRR.del, prop.del = 0.5, prop.pro = 0, same.variant = FALSE, genetic.model = "multiplicative", select.gene = "R1", replicates = 5)
+  x <- random.bed.matrix.GRR(file.pop.maf = Kryukov, size = c(1000, 500, 500), baseline = c(0.001, 0.001), GRR.matrix = GRR.del, prop.del = 0.5, prop.pro = 0, same.variant = FALSE, genetic.model = "multiplicative", select.gene = levels(file.pop.maf$gene)[[1]], replicates = 5)
 }

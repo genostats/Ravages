@@ -1,5 +1,5 @@
 #We only accept matrices of good dimensions
-group.mafs.GRR <- function(file.pop.maf = Ravages::Kryukov, GRR, GRR.2=NULL, baseline, model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
+group.mafs.GRR <- function(file.pop.maf = Ravages::Kryukov, GRR, GRR.2=NULL, baseline, model=c("general", "multiplicative", "dominant", "recessive"), select.gene=levels(file.pop.maf$gene)[[1]]) {
   #Selection of maf
   if (nlevels(file.pop.maf$gene) > 1) {
     if(is.null(select.gene)) warning("More than one gene in the file")

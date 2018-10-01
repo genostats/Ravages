@@ -1,6 +1,6 @@
 ##random.bed.matrix with GRR
 random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.matrix, GRR.matrix.pro=NULL, prop.del = 0.5, prop.pro = 0, same.variant=FALSE, 
-								  genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene="R1") {
+								  genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene=levels(file.pop.maf$gene)[[1]]) {
   
   if (nlevels(file.pop.maf$gene) > 1){ 
     if(is.null(select.gene)) warning("More than one gene in the file")

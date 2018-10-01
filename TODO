@@ -6,6 +6,8 @@ Notes après réunion du 12 sept:
 
 * il faudra revoir ensemble la paramétrisation de 
   compute.GRR.matrix et de group.mafs.GRR
+  01/10: GRR.function remplace GRR.formula
+  + argument par defaut de select.gene: 1er niveau du fichier de maf
 
 * on garde les 4 fichiers or_matrix*
   Du coup il faudrait ajouter un paramètre, par exemple
@@ -23,3 +25,7 @@ Notes après réunion du 12 sept:
 * on a garder sum_fst mais on ne va rien exporter
 
 * Dans data/ il faut faire du ménage dans les hg** ...
+  hg37 et hg38 correspondent maintenant aux fichiers avec les gènes
+  de GnomAD dans l'ordre des chromosomes;
+  Seul pb: certains gène en double avec positions différentes
+  hg37.sorted et hg38.sorted devront être supprimés..
