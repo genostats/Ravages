@@ -1,4 +1,4 @@
-compute.GRR.matrix <- function(file.pop.maf=Ravages::Kryukov, n.case.groups=2, GRR=c("constant", "SKAT", "variable"), GRR.value=NULL, GRR.formula=NULL, GRR.multiplicative.factor=2, select.gene="R1"){
+compute.GRR.matrix <- function(file.pop.maf=Ravages::Kryukov, n.case.groups=2, GRR=c("constant", "SKAT", "variable"), GRR.value=NULL, GRR.function=NULL, GRR.multiplicative.factor=2, select.gene=levels(file.pop.maf$gene)[[1]]){
   ##Select MAF from the file given by the user  
   if(nlevels(file.pop.maf$gene)>1){
     if(is.null(select.gene)) warning("More than one gene in the file")
@@ -31,10 +31,10 @@ compute.GRR.matrix <- function(file.pop.maf=Ravages::Kryukov, n.case.groups=2, G
                                                                               
   if(GRR=="variable"){
     if(is.null(pop.maf)) stop("Needs MAF in the population to compute GRR")
-    if(is.null(GRR.formula)) stop("Needs a formula to compute GRR")
+    if(is.null(GRR.function)) stop("Needs a function to compute GRR")
     if(is.null(GRR.multiplicative.factor)) stop("Needs multiplicative factors")
     if(length(GRR.multiplicative.factor)!=(n.case.groups-1)) stop("Wrong number of multiplicative factors")
-    GRR.matrix <- matrix(rbind(do.call(GRR.formula, list(pop.maf)), t(sapply(GRR.multiplicative.factor, function(z) z*do.call(GRR.formula, list(pop.maf))))), nrow=n.case.groups, byrow=TRUE)
+    GRR.matrix <- matrix(rbind(do.call(GRR.function, list(pop.maf)), t(sapply(GRR.multiplicative.factor, function(z) z*do.call(GRR.function, list(pop.maf))))), nrow=n.case.groups, byrow=TRUE)
   }
   return(GRR.matrix)
 }
