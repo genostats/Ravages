@@ -23,3 +23,5 @@ Notes après réunion du 12 sept:
 * on a garder sum_fst mais on ne va rien exporter
 
 * Dans data/ il faut faire du ménage dans les hg** ...
+
+* Il faut faire un tour dans src/ pour voir s'il y a du ménage à faire
