@@ -8,10 +8,11 @@
 }
 \usage{
   power.burden(alpha = 2.5e-06, filter = c("whole", "controls", "any"), min.nb.snps = NULL,
-  			   maf.threshold = 0.01, CAST = TRUE, WSS = TRUE, other.score=NULL,
-  			   pooled.analysis = TRUE, non.pooled.analysis = TRUE, analysis.by.group = TRUE, file.pop.maf = Kryukov,
+  			   maf.threshold = 0.01, CAST = c(TRUE, FALSE), WSS = c(TRUE, FALSE), other.score=NULL,
+  			   pooled.analysis = c(TRUE, FALSE), non.pooled.analysis = c(TRUE, FALSE), analysis.by.group = c(TRUE, FALSE), file.pop.maf = Kryukov,
   			   size = c(1000, 500, 500), baseline = c(0.001, 0.001), replicates = 1000, select.gene = NULL, 
-  			   same.variant = FALSE, genetic.model = c("multiplicative", "general", "recessive", "dominant"),
+  			   same.variant = c(FALSE, TRUE), fixed.variant.prop = c(TRUE, FALSE),
+  			   genetic.model = c("multiplicative", "general", "recessive", "dominant"),
   			   GRR.matrix, GRR.matrix.pro = NULL, prop.del = 0.5, prop.pro = 0, reflevel = "0")
 }
 \arguments{
@@ -31,6 +32,7 @@
   \item{replicates}{ The number of simulations to perform for power calculation, 1,000 by default}
   \item{select.gene}{ Which gene to choose in the column "gene" from \code{file.pop.maf} if multiple genes are present}
   \item{same.variant}{ TRUE/FALSE: whether the causal variants are the same in the different groups of cases}
+  \item{fixed.variant.prop}{ TRUE/FALSE: whether the arguments \code{prop.del} and \code{prop.pro} correspond to the final proportion of deleterious and protective variants (TRUE) or to the probability for each variant of being deleterious or protective (FALSE)}
   \item{genetic.model}{ The genetic model of the disease}
   \item{GRR.matrix}{ A list containing the GRR matrix associated to the heterozygous compared to the homozygous for the reference allele for deleterious variants. An additional GRR matrix associated to the homozygous for the alternate allele is needed if \code{genetic.model}="general"}
   \item{GRR.matrix.pro}{ The same argument as \code{GRR.matrix} but for protective variants}
@@ -68,6 +70,6 @@
   #100 genomic regions are simulated to calculate the power of CAST and WSS at a significance threshold of 2.5e-6.
   #Only non-monomorphic variants with a MAF lower than 1% in any of the groups are kept. Only regions with at least 5 variants are kept.
   power.burden(alpha = 0.001, WSS = TRUE, CAST = TRUE, maf.threshold = 0.01, filter = "any", min.nb.snps = 5, pooled.analysis = TRUE, non.pooled.analysis = TRUE, analysis.by.group = TRUE,
-               file.pop.maf = Kryukov, select.gene = "R1", size = c(1000,500,500), baseline = c(0.001,0.001), same.variant = FALSE, GRR.matrix = GRR.del,
+               file.pop.maf = Kryukov, select.gene = "R1", size = c(1000,500,500), baseline = c(0.001,0.001), same.variant = FALSE, fixed.variant.prop = TRUE, GRR.matrix = GRR.del,
                genetic.model = "multiplicative", prop.del = 0.5, prop.pro = 0, reflevel = "0", replicates = 100)  
   }

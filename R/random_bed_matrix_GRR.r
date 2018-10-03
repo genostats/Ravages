@@ -1,9 +1,13 @@
 ##random.bed.matrix with GRR
-random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.matrix, GRR.matrix.pro=NULL, prop.del = 0.5, prop.pro = 0, same.variant=FALSE, 
-								  genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene=levels(file.pop.maf$gene)[[1]]) {
+random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.matrix, GRR.matrix.pro=NULL, prop.del = 0.5, prop.pro = 0, 
+								  same.variant=FALSE, fixed.variant.prop = TRUE, 
+								  genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene) {
   
   if (nlevels(file.pop.maf$gene) > 1){ 
-    if(is.null(select.gene)) warning("More than one gene in the file")
+    if(missing(select.gene)){
+      warning("More than one gene in the file, only the first one is used")
+      select.gene <- levels(file.pop.maf$gene)[[1]]
+    }
     pop.maf <- subset(file.pop.maf, file.pop.maf$gene %in% select.gene)$maf
   }else{
     pop.maf <- file.pop.maf$maf
@@ -82,7 +86,11 @@ random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.
   }
   
   ##Choose the OR function
-  variant.function <- ifelse(same.variant == FALSE, OR.matrix.fix, OR.matrix.fix.same.variant)
+  if(fixed.variant.prop){
+    variant.function <- ifelse(same.variant == FALSE, OR.matrix.fix, OR.matrix.fix.same.variant)
+  }else{
+    variant.function <- ifelse(same.variant == FALSE, OR.matrix, OR.matrix.same.variant)
+  }
   
   GRR.pars$n.variants <- length(pop.maf)
   nb_snps <- GRR.pars$n.variants * replicates
@@ -100,7 +108,7 @@ random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.
       GRR.2=NULL
     }    
     MAFS <- group.mafs.GRR(file.pop.maf=file.pop.maf, GRR=GRR, GRR.2=GRR.2, baseline=baseline, select.gene=select.gene, model=genetic.model)
-    .Call("oz_random_filling_bed_matrix", PACKAGE = "Ravages", x@bed, MAFS, size, (b-1)*GRR.pars$n.variants)
+    .Call("oz_random_filling_bed_matrix_noHW", PACKAGE = "Ravages", x@bed, MAFS$freq.homo.ref, MAFS$freq.het, size, (b-1)*GRR.pars$n.variants)
   }
   x@ped$pheno <- rep.int( 1:length(size) - 1, size)
   x@snps$genomic.region <- factor( rep( sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = GRR.pars$n.variants) )
