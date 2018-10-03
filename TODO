@@ -9,12 +9,6 @@ Notes après réunion du 12 sept:
   01/10: GRR.function remplace GRR.formula
   + argument par defaut de select.gene: 1er niveau du fichier de maf
 
-* on garde les 4 fichiers or_matrix*
-  Du coup il faudrait ajouter un paramètre, par exemple
-  fixed.variants.prop dans random.bed.matrix.GRR et power.burden
-
-* les deux fichiers random_bed_matrix sont "à fusionner"
-
 * examiner en détail region.by.gen region.by.pos (peut-être ne 
   conserver que le premier)
 

@@ -7,7 +7,7 @@
   Generates MAF values for the controls group and each group of cases based on MAF in the general population and GRR values
 }
 \usage{
-  group.mafs.GRR(file.pop.maf = Kryukov, GRR, GRR.2 = NULL, baseline, genetic.model = c("general", "multiplicative", "dominant", "recessive"), select.gene=levels(file.pop.maf)[[1]])
+  group.mafs.GRR(file.pop.maf = Kryukov, GRR, GRR.2 = NULL, baseline, genetic.model = c("general", "multiplicative", "dominant", "recessive"), select.gene)
 }
 \arguments{
   \item{file.pop.maf}{ A file containing the MAF in the general population (column maf) for variants within a gene (column gene), by default the file Kryukov from the package is used}
@@ -15,7 +15,7 @@
   \item{GRR.2}{ A matrix giving the GRR of the heterozygous compared to the homozygous for the reference allele with one row per cases group and one column per variant, only need if \code{model}="general"}
   \item{baseline}{ A vector containing the baseline values for each group of cases}
   \item{genetic.model}{ The genetic model of the disease }
-  \item{select.gene}{ Which gene to choose in the column "gene" from \code{file.pop.maf} if multiple genes are present}
+  \item{select.gene}{ Which gene to choose in the column "gene" from \code{file.pop.maf} if multiple genes are present. If missing, the first level of \code{file.pop.maf$gene} is kept.}
 }
 \value{
   A matrix of MAF values with one column per variant and one row per group (the first one being the controls group)
@@ -35,10 +35,10 @@
 \examples{
   #Construction of the GRR matrix using the formula from SKAT and Kryukov data
   #2 groups of cases with GRR in the second group twice as high as in the first group
-  GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, n.case.groups = 2, GRR.multiplicative.factor=2, select.gene = levels(file.pop.maf$gene)[[1]])
+  GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, n.case.groups = 2, GRR.multiplicative.factor=2, select.gene = "R1")
 
   #Calculation of frequency in the two groups of cases and the controls group under a multilpicative model of the disease
   #All the variants are considered as deletrious
-  MAF.groups <- group.mafs.GRR(file.pop.maf = Kryukov, GRR = GRR.del, baseline = c(0.001, 0.001), genetic.model = "multiplicative", select.gene=levels(file.pop.maf$gene)[[1]]) 
+  MAF.groups <- group.mafs.GRR(file.pop.maf = Kryukov, GRR = GRR.del, baseline = c(0.001, 0.001), genetic.model = "multiplicative", select.gene = "R1") 
   MAF.groups[,1:5]
 }

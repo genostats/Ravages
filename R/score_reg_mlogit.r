@@ -41,7 +41,7 @@ score.reg.mlogit <- function(x, group = x@ped$pheno, genomic.region = x@snps$gen
 }
 
 
-get.model.parameters.mlogit <- function(pheno = group, score = score, region, reflevel, alt.levels, covariates, alpha, get.OR.value){
+get.model.parameters.mlogit <- function(pheno, score, region, reflevel, alt.levels, covariates, alpha, get.OR.value){
   assign("last.warning", NULL, envir = baseenv())
   
   #Model
