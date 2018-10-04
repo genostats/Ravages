@@ -1,5 +1,5 @@
-\name{group.mafs.GRR}
-\alias{group.mafs.GRR}
+\name{genotypic.freq}
+\alias{genotypic.freq}
 \title{
   Calculates the MAF in the controls group and in each group of cases
 }
@@ -7,7 +7,7 @@
   Generates MAF values for the controls group and each group of cases based on MAF in the general population and GRR values
 }
 \usage{
-  group.mafs.GRR(file.pop.maf = Kryukov, GRR, GRR.2 = NULL, baseline, genetic.model = c("general", "multiplicative", "dominant", "recessive"), select.gene)
+  genotypic.freq(file.pop.maf = Kryukov, GRR, GRR.2 = NULL, baseline, genetic.model = c("general", "multiplicative", "dominant", "recessive"), select.gene)
 }
 \arguments{
   \item{file.pop.maf}{ A file containing the MAF in the general population (column maf) for variants within a gene (column gene), by default the file Kryukov from the package is used}
@@ -39,6 +39,6 @@
 
   #Calculation of frequency in the two groups of cases and the controls group under a multilpicative model of the disease
   #All the variants are considered as deletrious
-  MAF.groups <- group.mafs.GRR(file.pop.maf = Kryukov, GRR = GRR.del, baseline = c(0.001, 0.001), genetic.model = "multiplicative", select.gene = "R1") 
+  MAF.groups <- genotypic.freq(file.pop.maf = Kryukov, GRR = GRR.del, baseline = c(0.001, 0.001), genetic.model = "multiplicative", select.gene = "R1") 
   MAF.groups[,1:5]
 }

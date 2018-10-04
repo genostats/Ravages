@@ -21,6 +21,6 @@ export(OR.matrix)
 export(filter.rare.variants)
 export(OR.matrix, OR.matrix.same.variant)
 export(score.reg.mlogit, get.model.parameters.mlogit)
-export(group.mafs.GRR, random.bed.matrix.GRR, compute.GRR.matrix)
+export(genotypic.freq, random.bed.matrix.GRR, compute.GRR.matrix)
 export(power.burden)
 

@@ -31,10 +31,10 @@ A data frame containing:
 Herve Perdry and Ozvan Bocher
 }
 %\data
-%The files hg37.RData and hg38.RData can be used as \code{genes} argument
+%The files genes.b37.RData and genes.b38.RData can be used as \code{genes} argument
 \examples{
-data(hg37)
-gpe_genes <- region.by.gene(x, genes = hg37, include.all = TRUE) #Attribution of all the SNP in the genes from the list hg37
+data(genes.b37)
+gpe_genes <- region.by.gene(x, genes = genes.b37, include.all = TRUE) #Attribution of all the SNP in the genes from the list genes.b37
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

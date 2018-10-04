@@ -1,14 +1,14 @@
-\name{hg38}
+\name{genes.b38}
 \docType{data}
 
-\title{hg38 gene positions}
+\title{genes.b38 gene positions}
 
 \description{
-  These data have been downloaded from Biomart on the Ensembl website with the hg38 version.
+  These data have been downloaded from Biomart on the Ensembl website with the genes.b38 version.
   The data contain the \code{Start} position, the \code{End} position, the \code{Gene_Name} and the \code{Chr} of all the genes in chromosomes 1 to 22 representing 55322 genes.
 }
 
-\usage{ data(hg38) }
+\usage{ data(genes.b38) }
 
 \format{
 The data contain one dataframe with four columns:

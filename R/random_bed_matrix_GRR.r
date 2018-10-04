@@ -107,7 +107,7 @@ random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.
     }else{
       GRR.2=NULL
     }    
-    MAFS <- group.mafs.GRR(file.pop.maf=file.pop.maf, GRR=GRR, GRR.2=GRR.2, baseline=baseline, select.gene=select.gene, model=genetic.model)
+    MAFS <- genotypic.freq(file.pop.maf=file.pop.maf, GRR=GRR, GRR.2=GRR.2, baseline=baseline, select.gene=select.gene, model=genetic.model)
     .Call("oz_random_filling_bed_matrix_noHW", PACKAGE = "Ravages", x@bed, MAFS$freq.homo.ref, MAFS$freq.het, size, (b-1)*GRR.pars$n.variants)
   }
   x@ped$pheno <- rep.int( 1:length(size) - 1, size)

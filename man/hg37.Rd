@@ -1,16 +1,16 @@
-\name{hg37}
+\name{genes.b37}
 \docType{data}
-\alias{hg37}
+\alias{genes.b37}
 
-\title{hg37 gene positions}
+\title{genes.b37 gene positions}
 
 \description{
-  These data have been downloaded from Biomart on the Ensembl website with the hg37 version.
+  These data have been downloaded from Biomart on the Ensembl website with the genes.b37 version.
   The data contain the \code{Start} position, the \code{End} position, the \code{Gene_Name} 
   and the \code{Chr} of all the genes in chromosomes 1 to 22 representing 19463 genes.
 }
   
-\usage{ data(hg37) }
+\usage{ data(genes.b37) }
 
 \format{
   The data contain one dataframe with four columns:
