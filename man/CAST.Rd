@@ -1,7 +1,7 @@
 \name{CAST}
 \alias{CAST}
 \title{ Cohort Allelic Sum Test statistic }
-\description{ Calculates the CAST statistic and its p-value using a bed.matrix }
+\description{ Calculates the CAST genetic score }
 \usage{
 CAST(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, maf.threshold = 0.01)
 }
@@ -11,27 +11,21 @@ CAST(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, maf.thresho
   \item{genomic.region}{ A factor defining the genomic region of each SNP }
   \item{maf.threshold}{ The MAF used for the definition of a rare variant, set as 0.01 by default}
 }
-\details{
-  When all the cases are put in a single group, we have the original CAST.
-  When the expected counts are lower than 5, Monte-carlo simulations are used to estimate the p-value. Otherwise, the asymptotic p-value is given.
-}
 \value{
-A data frame containing the following fields:
-  \item{genomic.region}{The name of the considered \code{genomic.region} }
-  \item{stat}{The CAST statistic for each genomic region }
-  \item{p.value}{ The p-value calculated with a chi-squared test}
+A matrix containing the CAST genetic score with one row per individual and one column per \code{genomic.region}
 }
 \author{
 Herve Perdry and Ozvan Bocher
 }     
 \examples{
-my.pars <- list(OR.del = c(2, 4), prob.del = 0.2, prob.pro = 0.05)
-#Simulation of genotypes with 10 replicates for 400 controls and two groups of 200 case with the same variants being deleterious, neutral or protective between the two groups of cases but different OR values
-x <- random.bed.matrix(pop.maf = Kryukov$maf[Kryukov$unit=="R1"], size = c(400, 200, 200), baseline = c(0.001, 0.001), replicates = 10, OR.pars = my.pars, OR.function = OR.matrix.same.variant)
-#Keep only variants with MAF<1% in one of the three groups
-x <- filter.rare.variants(x, filter = "any", maf.threshold = 0.01)
-#Compute the CAST score on 3 groups
+####Data simulation
+#GRR values
+GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, n.case.groups = 2, GRR.multiplicative.factor=2, select.gene = "R1")
+#Simulation of one group of 1,000 controls and two groups of 500 cases, each one with a prevalence of 0.001.
+#50% of deleterious variants having a GRR calculated with the SKAT formula based on MAF in the file Kryukov are present and they are different between the two groups of cases.
+#5 genomic regions are simulated.
+x <- random.bed.matrix.GRR(file.pop.maf = Kryukov, size = c(1000, 500, 500), baseline = c(0.001, 0.001), GRR.matrix = GRR.del, prop.del = 0.5, prop.pro = 0, same.variant = FALSE, fixed.variant.prop = TRUE, genetic.model = "multiplicative", select.gene = "R1", replicates = 5)
+
+#Compute the CAST score
 CAST(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, maf.threshold = 0.01 )
-#Compute the CAST score on 2 groups
-CAST(x, group = ifelse(x@ped$pheno==0, 0, 1), genomic.region = x@snps$genomic.region, maf.threshold = 0.01 )
 }

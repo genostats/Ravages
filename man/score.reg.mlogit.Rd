@@ -1,7 +1,7 @@
 \name{score.reg.mlogit}
 \alias{score.reg.mlogit}
 \title{
-  Logistic/Multinomial regression on genetic score
+  Logistic or multinomial regression on genetic score
 }
 \description{
   Performs a logistical or a non-ordinal multinomial regression on a genetic score

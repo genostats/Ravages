@@ -1,20 +1,20 @@
 \name{genotypic.freq}
 \alias{genotypic.freq}
 \title{
-  Calculates the MAF in the controls group and in each group of cases
+  Calculates the three genotypic frequencies in the controls group and in each group of cases
 }
 \description{
-  Generates MAF values for the controls group and each group of cases based on MAF in the general population and GRR values
+  Calculates the three genotypic frequencies for the controls group and each group of cases based on MAF in the general population and GRR values
 }
 \usage{
-  genotypic.freq(file.pop.maf = Kryukov, GRR, GRR.2 = NULL, baseline, genetic.model = c("general", "multiplicative", "dominant", "recessive"), select.gene)
+  genotypic.freq(file.pop.maf = Kryukov, GRR, GRR.2 = NULL, baseline, model = c("general", "multiplicative", "dominant", "recessive"), select.gene)
 }
 \arguments{
   \item{file.pop.maf}{ A file containing the MAF in the general population (column maf) for variants within a gene (column gene), by default the file Kryukov from the package is used}
   \item{GRR}{ A matrix giving the GRR of the heterozygous compared to the homozygous for the reference allele with one row per cases group and one column per variant }
   \item{GRR.2}{ A matrix giving the GRR of the heterozygous compared to the homozygous for the reference allele with one row per cases group and one column per variant, only need if \code{model}="general"}
   \item{baseline}{ A vector containing the baseline values for each group of cases}
-  \item{genetic.model}{ The genetic model of the disease }
+  \item{model}{ The genetic model of the disease }
   \item{select.gene}{ Which gene to choose in the column "gene" from \code{file.pop.maf} if multiple genes are present. If missing, the first level of \code{file.pop.maf$gene} is kept.}
 }
 \value{
@@ -22,12 +22,12 @@
 }
 \details{
   The genetic model of the disease needs to be specified in this function.
-  If \code{genetic.model}="general", there is no link between the GRR associated to the heterozygous and the GRR associated to the homozygous for the alternate allele. Therefore, the user has to give two matrices of GRR, one for the heterozygous, the other for the homozygous for the alternate allele.
-  If \code{genetic.model}="multiplicative", we assume that the the GRR associated to the homozygous for the alternate allele is the square of the GRR associated to the heterozygous: only one GRR matrix is needed.
-  If \code{genetic.model}="dominant", we assume that the GRR associated to the heterozygous and the GRR associated to the homozygous for the alternate allele are equal: only one GRR matrix is needed.
-  If \code{genetic.model}="recessive", we assume that the GRR associated to the heterozygous is equal to 1: the GRR given is the one associated to the homozygous for the alternate allele.
+  If \code{model}="general", there is no link between the GRR associated to the heterozygous and the GRR associated to the homozygous for the alternate allele. Therefore, the user has to give two matrices of GRR, one for the heterozygous, the other for the homozygous for the alternate allele.
+  If \code{model}="multiplicative", we assume that the the GRR associated to the homozygous for the alternate allele is the square of the GRR associated to the heterozygous: only one GRR matrix is needed.
+  If \code{model}="dominant", we assume that the GRR associated to the heterozygous and the GRR associated to the homozygous for the alternate allele are equal: only one GRR matrix is needed.
+  If \code{model}="recessive", we assume that the GRR associated to the heterozygous is equal to 1: the GRR given is the one associated to the homozygous for the alternate allele.
   The \code{baseline} corresponds to the proportion of each sub-group of cases in the population. It is used only to calculate the MAF in the controls group.
-  For the argument \code{pop.maf}, MAF from the file Kryukov or GnomADgenes available with the package Ravages can be used as MAF in the general population.
+  For the argument \code{file.pop.maf}, the file Kryukov or GnomADgenes available with the package Ravages can be used.
 }
 \author{
   Herve Perdry and Ozvan Bocher
@@ -39,6 +39,6 @@
 
   #Calculation of frequency in the two groups of cases and the controls group under a multilpicative model of the disease
   #All the variants are considered as deletrious
-  MAF.groups <- genotypic.freq(file.pop.maf = Kryukov, GRR = GRR.del, baseline = c(0.001, 0.001), genetic.model = "multiplicative", select.gene = "R1") 
-  MAF.groups[,1:5]
+  geno.freq.groups <- genotypic.freq(file.pop.maf = Kryukov, GRR = GRR.del, baseline = c(0.001, 0.001), genetic.model = "multiplicative", select.gene = "R1") 
+  geno.freq.groups[,1:5]
 }

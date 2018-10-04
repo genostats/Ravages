@@ -27,6 +27,8 @@
 Herve Perdry and Ozvan Bocher
 }
 \examples{
+  #GRR values
+  GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, n.case.groups = 2, GRR.multiplicative.factor=2, select.gene = "R1")
   #Simulation of one group of 1,000 controls and two groups of 500 cases, each one with a prevalence of 0.001.
   #50% of deleterious variants having a GRR calculated with the SKAT formula based on MAF in the file Kryukov are present and they are different between the two groups of cases.
   #5 genomic regions are simulated.

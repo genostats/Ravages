@@ -7,7 +7,7 @@
 \description{
   These data have been downloaded from Biomart on the Ensembl website with the genes.b37 version.
   The data contain the \code{Start} position, the \code{End} position, the \code{Gene_Name} 
-  and the \code{Chr} of all the genes in chromosomes 1 to 22 representing 19463 genes.
+  and the \code{Chr} of all the genes in chromosomes 1 to 22 representing 19375 genes.
 }
   
 \usage{ data(genes.b37) }

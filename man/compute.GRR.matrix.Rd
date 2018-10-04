@@ -13,7 +13,7 @@
   \item{file.pop.maf}{ A file containing the MAF in the general population (column maf) for variants within a gene (column gene), only needed if the GRR depends on the MAF of a variant. By default, the MAF from the file Kryukov are used}
   \item{n.case.groups}{ The number of cases groups, i.e. the number of groups where variants will have a GRR greater than 1, set as 2 by default}
   \item{GRR}{ How to calculate the GRR }
-  \item{GRR.value}{ GRR value if all the variants have the same GRR. In this situation, \code{file.pop.maf} is not needed}
+  \item{GRR.value}{ GRR value if \code{GRR="constant"}. In this situation, \code{file.pop.maf} is not needed}
   \item{GRR.function}{ A function indicating how to calculate the GRR depending on the MAF in the general population, only needed if \code{GRR}="variable"}
   \item{GRR.multiplicative.factor}{ A vector containing the multiplicative factor for the GRR for each group of cases compared to the first group of cases}
   \item{select.gene}{ The name of the gene(s) to select in the file \code{file.pop.maf} if it contains multiple genes. If missing, the first level of \code{file.pop.maf$gene} is kept.}
@@ -26,7 +26,7 @@
   If \code{GRR}="constant", the same GRR is applied to all the variants with the value given to the argument \code{GRR.value}.
   If \code{GRR}="SKAT", the GRR are calculating using the formula from the paper presenting the SKAT method and thus depend on MAF.
   If \code{GRR}="variable", the GRR are calculating using a function given by the user depending only on the MAF in the general population.
-  The GRR can be the same between the different groups of cases (\code{multiplicative.factor}=1 or different.There are \code{n.case.groups}-1 values in this vector.
+  The GRR can be the same between the different groups of cases (\code{multiplicative.factor}=1 or different. There are \code{n.case.groups}-1 values in this vector.
   If the GRR depend on the MAF in the general population, a file needs to be passed to the argument \code{file.pop.maf}. This file should contain at least a column "gene" and a column "maf". By default, the file Kryukov is used, but the file GnomADgenes which contains MAF in the NFE population can also be used.
 }
 \author{
