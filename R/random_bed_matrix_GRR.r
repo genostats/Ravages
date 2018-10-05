@@ -1,7 +1,7 @@
 ##random.bed.matrix with GRR
 random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.matrix, GRR.matrix.pro=NULL, prop.del = 0.5, prop.pro = 0, 
 								  same.variant=FALSE, fixed.variant.prop = TRUE, 
-								  genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
+								  model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
   
   if (nlevels(file.pop.maf$gene) > 1){ 
     if(is.null(select.gene)){
@@ -23,13 +23,13 @@ random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.
   GRR <- GRR.matrix[[1]]
   }
   if (length(GRR.matrix) == 1) {
-    if (genetic.model == "general") {
+    if (model == "general") {
       stop("Needs two GRR matrices in the general model")
     }else{
       GRR.2 <- NULL
     }
   }else{
-    if (genetic.model == "general") {
+    if (model == "general") {
       GRR.2 <- GRR.matrix[[2]]
     }else{
       warning("Only one GRR matrix needed for this model, only the first one is used")
@@ -48,13 +48,13 @@ random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.
     }
     GRR.pro <- GRR.matrix.pro[[1]]
     if (length(GRR.matrix.pro) == 1) {
-      if (genetic.model == "general") {
+      if (model == "general") {
         stop("Needs two GRR matrices in the general model")
       }else{
         GRR.2.pro <- NULL
       }
     }else{
-      if (genetic.model == "general") {
+      if (model == "general") {
         GRR.2.pro <- GRR.matrix.pro[[2]]
       }else{
         warning("Only one GRR matrix needed for this model, only the first one is used")
@@ -107,7 +107,7 @@ random.bed.matrix.GRR <- function(file.pop.maf, size, baseline, replicates, GRR.
     }else{
       GRR.2=NULL
     }    
-    MAFS <- genotypic.freq(file.pop.maf=file.pop.maf, GRR=GRR, GRR.2=GRR.2, baseline=baseline, select.gene=select.gene, model=genetic.model)
+    MAFS <- genotypic.freq(file.pop.maf=file.pop.maf, GRR=GRR, GRR.2=GRR.2, baseline=baseline, select.gene=select.gene, model=model)
     .Call("oz_random_filling_bed_matrix_noHW", PACKAGE = "Ravages", x@bed, MAFS$freq.homo.ref, MAFS$freq.het, size, (b-1)*GRR.pars$n.variants)
   }
   x@ped$pheno <- rep.int( 1:length(size) - 1, size)

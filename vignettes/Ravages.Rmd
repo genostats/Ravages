@@ -74,7 +74,7 @@ x <- random.bed.matrix.GRR(file.pop.maf = Kryukov, size = c(1000, 500, 500),
                            baseline = c(0.001, 0.001), GRR.matrix = GRR.del, 
                            prop.del = 0.5, prop.pro = 0, same.variant = FALSE,
                            fixed.variant.prop = TRUE, replicates = 5,
-                           genetic.model = "multiplicative", select.gene = "R1")
+                           model = "multiplicative", select.gene = "R1")
 x
 table(x@ped$pheno)
 table(x@snps$genomic.region)
@@ -146,6 +146,6 @@ power.burden(alpha = 0.001, WSS = TRUE, CAST = TRUE,
              pooled.analysis = TRUE, non.pooled.analysis = TRUE, analysis.by.group = TRUE,
              file.pop.maf = Kryukov, select.gene = "R1", size = c(1000,500,500), 
              baseline = c(0.001,0.001), same.variant = FALSE, GRR.matrix = GRR.del,
-             genetic.model = "multiplicative", prop.del = 0.5, prop.pro = 0,
+             model = "multiplicative", prop.del = 0.5, prop.pro = 0,
              reflevel = "0", replicates = 100)
 ```

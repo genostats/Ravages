@@ -43,6 +43,6 @@
   #under a multilpicative model of the disease
   geno.freq.groups <- genotypic.freq(file.pop.maf = Kryukov, GRR = GRR.del, 
   									 baseline = c(0.001, 0.001), 
-  									 genetic.model = "multiplicative", select.gene = "R1") 
+  									 model = "multiplicative", select.gene = "R1") 
   geno.freq.groups[,1:5]
 }

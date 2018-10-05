@@ -4,7 +4,7 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
               file.pop.maf=Kryukov, select.gene=NULL, 
               size=c(1000, 500, 500), baseline=c(0.001, 0.001), replicates=1000, 
               same.variant=c(FALSE, TRUE), fixed.variant.prop = c(TRUE, FALSE),
-              genetic.model=c("multiplicative", "general", "recessive", "dominant"),
+              model=c("multiplicative", "general", "recessive", "dominant"),
               GRR.matrix, GRR.matrix.pro=NULL, prop.del=0.5, prop.pro=0,              
               covariates=NULL, reflevel="0"){
 
@@ -14,7 +14,7 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
   }      
 
 ##Arguments for data simulation
-  model.pars <- list(file.pop.maf=file.pop.maf, size=size, baseline=baseline, replicates=replicates, GRR.matrix=GRR.matrix, GRR.matrix.pro=GRR.matrix.pro, same.variant=same.variant, fixed.variant.prop = fixed.variant.prop, genetic.model=genetic.model, select.gene=select.gene, prop.del = prop.del, prop.pro=prop.pro)
+  model.pars <- list(file.pop.maf=file.pop.maf, size=size, baseline=baseline, replicates=replicates, GRR.matrix=GRR.matrix, GRR.matrix.pro=GRR.matrix.pro, same.variant=same.variant, fixed.variant.prop = fixed.variant.prop, model=model, select.gene=select.gene, prop.del = prop.del, prop.pro=prop.pro)
   
 ##Simulations des donnees
   x <- do.call(random.bed.matrix.GRR, model.pars)

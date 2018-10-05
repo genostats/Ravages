@@ -11,13 +11,13 @@
   			   min.nb.snps = NULL, maf.threshold = 0.01, 
   			   CAST = c(TRUE, FALSE), WSS = c(TRUE, FALSE), other.score=NULL,
   			   pooled.analysis = c(TRUE, FALSE), non.pooled.analysis = c(TRUE, FALSE), 
-  			   analysis.by.group = c(TRUE, FALSE), covariates = NULL, 
-  			   file.pop.maf = Kryukov, select.gene,
+  			   analysis.by.group = c(TRUE, FALSE), 
+  			   file.pop.maf = Kryukov, select.gene=NULL,
   			   size = c(1000, 500, 500), baseline = c(0.001, 0.001), replicates = 1000, 
   			   same.variant = c(FALSE, TRUE), fixed.variant.prop = c(TRUE, FALSE),
-  			   genetic.model = c("multiplicative", "general", "recessive", "dominant"),
+  			   model = c("multiplicative", "general", "recessive", "dominant"),
   			   GRR.matrix, GRR.matrix.pro = NULL, 
-  			   prop.del = 0.5, prop.pro = 0, reflevel = "0")
+  			   prop.del = 0.5, prop.pro = 0, covariates=NULL, reflevel = "0")
 }
 \arguments{
   \item{alpha}{ The significance threshold, 2.5e-06 bu default}
@@ -37,8 +37,8 @@
   \item{replicates}{ The number of simulations to perform for power calculation. 1,000 by default}
   \item{same.variant}{ TRUE/FALSE: whether the causal variants are the same in the different groups of cases}
   \item{fixed.variant.prop}{ TRUE/FALSE: whether the arguments \code{prop.del} and \code{prop.pro} correspond to the final proportion of deleterious and protective variants (TRUE) or to the probability for each variant of being deleterious or protective (FALSE)}
-  \item{genetic.model}{ The genetic model of the disease}
-  \item{GRR.matrix}{ A list containing the deleterious GRR matrix associated to the heterozygous compared to the homozygous for the reference allele. An additional GRR matrix associated to the homozygous for the alternate allele is needed if \code{genetic.model}="general"}
+  \item{model}{ The genetic model of the disease}
+  \item{GRR.matrix}{ A list containing the deleterious GRR matrix associated to the heterozygous compared to the homozygous for the reference allele. An additional GRR matrix associated to the homozygous for the alternate allele is needed if \code{model}="general"}
   \item{GRR.matrix.pro}{ Needed if \code{prob.pro>0}: the same argument as \code{GRR.matrix} but with protective GRR values}
   \item{prop.del}{ The proportion of deleterious variants in cases, 0.5 by default}
   \item{prop.pro}{ The proportion of protective variants in cases, 0 by default}
@@ -68,7 +68,8 @@
 }
 \examples{
   #GRR matrix
-  GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, n.case.groups = 2, GRR.multiplicative.factor=2, select.gene = "R1")
+  GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, n.case.groups = 2, 
+  								GRR.multiplicative.factor=2, select.gene = "R1")
                                  
   #Simulation of one group of 1,000 controls and two groups of 500 cases, 
   #each one with a prevalence of 0.001.
@@ -83,6 +84,6 @@
 			   analysis.by.group = TRUE, file.pop.maf = Kryukov, select.gene = "R1", 
 			   size = c(1000,500,500), baseline = c(0.001,0.001), 
 			   same.variant = FALSE, fixed.variant.prop = TRUE, GRR.matrix = GRR.del,
-               genetic.model = "multiplicative", prop.del = 0.5, prop.pro = 0, 
+               model = "multiplicative", prop.del = 0.5, prop.pro = 0, 
                reflevel = "0", replicates = 100)  
   }

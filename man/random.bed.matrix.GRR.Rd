@@ -10,7 +10,7 @@
   random.bed.matrix.GRR(file.pop.maf, size, baseline, replicates, GRR.matrix, GRR.matrix.pro=NULL, 
   					 prop.del = 0.5, prop.pro = 0, same.variant = c(FALSE,TRUE), 
   					 fixed.variant.prop = c(TRUE,FALSE), select.gene,
-  					 genetic.model=c("general", "multiplicative", "dominant", "recessive")
+  					 model=c("general", "multiplicative", "dominant", "recessive")
 }
 \arguments{
   \item{file.pop.maf}{ A file containing the MAF in the general population (column maf) for variants within a gene (column gene), by default the file Kryukov from the package is used}
@@ -23,7 +23,7 @@
   \item{prop.pro}{ The proportion of protective variants in the cases}
   \item{same.variant}{ TRUE/FALSE: whether the causal variants are the same in the different groups of cases}
   \item{fixed.variant.prop}{ TRUE/FALSE: whether the arguments \code{prop.del} and \code{prop.pro} correspond to the final proportion of deleterious and protective variants (TRUE) or to the probability for each variant of being deleterious or protective (FALSE)}
-  \item{genetic.model}{ The genetic model of the disease }
+  \item{model}{ The genetic model of the disease }
   \item{select.gene}{ Which gene to choose in the column "gene" from \code{file.pop.maf} if multiple genes are present. If missing, the first level of \code{file.pop.maf$gene} is kept.}
 }
 \value{
@@ -54,5 +54,5 @@
   							 baseline = c(0.001, 0.001), GRR.matrix = GRR.del, 
   							 prop.del = 0.5, prop.pro = 0, select.gene="R1",
   							 same.variant = FALSE, fixed.variant.prop = TRUE, 
-  							 genetic.model = "multiplicative", replicates = 5)
+  							 model = "multiplicative", replicates = 5)
 }
