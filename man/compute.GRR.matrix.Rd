@@ -7,7 +7,8 @@
   Computes a GRR matrix based on simulation parameters for variants and genetic effects
 }
 \usage{
-  compute.GRR.matrix(file.pop.maf = Kryukov, n.case.groups = 2, GRR = c("constant", "SKAT", "variable"), GRR.value = NULL, GRR.function = NULL, GRR.multiplicative.factor = 2, select.gene)
+  compute.GRR.matrix(file.pop.maf = Kryukov, n.case.groups = 2, GRR = c("constant", "SKAT", "variable"), 
+  					 GRR.value = NULL, GRR.function = NULL, GRR.multiplicative.factor = 2, select.gene=NULL)
 }
 \arguments{
   \item{file.pop.maf}{ A file containing the MAF in the general population (column maf) for variants within a gene (column gene), only needed if the GRR depends on the MAF of a variant. By default, the MAF from the file Kryukov are used}
@@ -33,8 +34,8 @@
   Ozvan Bocher and Herve Perdry
 }
 \examples{
-  #GRR calculated on the MAF from the first unit of the file Kryukov using the formula from the SKAT paper with two groups of cases,
-  #the second group having GRR values twice as high as the first one
+  #GRR calculated on the MAF from the first unit of the file Kryukov using the formula from the SKAT paper 
+  #with two groups of cases, the second group having GRR values twice as high as the first one
   GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, n.case.groups = 2,
                                 GRR.multiplicative.factor=2, select.gene = "R1")
   GRR.del[,1:5]

@@ -1,16 +1,10 @@
 
 Notes après réunion du 12 sept:
 
-* WSS.0 et CAST.0 (calcul des stats uniquement) ont remplacé
-  WSS et CAST : corriger la documentation 
-
 * il faudra revoir ensemble la paramétrisation de 
   compute.GRR.matrix et de group.mafs.GRR
   01/10: GRR.function remplace GRR.formula
   + argument par defaut de select.gene: 1er niveau du fichier de maf
-
-* examiner en détail region.by.gen region.by.pos (peut-être ne 
-  conserver que le premier)
 
 * score.reg.mlogit et get.model.etc : à revoir ensemble
   Note : le pb de get.model.parameters.mlogit c'est la construction
@@ -20,9 +14,8 @@ Notes après réunion du 12 sept:
 
 * Dans data/ il faut faire du ménage dans les hg** ...
 
-  hg37 et hg38 correspondent maintenant aux fichiers avec les gènes
-  de GnomAD dans l'ordre des chromosomes;
-  Seul pb: certains gène en double avec positions différentes
+  genes.b37 et genes.b38 correspondent maintenant aux fichiers avec les gènes
+  de GnomAD dans l'ordre du génome, sans doublons
   hg37.sorted et hg38.sorted devront être supprimés..
 
 * Il faut faire un tour dans src/ pour voir s'il y a du ménage à faire

@@ -1,8 +1,8 @@
 #We only accept matrices of good dimensions
-genotypic.freq <- function(file.pop.maf = Ravages::Kryukov, GRR, GRR.2=NULL, baseline, model=c("general", "multiplicative", "dominant", "recessive"), select.gene) {
+genotypic.freq <- function(file.pop.maf = Kryukov, GRR, GRR.2=NULL, baseline, model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
   #Selection of maf
   if (nlevels(file.pop.maf$gene) > 1) {
-    if(missing(select.gene)){
+    if(is.null(select.gene)){
       warning("More than one gene in the file")
       select.gene <- levels(file.pop.maf$gene)[[1]]
     }

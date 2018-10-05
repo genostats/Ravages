@@ -1,4 +1,4 @@
-\name{Kryukov2009European1800}
+\name{Kryukov}
 \docType{data}
 
 \title{Kryukov data set}
@@ -8,10 +8,10 @@
   These data contain 200 units corresponding to 200 genes. For each unit, the data set contains the maf in the European population, the selection coefficient and the position of each variant.
 }
 
-\usage{ data(Kryukov2009European1800) }
+\usage{ data(Kryukov) }
 
 \format{
-  The data contains one dataframe called "Kryukov" with four columns:
+  Kryukov is a dataframe with four columns:
   \describe{
     \item{unit}{The unit of each variant}
     \item{maf}{The maf of each variant in the European population}

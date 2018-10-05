@@ -7,7 +7,8 @@
   Calculates the three genotypic frequencies for the controls group and each group of cases based on MAF in the general population and GRR values
 }
 \usage{
-  genotypic.freq(file.pop.maf = Kryukov, GRR, GRR.2 = NULL, baseline, model = c("general", "multiplicative", "dominant", "recessive"), select.gene)
+  genotypic.freq(file.pop.maf = Kryukov, GRR, GRR.2 = NULL, baseline, 
+  				 model = c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL)
 }
 \arguments{
   \item{file.pop.maf}{ A file containing the MAF in the general population (column maf) for variants within a gene (column gene), by default the file Kryukov from the package is used}
@@ -35,10 +36,13 @@
 \examples{
   #Construction of the GRR matrix using the formula from SKAT and Kryukov data
   #2 groups of cases with GRR in the second group twice as high as in the first group
-  GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, n.case.groups = 2, GRR.multiplicative.factor=2, select.gene = "R1")
+  GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, n.case.groups = 2, 
+  								GRR.multiplicative.factor=2, select.gene = "R1")
 
-  #Calculation of frequency in the two groups of cases and the controls group under a multilpicative model of the disease
-  #All the variants are considered as deletrious
-  geno.freq.groups <- genotypic.freq(file.pop.maf = Kryukov, GRR = GRR.del, baseline = c(0.001, 0.001), genetic.model = "multiplicative", select.gene = "R1") 
+  #Calculation of frequency in the two groups of cases and the controls group 
+  #under a multilpicative model of the disease
+  geno.freq.groups <- genotypic.freq(file.pop.maf = Kryukov, GRR = GRR.del, 
+  									 baseline = c(0.001, 0.001), 
+  									 genetic.model = "multiplicative", select.gene = "R1") 
   geno.freq.groups[,1:5]
 }

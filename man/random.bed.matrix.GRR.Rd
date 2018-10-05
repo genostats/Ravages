@@ -7,7 +7,10 @@
   Generates a bed.matrix with genotypes for cases and controls based on simulation parameters
 }
 \usage{
-  random.bed.matrix.(file.pop.maf, size, baseline, replicates, GRR.matrix, GRR.matrix.pro=NULL, prop.del = 0.5, prop.pro = 0, same.variant = c(FALSE,TRUE), fixed.variant.prop = c(TRUE,FALSE), genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene)
+  random.bed.matrix.GRR(file.pop.maf, size, baseline, replicates, GRR.matrix, GRR.matrix.pro=NULL, 
+  					 prop.del = 0.5, prop.pro = 0, same.variant = c(FALSE,TRUE), 
+  					 fixed.variant.prop = c(TRUE,FALSE), select.gene,
+  					 genetic.model=c("general", "multiplicative", "dominant", "recessive")
 }
 \arguments{
   \item{file.pop.maf}{ A file containing the MAF in the general population (column maf) for variants within a gene (column gene), by default the file Kryukov from the package is used}
@@ -40,9 +43,16 @@
 }
 \examples{
   #GRR values
-  GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, n.case.groups = 2, GRR.multiplicative.factor=2, select.gene = "R1")
-  #Simulation of one group of 1,000 controls and two groups of 500 cases, each one with a prevalence of 0.001.
-  #50% of deleterious variants having a GRR calculated with the SKAT formula based on MAF in the file Kryukov are present and they are different between the two groups of cases. 
+  GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, n.case.groups = 2, 
+  								GRR.multiplicative.factor=2, select.gene = "R1")
+  #Simulation of one group of 1,000 controls and two groups of 500 cases, 
+  #each one with a prevalence of 0.001.
+  #50% of deleterious variants having a GRR calculated with the SKAT formula based on MAF 
+  #in the file Kryukov are present and they are different between the two groups of cases. 
   #5 genomic regions are simulated.
-  x <- random.bed.matrix.GRR(file.pop.maf = Kryukov, size = c(1000, 500, 500), baseline = c(0.001, 0.001), GRR.matrix = GRR.del, prop.del = 0.5, prop.pro = 0, same.variant = FALSE, fixed.variant.prop = TRUE, genetic.model = "multiplicative", select.gene = "R1", replicates = 5)
+  x <- random.bed.matrix.GRR(file.pop.maf = Kryukov, size = c(1000, 500, 500), 
+  							 baseline = c(0.001, 0.001), GRR.matrix = GRR.del, 
+  							 prop.del = 0.5, prop.pro = 0, select.gene="R1",
+  							 same.variant = FALSE, fixed.variant.prop = TRUE, 
+  							 genetic.model = "multiplicative", replicates = 5)
 }

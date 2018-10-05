@@ -1,5 +1,5 @@
 ######Utilisation de mlogit
-score.reg.mlogit <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, burden.score = c("CAST", "WSS", "Other"), other.score = NULL, maf.threshold = 0.01, reflevel, covariates=NULL, alpha=0.05, get.OR.value=FALSE){
+score.reg.mlogit <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, burden.score = c("CAST", "WSS", "Other"), other.score = NULL, maf.threshold = 0.01, reflevel, covariates=NULL, get.OR.value=FALSE, alpha=0.05){
   if(burden.score == "CAST"){
     score <- CAST(x, genomic.region, maf.threshold)
   }

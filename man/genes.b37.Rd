@@ -5,7 +5,7 @@
 \title{genes.b37 gene positions}
 
 \description{
-  These data have been downloaded from Biomart on the Ensembl website with the genes.b37 version.
+  These data have been downloaded from Biomart on the Ensembl website with the b37 version.
   The data contain the \code{Start} position, the \code{End} position, the \code{Gene_Name} 
   and the \code{Chr} of all the genes in chromosomes 1 to 22 representing 19375 genes.
 }
