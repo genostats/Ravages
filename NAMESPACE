@@ -13,7 +13,6 @@ importFrom("mlogit", "mFormula", "mlogit", "mlogit.data")
 useDynLib(Ravages)
 
 export(CAST, WSS)
-export(region.by.pos, region.by.gene)
 export(set.genomic.region.by.gene)
 export(Jaccard)
 export(Sum.Fst, Sum.Fst.higher.perms)
