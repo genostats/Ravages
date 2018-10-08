@@ -29,10 +29,10 @@ set.genomic.region.by.gene <- function(x, genes, include.all = FALSE) {
   levels(R) <- as.character(genes$Gene_Name)
   class(R) <- "factor"
 
-  # remettre les niveaux dans l'ordre de ceux de genes$Gene_Name
+  # remettre les niveaux dans l'ordre de ceux de genes$Gene_Name 
   R <- factor(R, levels(genes$Gene_Name))
 
-  x@snps$genomic.region <- R
+  x@snps$genomic.region <- droplevels(R) ## attention au droplevels !
 
   x
 }
