@@ -1,4 +1,13 @@
 set.genomic.region.by.gene <- function(x, genes, include.all = FALSE) {
+  # ce test est OK pour les facteurs aussi
+  if(typeof(x@snps$chr) != "integer") 
+    stop("x@snps$chr should be either a vector of integers, or a factor with same levels as genes$Chr")
+  
+  # difficile de tester intelligemment l'identité des niveaux ...
+  if(is.factor(x@snps$chr)) 
+    genes$Chr <- as.factor(genes$Chr)
+   
+  
   # remove duplicated genes if any
   w <- duplicated(genes$Gene_Name)
   if(any(w)) {
