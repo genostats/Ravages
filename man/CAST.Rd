@@ -1,6 +1,6 @@
 \name{CAST}
 \alias{CAST}
-\title{ Cohort Allelic Sum Test statistic }
+\title{ Cohort Allelic Sum Test}
 \description{ Calculates the CAST genetic score }
 \usage{
 CAST(x, genomic.region = x@snps$genomic.region, maf.threshold = 0.01)
@@ -18,20 +18,17 @@ Herve Perdry and Ozvan Bocher
 }     
 \examples{
   ####Data simulation
-  #GRR values
+  #GRR values according to the SKAT formula
   GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, n.case.groups = 2, 
 							    GRR.multiplicative.factor=2, select.gene = "R1")
   #Simulation of one group of 1,000 controls and two groups of 500 cases, 
-  #each one with a prevalence of 0.001.
-  #50% of deleterious variants having a GRR calculated with the SKAT formula based on MAF
-  #in the file Kryukov are present and they are different between the two groups of cases.
-  #5 genomic regions are simulated.
-  x <- random.bed.matrix.GRR(file.pop.maf = Kryukov, size = c(1000, 500, 500), baseline = c(0.001, 0.001), 
-						     GRR.matrix = GRR.del, prop.del = 0.5, prop.pro = 0, 
-						     same.variant = FALSE, fixed.variant.prop = TRUE, 
-						     genetic.model = "multiplicative", select.gene = "R1", replicates = 5)
+  #50% of deleterious, 5 genomic regions are simulated.
+  x <- random.bed.matrix.GRR(file.pop.maf=Kryukov,
+  							 size = c(1000, 500, 500), baseline = c(0.001, 0.001),
+						     GRR.matrix = GRR.del, prop.del = 0.5, 
+						     genetic.model = "multiplicative", replicates=5)
   #Keep only rare variant
   x <- filter.rare.variants(x, filter = "any", maf.threshold = 0.01, min.nb.snps = 5)
   #Compute the CAST score
-  CAST(x, genomic.region = x@snps$genomic.region, maf.threshold = 0.01 )
+  score <- CAST(x, genomic.region = x@snps$genomic.region, maf.threshold = 0.01)
 }

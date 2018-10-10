@@ -4,7 +4,7 @@
 \title{Kryukov data set}
 
 \description{
-  These data are the data from Kryukov et al, 2009 containing deep resequencing data for the European population.
+  These data are the data from Kryukov et al, 2009, containing deep resequencing data for the European population.
   These data contain 200 units corresponding to 200 genes. For each unit, the data set contains the maf in the European population, the selection coefficient and the position of each variant.
 }
 
@@ -13,7 +13,7 @@
 \format{
   Kryukov is a dataframe with four columns:
   \describe{
-    \item{unit}{The unit of each variant}
+    \item{gene}{The unit of each variant}
     \item{maf}{The maf of each variant in the European population}
     \item{selection.coefficient}{The selction coefficient of each variant in the European population}
     \item{position}{The position of each variant}

@@ -2,14 +2,13 @@ compute.GRR.matrix <- function(file.pop.maf=Kryukov, n.case.groups=2, GRR=c("con
   ##Select MAF from the file given by the user  
   if(nlevels(file.pop.maf$gene)>1){
     if(is.null(select.gene)){
-      warning("More than one gene in the file")
+      warning("More than one gene in the file, only the first one is used")
       select.gene <- levels(file.pop.maf$gene)[[1]]
     }
     pop.maf <- subset(file.pop.maf, file.pop.maf$gene %in% select.gene)$maf
   }else{
     pop.maf <- file.pop.maf$maf
   }
-                  
   n.variants <- length(pop.maf)
                       
   ##Same GRR for all variants

@@ -1,8 +1,8 @@
 \name{set.genomic.region.by.gene}
 \alias{set.genomic.region.by.gene}
-\title{ Gene grouping based on gene positions }
+\title{ Variants grouping based on gene positions }
 \description{
-Performs a gene grouping based on the positions of known genes
+Groups variants based on positions of known genes
 }
 \usage{
 set.genomic.region.by.gene(x, genes, include.all = FALSE)
@@ -17,19 +17,13 @@ set.genomic.region.by.gene(x, genes, include.all = FALSE)
   \item{include.all}{ TRUE/FALSE, whether or not to assigne all the variants into a genomic region. }
 }
 \details{ 
-If \code{include.all == FALSE}, only the variants having their position between the 
-\code{genes$Start} and the \code{genes$End} of a gene will be attributed to the 
-corresponding gene. If \code{include.all == TRUE}, each variant will be included in the nearest gene.
+If \code{include.all == FALSE}, only the variants having their position between the \code{genes$Start} and the \code{genes$End} of a gene will be attributed to the corresponding gene. 
+If \code{include.all == TRUE}, each variant will be included in the nearest gene.
 The files genes.b37.RData and genes.b38.RData can be used as \code{genes} argument
 }
 \value{
-The same bed matrix as x with the additional column \code{x@snps$genomic.region} containing the group of each variant
+The same bed matrix as x with an additional column \code{x@snps$genomic.region} containing the group of each variant
 }
 \author{
 Herve Perdry and Ozvan Bocher
-}
-\examples{
-  data(genes.b37)
-  #Attribution of all the SNP in the genes from the list genes.b37
-  gpe_genes <- set.genomic.region.by.gene(x, genes = genes.b37, include.all = TRUE) 
 }

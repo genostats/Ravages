@@ -8,18 +8,14 @@ importFrom("Rcpp", "evalCpp") # just to avoid << function 'enterRNGScope' not pr
 importFrom("RcppParallel", "setThreadOptions", "defaultNumThreads")
 importFrom("gaston", "rbind", "cbind", "select.snps", "select.inds", "set.stats", "is.autosome")
 
-importFrom("SKAT", "SKAT_Null_Model")
 importFrom("mlogit", "mFormula", "mlogit", "mlogit.data")
 useDynLib(Ravages)
 
 export(CAST, WSS)
 export(set.genomic.region.by.gene)
 export(Jaccard)
-export(Sum.Fst, Sum.Fst.higher.perms)
 export(filter.rare.variants)
-export(score.reg.mlogit, get.model.parameters.mlogit)
 export(burden.mlogit)
-
 export(genotypic.freq, random.bed.matrix.GRR, compute.GRR.matrix)
 export(power.burden)
 

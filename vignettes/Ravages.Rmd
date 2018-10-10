@@ -33,7 +33,7 @@ $$P(Aa | Y=c) = \frac{P(Y=c | Aa)*P(Aa)}{\sum_{Geno=AA, Aa, aa} P(Y=c | Geno)*P(
 With A the reference allele, and a the alternate allele. P(AA), P(Aa) and P(aa) correspond to the genotypic probabilities in the general population.
 The three genotypic frequencies can then be calculated in the controls group using the rule of total probability:
 $$P(Geno | Y=1)=P(Geno) - \sum{_{c=2}^{c=C} P(Geno | Y=c)*P(Y=c)}$$
-The function **genotypic.freq()** enables to obtain these three genotypic frequencies in the different groups of individuals. To do so, the user needs to give *P(Y=c)*, the prevalence of each group of cases (argument *baseline*); and the *GRR* values. The GRR values need to be in a matrix with one row per cases group and one column per variant. If there is no supposed link between the GRR associated to the heterozygous genotype and the GRR associated to the homozygous for the alternate allele genotype (general model of the disease, $model="general"$), the user needs to specify two GRR matrices: one for $GRR_{Aa}$ (argument *GRR*) and one for $GRR_{aa}$ (argument *GRR.2*. If *model="recessive", "multiplicative" or "dominant"*, only one GRR matrix is needed. **genotypic.freq()** will return a list with three matrices, one for each genotype, with one row per group of individuals and one column per variant.  
+The function **genotypic.freq()** enables to obtain these three genotypic frequencies in the different groups of individuals. To do so, the user needs to give *P(Y=c)*, the prevalence of each group of cases (argument *baseline*); and the *GRR* values. The GRR values need to be in a matrix with one row per cases group and one column per variant. If there is no supposed link between the GRR associated to the heterozygous genotype and the GRR associated to the homozygous for the alternate allele genotype (general model of the disease, $genetic.model="general"$), the user needs to specify two GRR matrices: one for $GRR_{Aa}$ (argument *GRR*) and one for $GRR_{aa}$ (argument *GRR.2*. If *genetic.model="recessive", "multiplicative" or "dominant"*, only one GRR matrix is needed. **genotypic.freq()** will return a list with three matrices, one for each genotype, with one row per group of individuals and one column per variant.  
 To help the user with the construction of this GRR matrix, we implemented the function **compute.GRR.matrix()**. To use this function, the user needs to specify how the GRR are calculated (argument *GRR*). The user can choose to give the same GRR to all the variants (*GRR="constant"*), its value being specified to the argument *GRR.value*. It is also possible to compute the GRR by using the formula from the publication presenting the method SKAT (*GRR="SKAT"*). Finally, the user can choose to calculate the GRR in another way depending on MAF in the general population (*GRR="variable"*), this function being specified with the argument *GRR.function*. In the two last situations, a file containing the MAF in the general population with at least a column "maf" and a column "gene" should be given to the argument *file.pop.maf*. Two such files are available in Ravages: the file *Kryukov* containing MAF simulated under a demographic model of Kryukov and the file *GnomADgenes* containing MAF from the population NFE in GnomAD. As these files contain MAF for multiple genes, the user needs to specify which gene to choose to simulate the data with the argument *select.gene*. If this argument is empty, only the first gene will be kept in the analysis. Finally, the multiplicative factor of the GRR between each group of cases compared to the first group of cases needs to be specified to the argument *GRR.multiplicative.factor* (number of values: number of cases groups - 1).  
 **compute.GRR.matrix()** will return a GRR matrix in the appropriate format for the function **genotypic.freq()**.
 Examples of these two functions are show below:
@@ -51,7 +51,7 @@ GRR.del[,1:5]
 
 geno.freq.groups <- genotypic.freq(file.pop.maf = Kryukov, select.gene="R1", 
                                    GRR = GRR.del, baseline = c(0.001, 0.001),
-                                   model = "multiplicative")
+                                   genetic.model = "multiplicative")
 str(geno.freq.groups)
 geno.freq.groups$freq.homo.alt[,1:5]
 ```
@@ -64,8 +64,8 @@ geno.freq.groups$freq.homo.alt[,1:5] + 0.5*geno.freq.groups$freq.het[,1:5]
 
 ###Simulation of genotypes
 In addition to calculate the genotypic frequencies in each group of individuals, it is possible to directly simulate these genotypes. This can be done using the function **random.bed.matrix.GRR()** which relies on the function **genotypic.freq()** explained previously.
-The arguments *file.pop.maf*, *select.gene*, *baseline* and *model* are the same as in the function **genotypic.freq()**.  
-In **random.bed.matrix.GRR()**, the proportion of deleterious and protective variants simulated in the genomic region should be specified to *prop.del* and *prop.pro* respectively. The argument *GRR.matrix* should contain a matrix with GRR values as if all the variants were deleterious. If *model="general"*, two GRR matrices need to be given (one for the heterozygous genotype and the other for the homozygous genotype for the alternate allele) as a list to the argument *GRR.matrix*. If the user wants to simulate protective variants in addition to deleterious variants, a similar argument to *GRR.matrix* should be given to *GRR.matrix.pro* with GRR values as if all variants were protective. If the argument *GRR.matrix.pro* is empty and *prop.pro*>0, the GRR values for protective variants will be calculated as 1/GRR of the deleterious variants. These protective and deleterious GRR values will then be assigned to the sampled protective and deleterious variants in the simulations.   
+The arguments *file.pop.maf*, *select.gene*, *baseline* and *genetic.model* are the same as in the function **genotypic.freq()**.  
+In **random.bed.matrix.GRR()**, the proportion of deleterious and protective variants simulated in the genomic region should be specified to *prop.del* and *prop.pro* respectively. The argument *GRR.matrix* should contain a matrix with GRR values as if all the variants were deleterious. If *genetic.model="general"*, two GRR matrices need to be given (one for the heterozygous genotype and the other for the homozygous genotype for the alternate allele) as a list to the argument *GRR.matrix*. If the user wants to simulate protective variants in addition to deleterious variants, a similar argument to *GRR.matrix* should be given to *GRR.matrix.pro* with GRR values as if all variants were protective. If the argument *GRR.matrix.pro* is empty and *prop.pro*>0, the GRR values for protective variants will be calculated as 1/GRR of the deleterious variants. These protective and deleterious GRR values will then be assigned to the sampled protective and deleterious variants in the simulations.   
 The size of the different groups of individuals should be a vector specified to *size*, and the user should choose whether the causal variants will be the same between the different groups of cases with the argument *same.variant*. Using the argument *fixed.variant.prop*, the user needs also to choose if the argument *prop.del* (or *prop.pro*) corresponds to the final proportion of deleterious (or protective) variants, i.e. fixed.variant.prop=TRUE or to the probability associated to each variant of being deletrious (or protective), i.e. fixed.variant.prop=FALSE. Finally, the number of simulations is specified with the argument *replicates*.
 **random.bed.matrix.GRR()** will return a bed matrix with the group of each individual in the field *@ped$pheno*, the first one being considered by default as the controls group, and the replicate number corresponding to the genomic region in the field *@snps$genomic.region*.  
 The example below shows how to simulate a group of 1,000 controls and two groups of 500 cases with 50% of deleterious variants having GRR values from the previous example. The deleterious variants are different between the two groups of cases and 5 genomic regions are simulated.
@@ -74,7 +74,7 @@ x <- random.bed.matrix.GRR(file.pop.maf = Kryukov, size = c(1000, 500, 500),
                            baseline = c(0.001, 0.001), GRR.matrix = GRR.del, 
                            prop.del = 0.5, prop.pro = 0, same.variant = FALSE,
                            fixed.variant.prop = TRUE, replicates = 5,
-                           model = "multiplicative", select.gene = "R1")
+                           genetic.model = "multiplicative", select.gene = "R1")
 x
 table(x@ped$pheno)
 table(x@snps$genomic.region)
@@ -118,21 +118,21 @@ Where $n_{i}$ is the total number of minor alleles genotyped for SNP $i$, $t_{i}
 We have extended the two tests CAST and WSS using non-ordinal multinomial regression models. Let consider $C$ groups of individuals including a group of controls ($c=1$) and $C-1$ groups of cases with different sub-phenotypes of the disease. We can compute $C-1$ probability ratios: $$ln \frac{P(Y_{j}=c)}{P(Y_{j}=1)} = \beta_{0,c} + \beta_{G,c}X_{G} + \beta_{k1,c}K_{1}+...+\beta_{kl,c}K_{l}$$
 Where $Y_{j}$ corresponds to the phenotyphe of the individual $j$ and $K_{l}$ is a vector for the $l$th covariate with the corresponding coefficient $\beta_{kl}$. The genetic effect is represented by $X_{G}$ and correspond to the genetic score CAST or WSS with $\beta_{G,c}$ the log-odds ratio associated to this burden score.  
 The p-value associated to the genetic effect is computed using a likelihood ratio test comparing this model to the same model without the genetic effect (null hypothesis). If only two groups are compared using this package, a classical logistic regression is performed.  
-This regression can be performed on a bed.matrix using the function **score.reg.mlogit()** which relies on the package mlogit. The odds ratio associated to the genetic score in each group of cases with its confidence interval can also be obtained if *get.OR.value=TRUE* at a given alpha threshold (argument *alpha*). 
+This regression can be performed on a bed.matrix using the function **burden.mlogit()** which relies on the package mlogit. The odds ratio associated to the genetic score in each group of cases with its confidence interval can also be obtained if *get.OR.value=TRUE* at a given alpha threshold (argument *alpha*). 
 In this function, the user needs to specify a vector with the phenotype of each individual (argument *group*) and the gene of each variant (argument *genomic.region*). The genetic score in the regression can also be represented by another genetic score than CAST or WSS, which has to be specified as a matrix to the argument *other.score*. This matrix should contain one individual per row and one column per genomic region.  
 An example of the p-value and OR calculation with its 95% confidence interval for CAST and WSS on the data simulated previously using a non-ordinal multinomial regression on three groups is shown below.
 
 ```{r}
 ##CAST
-score.reg.mlogit(x=x.filter, group=x.filter@ped$pheno, 
+burden.mlogit(x=x.filter, group=x.filter@ped$pheno, 
                  genomic.region=x.filter@snps$genomic.region,
-                 burden.score="CAST", maf.threshold=0.01, reflevel="0",
+                 burden="CAST", maf.threshold=0.01, ref.level="0",
                  alpha=0.05, get.OR.value=TRUE)
 
 ##WSS
-score.reg.mlogit(x=x.filter, group=x.filter@ped$pheno, 
+burden.mlogit(x=x.filter, group=x.filter@ped$pheno, 
                  genomic.region=x.filter@snps$genomic.region,
-                 burden.score="WSS", maf.threshold=0.01, reflevel="0",
+                 burden="WSS", maf.threshold=0.01, ref.level="0",
                  alpha=0.05, get.OR.value=TRUE)
 ```
 
@@ -146,6 +146,6 @@ power.burden(alpha = 0.001, WSS = TRUE, CAST = TRUE,
              pooled.analysis = TRUE, non.pooled.analysis = TRUE, analysis.by.group = TRUE,
              file.pop.maf = Kryukov, select.gene = "R1", size = c(1000,500,500), 
              baseline = c(0.001,0.001), same.variant = FALSE, GRR.matrix = GRR.del,
-             model = "multiplicative", prop.del = 0.5, prop.pro = 0,
-             reflevel = "0", replicates = 100)
+             genetic.model = "multiplicative", prop.del = 0.5, prop.pro = 0,
+             ref.level = "0", replicates = 100)
 ```

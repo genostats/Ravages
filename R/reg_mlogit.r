@@ -2,13 +2,13 @@
 burden.mlogit <- function(x, group = x@ped$pheno, 
                           genomic.region = x@snps$genomic.region, 
                           burden, maf.threshold = 0.01, 
-                          ref.level, formula, data, get.OR.value=FALSE, alpha=0.05){
+                          ref.level, formula = NULL, data = NULL, get.OR.value=FALSE, alpha=0.05){
 
   if(is.numeric(burden)) {
-    if(!is.matrix(other.score)){
+    if(!is.matrix(burden)){
       stop("Score is not a matrix")
     } else {
-      if(ncol(other.score) != nlevels(x@snps$genomic.region) | nrow(other.score) != nrow(x@ped))
+      if(ncol(burden) != nlevels(x@snps$genomic.region) | nrow(burden) != nrow(x@ped))
         stop("Score has wrong dimensions")
     }
     score <- burden
@@ -21,7 +21,7 @@ burden.mlogit <- function(x, group = x@ped$pheno,
   }
   score <- as.data.frame(score)
 
-  if(!missing(data)){
+  if(!is.null(data)){
     if(nrow(data) != length(group)){
       stop("'data' has wrong dimensions")
     }
@@ -32,11 +32,8 @@ burden.mlogit <- function(x, group = x@ped$pheno,
   
   alt.levels <- levels(group)[!(levels(group) %in% ref.level)]
 
-  if(missing(formula)) 
-    formula <- NULL 
-
   # preparation data / formula
-  if(missing(data)) {
+  if(is.null(data)) {
     data <- cbind(ind.pheno = group, score)
   } else {
     data <- as.data.frame(data)

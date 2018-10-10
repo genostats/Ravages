@@ -1,9 +1,9 @@
 #We only accept matrices of good dimensions
-genotypic.freq <- function(file.pop.maf = Kryukov, GRR, GRR.2=NULL, baseline, model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
+genotypic.freq <- function(file.pop.maf = Kryukov, GRR, GRR.2=NULL, baseline, genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
   #Selection of maf
   if (nlevels(file.pop.maf$gene) > 1) {
     if(is.null(select.gene)){
-      warning("More than one gene in the file")
+      warning("More than one gene in the file, only the first one is used")
       select.gene <- levels(file.pop.maf$gene)[[1]]
     }
     pop.maf <- subset(file.pop.maf, file.pop.maf$gene %in% select.gene)$maf
@@ -16,7 +16,7 @@ genotypic.freq <- function(file.pop.maf = Kryukov, GRR, GRR.2=NULL, baseline, mo
     stop("GRR dimensions mismatch")
     
   #Test on GRR.2 only for general model , if not general model: only first GRR matrix used
-  if(model=="general"){
+  if(genetic.model=="general"){
     if(is.null(GRR.2)){
       stop("general model needs two GRR values per group")
     }else{
@@ -33,16 +33,16 @@ genotypic.freq <- function(file.pop.maf = Kryukov, GRR, GRR.2=NULL, baseline, mo
   
       
   #Creates matrix for each model
-  if(model=="multiplicative"){
+  if(genetic.model=="multiplicative"){
     GRR.2 <- GRR**2
   }
   
-  if(model=="dominant"){
+  if(genetic.model=="dominant"){
     GRR.2 <- GRR
   }
   
-  #GRR=1 for heterozygous if model=recessive
-  if(model=="recessive"){
+  #GRR=1 for heterozygous if genetic.model=recessive
+  if(genetic.model=="recessive"){
     GRR.2 <- GRR
     GRR <- matrix(rep(1, ncol(GRR)*nrow(GRR)), nrow=nrow(GRR)) 
   }    
