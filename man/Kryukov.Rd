@@ -5,10 +5,10 @@
 
 \description{
   These data are the data from Kryukov et al, 2009, containing deep resequencing data for the European population.
-  These data contain 200 units corresponding to 200 genes. For each unit, the data set contains the maf in the European population, the selection coefficient and the position of each variant.
+  They contain 200 units corresponding to 200 genes. For each unit, the data set contains the maf in the European population, the selection coefficient and the position of each variant.
 }
 
-\usage{ data(Kryukov) }
+\usage{data(Kryukov) }
 
 \format{
   Kryukov is a dataframe with four columns:

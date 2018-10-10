@@ -23,16 +23,18 @@ A squared matrix giving the Jaccard index for each pair of individuals
 Herve Perdry and Ozvan Bocher
 }
 \examples{
-  ##Simulation of genetic data
-  #GRR values according to the SKAT formula
-  GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, n.case.groups = 2, 
-							    GRR.multiplicative.factor=2, select.gene = "R1")
-  #Simulation of one group of 1,000 controls and two groups of 500 cases, 
-  #50% of deleterious variants, 5 genomic regions are simulated.
-  x <- random.bed.matrix.GRR(file.pop.maf=Kryukov,
-  							size = c(1000, 500, 500), baseline = c(0.001, 0.001),
-                            GRR.matrix = GRR.del, prop.del = 0.5,
-                            genetic.model = "multiplicative", replicates = 5)
-  #Calculate the Jaccard matrix
-  J <- Jaccard(x, maf.threshold = 0.01)
+#Simulation of genetic data with GRR values according to the SKAT formula
+GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, 
+                              n.case.groups = 2, select.gene = "R1",
+                              GRR.multiplicative.factor=2)
+
+#Simulation of one group of 1,000 controls and two groups of 500 cases, 
+#50% of deleterious variants, 5 genomic regions are simulated.
+x <- random.bed.matrix.GRR(file.pop.maf=Kryukov, size = c(1000, 500, 500),
+                           baseline = c(0.001, 0.001),
+                           GRR.matrix = GRR.del, prop.del = 0.5,
+                           genetic.model = "multiplicative", replicates = 5)
+                           
+#Calculate the Jaccard matrix
+J <- Jaccard(x, maf.threshold = 0.01)
 }

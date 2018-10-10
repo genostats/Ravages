@@ -9,7 +9,7 @@
   The data contain the \code{Chr}, the \code{Start} position, the \code{End} position and the \code{Gene_Name} of all the genes in chromosomes 1 to 22 representing 19375 genes.
 }
   
-\usage{ data(genes.b37) }
+\usage{data(genes.b37) }
 
 \format{
   The data contain one dataframe with four columns:
