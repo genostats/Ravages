@@ -4,6 +4,9 @@ burden.mlogit <- function(x, group = x@ped$pheno,
                           burden, maf.threshold = 0.01, 
                           ref.level, formula = NULL, data = NULL, get.OR.value=FALSE, alpha=0.05){
 
+  if(!(ref.level %in% levels(group))) 
+    stop("'ref.level' is not a level of 'group'")
+
   if(is.numeric(burden)) {
     if(!is.matrix(burden)){
       stop("Score is not a matrix")
@@ -30,7 +33,7 @@ burden.mlogit <- function(x, group = x@ped$pheno,
   group <- as.factor(group)
   genomic.region <- as.factor(genomic.region)
   
-  alt.levels <- levels(group)[!(levels(group) %in% ref.level)]
+  alt.levels <- levels(group)[levels(group) != ref.level]
 
   # preparation data / formula
   if(is.null(data)) {
