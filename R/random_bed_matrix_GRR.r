@@ -1,7 +1,8 @@
 ##random.bed.matrix with GRR
-random.bed.matrix.GRR <- function(file.pop.maf = Kryukov, size, baseline, replicates, GRR.matrix, GRR.matrix.pro=NULL, prop.del = 0.5, prop.pro = 0, 
-								  same.variant=c(FALSE, TRUE), fixed.variant.prop = c(TRUE, FALSE), 
-								  genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
+random.bed.matrix.GRR <- function(file.pop.maf = Kryukov, size, baseline, replicates, 
+                                  GRR.matrix, GRR.matrix.pro=NULL, prop.del = 0.5, prop.pro = 0, 
+                                  same.variant=c(FALSE, TRUE), fixed.variant.prop = c(TRUE, FALSE), 
+                                  genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
   
   if (nlevels(file.pop.maf$gene) > 1){ 
     if(is.null(select.gene)){
@@ -87,9 +88,9 @@ random.bed.matrix.GRR <- function(file.pop.maf = Kryukov, size, baseline, replic
   
   ##Choose the OR function
   if(fixed.variant.prop){
-    variant.function <- ifelse(same.variant == FALSE, OR.matrix.fix, OR.matrix.fix.same.variant)
+    variant.function <- ifelse(!same.variant, OR.matrix.fix, OR.matrix.fix.same.variant)
   }else{
-    variant.function <- ifelse(same.variant == FALSE, OR.matrix, OR.matrix.same.variant)
+    variant.function <- ifelse(!same.variant, OR.matrix, OR.matrix.same.variant)
   }
   
   GRR.pars$n.variants <- length(pop.maf)
@@ -97,7 +98,11 @@ random.bed.matrix.GRR <- function(file.pop.maf = Kryukov, size, baseline, replic
   nb_inds <- sum(size)
   x <- new.bed.matrix(nb_inds, nb_snps);
   for(b in 1:replicates) {
-    GRR <- do.call( variant.function, GRR.pars)
+    if( prop.pro == 0 & prop.del == 0) {
+      GRR <- matrix(1, nrow = length(baseline), ncol = GRR.pars$n.variants)
+    } else {
+      GRR <- do.call( variant.function, GRR.pars)
+    }
     if(!is.null(GRR.2.pars)){
       #Give GRR>1 for the same variants as GRR
       for(i in 1:length(baseline)){

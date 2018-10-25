@@ -58,9 +58,9 @@ genotypic.freq <- function(file.pop.maf = Kryukov, GRR, GRR.2=NULL, baseline, ge
     freq.case <- p.case(pop.maf[i], GRR[,i], GRR.2[,i])
     freq.controls <- p.tem.GRR(pop.maf[i], GRR[,i], GRR.2[,i], baseline=baseline)
 
-    homo.ref[,i] <- c(freq.controls["freq.homo.ref",], freq.case["freq.homo.ref",])
-    het[,i] <- c(freq.controls["freq.het",], freq.case["freq.het",])
-    homo.alt[,i] <- c(freq.controls["freq.homo.alt",], freq.case["freq.homo.alt",])
+    homo.ref[,i] <- c(freq.controls[3], freq.case[,3])
+    het[,i] <- c(freq.controls[2], freq.case[,2])
+    homo.alt[,i] <- c(freq.controls[1], freq.case[,1])
   }
   
   if(nrow(homo.ref) == 2) 
@@ -72,19 +72,20 @@ genotypic.freq <- function(file.pop.maf = Kryukov, GRR, GRR.2=NULL, baseline, ge
   
   
 p.case <- function(p, GRR, GRR.2){
-  freq.homo.alt <- (GRR.2*p**2)/(GRR.2*p**2 + GRR*2*p*(1-p) + (1-p)**2)
-  freq.het <- (GRR*2*p*(1-p))/(GRR.2*p**2 + GRR*2*p*(1-p) + (1-p)**2)
-  freq.homo.ref <- 1-freq.homo.alt-freq.het
-  return(t(data.frame(freq.homo.ref, freq.het, freq.homo.alt)))
+  r <- matrix( 0.0, ncol = 3, nrow = length(GRR))
+  r[,1] <- (GRR.2*p**2)/(GRR.2*p**2 + GRR*2*p*(1-p) + (1-p)**2)     # freq homo alt
+  r[,2] <- (GRR*2*p*(1-p))/(GRR.2*p**2 + GRR*2*p*(1-p) + (1-p)**2)  # freq het
+  r[,3] <- 1-r[,1]-r[,2]                                            # freq homo ref
+  return(r)
 }
 
 p.tem.GRR <- function(p, GRR, GRR.2, baseline){
   f <- baseline / (GRR.2*p**2 + GRR*2*p*(1-p) + (1-p)**2) #Frequence des cas chez les homo de ref
-  
-  freq.homo.alt <- (p**2 * (1-sum(f*GRR.2))) / (1-sum(baseline))
-  freq.het <- (2*p*(1-p) * (1-sum(f*GRR))) / (1-sum(baseline))
-  freq.homo.ref <- 1-freq.homo.alt-freq.het
-  return(t(data.frame(freq.homo.ref, freq.het, freq.homo.alt)))
+  r <- numeric(3)
+  r[1] <- (p**2 * (1-sum(f*GRR.2))) / (1-sum(baseline))           # freq homo alt
+  r[2] <- (2*p*(1-p) * (1-sum(f*GRR))) / (1-sum(baseline))        # freq het
+  r[3] <- 1-r[1]-r[2]                                             # freq homo ref
+  return(r)
 }
 
 
