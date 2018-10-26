@@ -33,7 +33,8 @@ GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov,
 x <- random.bed.matrix.GRR(file.pop.maf=Kryukov, size = c(1000, 500, 500),
                            baseline = c(0.001, 0.001),
                            GRR.matrix = GRR.del, prop.del = 0.5,
-                           genetic.model = "multiplicative", replicates = 5)
+                           genetic.model = "multiplicative", replicates = 5,
+                           fixed.variant.prop=TRUE, select.gene="R1")
                            
 #Calculate the Jaccard matrix
 J <- Jaccard(x, maf.threshold = 0.01)

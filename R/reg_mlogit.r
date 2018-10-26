@@ -4,6 +4,8 @@ burden.mlogit <- function(x, group = x@ped$pheno,
                           burden, maf.threshold = 0.01, 
                           ref.level, formula = NULL, data = NULL, get.OR.value=FALSE, alpha=0.05){
 
+  group <- as.factor(group)
+
   if(!(ref.level %in% levels(group))) 
     stop("'ref.level' is not a level of 'group'")
 
@@ -30,7 +32,6 @@ burden.mlogit <- function(x, group = x@ped$pheno,
     }
   }
   
-  group <- as.factor(group)
   genomic.region <- as.factor(genomic.region)
   
   alt.levels <- levels(group)[levels(group) != ref.level]
