@@ -24,9 +24,9 @@ OR.matrix.fix <- function (n.variants, n.groups, OR.del, OR.pro = 1/OR.del, prob
     OR.tot <- matrix(rep(NA, n.variants*nrow(OR.del)), nrow=nrow(OR.del))
     for (i in 1:nrow(OR.del)) {
       v.del[[i]] <- sample(v, prob.del*n.variants)
-      v.pro[[i]] <- ifelse(length(v.del[[i]])==0, sample(v, prob.pro*n.variants), sample(v[-v.del[[i]]], prob.pro*n.variants))
+      v.pro[[i]] <- if(length(v.del[[i]])==0){ sample(v, prob.pro*n.variants) }else{ sample(v[-v.del[[i]]], prob.pro*n.variants)}
       #On estime qu'on a toujours plus qu'un variant protecteur
-      v.neutres[[i]] <- ifelse(length(v.pro[[i]])>1, v[-c(v.del[[i]], v.pro[[i]])], v[-v.del[[i]]])
+      v.neutres[[i]] <- if(length(v.pro[[i]])>1){ v[-c(v.del[[i]], v.pro[[i]])] }else{ v[-v.del[[i]]]}
       OR.tot[i,v.neutres[[i]]] <- 1
       if(prob.del>0){OR.tot[i,v.del[[i]]] <- OR[i,v.del[[i]]+1]}
       if(prob.pro>0){OR.tot[i,v.pro[[i]]] <- OR[i,v.pro[[i]]+1+n.variants]}

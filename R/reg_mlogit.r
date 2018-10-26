@@ -1,5 +1,5 @@
 
-burden.mlogit <- function(x, group = x@ped$pheno, 
+burden.mlogit <- function(x, group = x@ped$pheno, group2 = NULL,
                           genomic.region = x@snps$genomic.region, 
                           burden, maf.threshold = 0.01, 
                           ref.level, formula = NULL, data = NULL, get.OR.value=FALSE, alpha=0.05){
@@ -38,20 +38,20 @@ burden.mlogit <- function(x, group = x@ped$pheno,
 
   # preparation data / formula
   if(is.null(data)) {
-    data <- cbind(ind.pheno = group, score)
+    data.reg <- cbind(ind.pheno = group, score)
   } else {
-    data <- as.data.frame(data)
+    data.reg <- as.data.frame(data)
     if(is.null(formula)) 
       formula <- as.formula( paste("~", paste(colnames(data), collapse = "+")))
-    data <- cbind(ind.pheno = group, score, data)
+    data.reg <- cbind(ind.pheno = group, score, data.reg)
   }
-  rownames(data) <- NULL # is this useful ??
-  data <- mlogit.data(data, varying=NULL, shape="wide", choice="ind.pheno", alt.levels=levels(group))
+  rownames(data.reg) <- NULL # is this useful ??
+  data.reg <- mlogit.data(data.reg, varying=NULL, shape="wide", choice="ind.pheno", alt.levels=levels(group))
  
   R <- sapply( levels(genomic.region), 
                function(reg) 
                   run.mlogit(pheno = group, score = score, region = reg, 
-                  ref.level = ref.level, alt.levels = alt.levels, formula = formula, data = data, 
+                  ref.level = ref.level, alt.levels = alt.levels, formula = formula, data = data.reg, 
                   alpha = alpha, get.OR.value = get.OR.value))
 
   R <- as.data.frame( t(R) );
@@ -62,7 +62,41 @@ burden.mlogit <- function(x, group = x@ped$pheno,
     colnames(R) <- c("p.value", "is.err")
 
   rownames(R) <- levels(genomic.region)
-  R
+
+  #Comparison of two nested models
+  if(!is.null(group2)){
+    if(!is.factor(group2)) group2 <- as.factor(group2)
+    if(nlevels(group)>nlevels(group2)){ combined.group <- group2 }else{ combined.group <- group }
+    if(nlevels(group)>nlevels(group2)){ large.group <- group }else{ large.group <- group2}
+    
+    #Check if the two models are nested
+    if(any(apply(as.matrix(table(large.group, combined.group)), 1, function(z) sum(z==0))>1)) 
+      stop("The two models are not nested")
+    
+    alt.levels.large <- levels(large.group)[levels(large.group) != ref.level]
+    alt.levels.combined <- levels(combined.group)[levels(combined.group) != ref.level]
+    
+    if(is.null(data)) {
+      data.nested <- cbind(combined.group = combined.group, large.group=large.group, score)
+    } else {
+      data.nested <- as.data.frame(data)
+      if(is.null(formula))
+        formula <- as.formula( paste("~", paste(colnames(data), collapse = "+")))
+      data.nested <- cbind(combined.group = combined.group, large.group = large.group, score, data.nested)
+    }
+    rownames(data.nested) <- NULL
+    data.combined <- mlogit.data(data.nested[,!(colnames(data.nested) == "large.group")], varying=NULL, shape="wide", choice="combined.group", alt.levels=levels(combined.group))
+    data.group <- mlogit.data(data.nested[,!(colnames(data.nested) == "combined.group")], varying=NULL, shape="wide", choice="large.group", alt.levels=levels(large.group))
+    
+    R.nested <- sapply( levels(genomic.region), function(reg) run.mlogit.two.models(data.combined = data.combined, data.group = data.group,
+                                                                             large.group = large.group, combined.group = combined.group,
+                                                                             score = score, region = reg, ref.level = ref.level, 
+                                                                             alt.levels.large = alt.levels.large, alt.levels.combined = alt.levels.combined, 
+                                                                             formula = formula))
+    R.nested <- as.data.frame(t(R.nested)) ; rownames(R.nested) <- levels(genomic.region)
+    return(list(logistic.regression=R, nested.models=R.nested))
+  }
+  return(R)
 }
 
 
@@ -119,3 +153,39 @@ run.mlogit <- function(pheno, score, region, ref.level, alt.levels, formula, dat
   return(results)
 }
   
+
+
+run.mlogit.two.models <- function(large.group, combined.group, score, region, ref.level, alt.levels.large, alt.levels.combined, formula, data.group, data.combined){
+  #Check if same reference level
+  if(sum(large.group==ref.level) != sum(combined.group==ref.level)) stop("Not the same reference group in the two models")
+  
+  # Formula for the current region
+  if(is.null(formula)) {
+    my.formula.combined.gpe <- mFormula(as.formula(paste("combined.group ~ 0 |", region)))
+    my.formula.large.gpe <- mFormula(as.formula(paste("large.group ~ 0 |", region)))
+  } else {
+    z <- as.character(formula)
+    if(z[1] != "~" | length(z) != 2)
+      stop("'formula' should be a formula of the form \"~ var1 + var2\"")
+    z <- z[2]
+    my.formula.combined.gpe <- mFormula( as.formula( paste("combined.group ~ 0 |", region, " + ", z) ) )
+    my.formula.large.gpe <- mFormula( as.formula( paste("large.group ~ 0 | ", z ) ) )
+  }
+
+  #Catch errors
+  fit.large.gpe <- tryCatch(mlogit(my.formula.large.gpe, data = data.group, reflevel = ref.level), error = identity, warning = identity)
+  fit.combined.gpe <- tryCatch(mlogit(my.formula.combined.gpe, data = data.combined, reflevel = ref.level), error = identity, warning = identity)
+  
+  if(is(fit.large.gpe, "error") | is(fit.combined.gpe, "error")) {
+    pval <- NA ;
+    is.err <- 1 ;
+  }else {
+    my.model.combined.gpe <- summary(fit.combined.gpe)
+    my.model.large.gpe <- summary(fit.large.gpe)
+    pval <- pchisq(-2*as.numeric(my.model.combined.gpe$logLik) + 2*as.numeric(my.model.large.gpe$logLik), nlevels(large.group)-nlevels(combined.group), lower.tail=FALSE)
+    is.err <- 0
+  }
+  
+  results <- c(pval, is.err)
+  return(results)
+}
