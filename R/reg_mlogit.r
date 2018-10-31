@@ -1,10 +1,10 @@
 
-burden.mlogit <- function(x, group = x@ped$pheno, group2 = NULL,
+burden.mlogit <- function(x=NULL, group = x@ped$pheno, group2 = NULL,
                           genomic.region = x@snps$genomic.region, 
                           burden, maf.threshold = 0.01, 
                           ref.level, formula = NULL, data = NULL, get.OR.value=FALSE, alpha=0.05){
 
-  group <- as.factor(group)
+  group <- if(!is.factor(group)) as.factor(group)
 
   if(!(ref.level %in% levels(group))) 
     stop("'ref.level' is not a level of 'group'")
@@ -13,13 +13,15 @@ burden.mlogit <- function(x, group = x@ped$pheno, group2 = NULL,
     if(!is.matrix(burden)){
       stop("Score is not a matrix")
     } else {
-      if(ncol(burden) != nlevels(x@snps$genomic.region) | nrow(burden) != nrow(x@ped))
+      if(ncol(burden) != nlevels(genomic.region) | nrow(burden) != length(group))
         stop("Score has wrong dimensions")
     }
     score <- burden
   } else if(burden == "CAST"){
+    if(is.null(x)) stop("a bed.matrix 'x' is needed to compute CAST score")
     score <- CAST(x, genomic.region, maf.threshold)
   } else if(burden == "WSS"){
+    if(is.null(x)) stop("a bed.matrix 'x' is needed to compute WSS score")
     score <- WSS(x, genomic.region)
   } else {
     stop("'burden' should be \"CAST\", \"WSS\", or a matrix of pre-computed burdens");
