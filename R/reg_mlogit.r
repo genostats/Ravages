@@ -6,6 +6,8 @@ burden.mlogit <- function(x=NULL, group = x@ped$pheno, group2 = NULL,
 
   group <- if(!is.factor(group)) as.factor(group)
 
+  if(is.numeric(ref.level)) ref.level <- as.character(ref.level)
+
   if(!(ref.level %in% levels(group))) 
     stop("'ref.level' is not a level of 'group'")
 

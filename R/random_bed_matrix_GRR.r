@@ -113,6 +113,8 @@ random.bed.matrix.GRR <- function(file.pop.maf = Kryukov, size, baseline, replic
       GRR.2=NULL
     }    
     MAFS <- genotypic.freq(file.pop.maf=file.pop.maf, GRR=GRR, GRR.2=GRR.2, baseline=baseline, select.gene=select.gene, genetic.model=genetic.model)
+  #Check if problems with model
+    if(any(MAFS$freq.homo.ref[1,]>1 | MAFS$freq.het[1,]<0 | MAFS$freq.homo.alt[1,]<0)) stop("Impossible genetic model, please change your parametrization")
     .Call("oz_random_filling_bed_matrix_noHW", PACKAGE = "Ravages", x@bed, MAFS$freq.homo.ref, MAFS$freq.het, size, (b-1)*GRR.pars$n.variants)
   }
   x@ped$pheno <- rep.int( 1:length(size) - 1, size)
