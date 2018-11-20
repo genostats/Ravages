@@ -27,8 +27,10 @@ set.genomic.region.by.gene <- function(x, genes, include.all = FALSE) {
   if(include.all) {
     M <- as.integer(max(x@snps$pos, genes$End))  # joue le rôle de la position infinie !
     b <- genes$Chr[2:n] == genes$Chr[1:(n-1)]
-    start <- ifelse(b, as.integer(0.5*(genes$Start[-1] + genes$End[-1])),  0L)
-    end <- ifelse(b, start-1L, M)
+    #Teste si les gènes se chevauchent
+    b2 <- (genes$Start[2:n] > genes$End[1:(n-1)])
+    start <- ifelse(b, ifelse(b2, as.integer(0.5*(genes$Start[-1] + genes$End[-n])), genes$Start[-1]),  0L)
+    end <- ifelse(b, ifelse(b2, start-1L, genes$End[-n]), M)
     genes$Start <- c(0L,start)
     genes$End <- c(end,M)
   }

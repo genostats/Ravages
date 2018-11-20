@@ -1,5 +1,9 @@
 #We only accept matrices of good dimensions
 genotypic.freq <- function(file.pop.maf = Kryukov, GRR, GRR.2=NULL, baseline, genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
+
+  #Test if a good genetic model is given
+  if(!(genetic.model %in% c("general", "multiplicative", "dominant", "recessive"))) stop("Wrong genetic.model")
+
   #Selection of maf
   if (nlevels(file.pop.maf$gene) > 1) {
     if(is.null(select.gene)){

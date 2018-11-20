@@ -37,7 +37,7 @@ compute.GRR.matrix <- function(file.pop.maf=Kryukov, n.case.groups=2, GRR=c("con
     if(is.null(pop.maf)) stop("Needs MAF in the population to compute GRR")
     if(is.null(GRR.function)) stop("Needs a function to compute GRR")
     if(length(GRR.multiplicative.factor)!=(n.case.groups-1)) stop("Wrong number of multiplicative factors")
-    GRR.matrix <- matrix(rbind(do.call(GRR.function, list(pop.maf)), t(sapply(GRR.multiplicative.factor, function(z) z*do.call(GRR.function, list(pop.maf))))), nrow=n.case.groups, byrow=TRUE)
+    GRR.matrix <- matrix(rbind(do.call(GRR.function, list(pop.maf)), t(sapply(GRR.multiplicative.factor, function(z) z*do.call(GRR.function, list(pop.maf))))), nrow=n.case.groups, byrow=FALSE)
   }
   return(GRR.matrix)
 }
