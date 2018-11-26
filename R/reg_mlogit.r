@@ -1,5 +1,5 @@
 
-burden.mlogit <- function(x=NULL, group = x@ped$pheno, group2 = NULL,
+burden.mlogit <- function(x=NULL, group = x@ped$pheno,
                           genomic.region = x@snps$genomic.region, 
                           burden, maf.threshold = 0.01, 
                           ref.level, formula = NULL, data = NULL, get.OR.value=FALSE, alpha=0.05){
@@ -17,6 +17,12 @@ burden.mlogit <- function(x=NULL, group = x@ped$pheno, group2 = NULL,
     } else {
       if(ncol(burden) != nlevels(genomic.region) | nrow(burden) != length(group))
         stop("Score has wrong dimensions")
+      #If burden is a matrix: no need to specify genomic.region  
+      if(is.null(colnames(burden))){ 
+        genomic.region <- paste("genomic.region", 1:ncol(burden), sep=".")
+      }else{
+        genomic.region <- colnames(burden)
+      }
     }
     score <- burden
   } else if(burden == "CAST"){
@@ -35,7 +41,7 @@ burden.mlogit <- function(x=NULL, group = x@ped$pheno, group2 = NULL,
       stop("'data' has wrong dimensions")
     }
   }
-  
+
   genomic.region <- as.factor(genomic.region)
   
   alt.levels <- levels(group)[levels(group) != ref.level]
@@ -67,39 +73,6 @@ burden.mlogit <- function(x=NULL, group = x@ped$pheno, group2 = NULL,
 
   rownames(R) <- levels(genomic.region)
 
-  #Comparison of two nested models
-  if(!is.null(group2)){
-    if(!is.factor(group2)) group2 <- as.factor(group2)
-    if(nlevels(group)>nlevels(group2)){ combined.group <- group2 }else{ combined.group <- group }
-    if(nlevels(group)>nlevels(group2)){ large.group <- group }else{ large.group <- group2}
-    
-    #Check if the two models are nested
-    if(any(apply(as.matrix(table(large.group, combined.group)), 1, function(z) sum(z==0))>1)) 
-      stop("The two models are not nested")
-    
-    alt.levels.large <- levels(large.group)[levels(large.group) != ref.level]
-    alt.levels.combined <- levels(combined.group)[levels(combined.group) != ref.level]
-    
-    if(is.null(data)) {
-      data.nested <- cbind(combined.group = combined.group, large.group=large.group, score)
-    } else {
-      data.nested <- as.data.frame(data)
-      if(is.null(formula))
-        formula <- as.formula( paste("~", paste(colnames(data), collapse = "+")))
-      data.nested <- cbind(combined.group = combined.group, large.group = large.group, score, data.nested)
-    }
-    rownames(data.nested) <- NULL
-    data.combined <- mlogit.data(data.nested[,!(colnames(data.nested) == "large.group")], varying=NULL, shape="wide", choice="combined.group", alt.levels=levels(combined.group))
-    data.group <- mlogit.data(data.nested[,!(colnames(data.nested) == "combined.group")], varying=NULL, shape="wide", choice="large.group", alt.levels=levels(large.group))
-    
-    R.nested <- sapply( levels(genomic.region), function(reg) run.mlogit.two.models(data.combined = data.combined, data.group = data.group,
-                                                                             large.group = large.group, combined.group = combined.group,
-                                                                             score = score, region = reg, ref.level = ref.level, 
-                                                                             alt.levels.large = alt.levels.large, alt.levels.combined = alt.levels.combined, 
-                                                                             formula = formula))
-    R.nested <- as.data.frame(t(R.nested)) ; rownames(R.nested) <- levels(genomic.region)
-    return(list(logistic.regression=R, nested.models=R.nested))
-  }
   return(R)
 }
 
