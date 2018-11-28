@@ -15,14 +15,14 @@ burden.mlogit <- function(x=NULL, group = x@ped$pheno,
     if(!is.matrix(burden)){
       stop("Score is not a matrix")
     } else {
-      if(ncol(burden) != nlevels(genomic.region) | nrow(burden) != length(group))
-        stop("Score has wrong dimensions")
       #If burden is a matrix: no need to specify genomic.region  
       if(is.null(colnames(burden))){ 
-        genomic.region <- paste("genomic.region", 1:ncol(burden), sep=".")
+        genomic.region <- factor(paste("genomic.region", 1:ncol(burden), sep="."))
       }else{
-        genomic.region <- colnames(burden)
+        genomic.region <- as.factor(colnames(burden))
       }
+      if(ncol(burden) != nlevels(genomic.region) | nrow(burden) != length(group))
+        stop("Score has wrong dimensions")
     }
     score <- burden
   } else if(burden == "CAST"){
