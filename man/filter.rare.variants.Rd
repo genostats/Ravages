@@ -7,14 +7,16 @@
   Filter rare variants based on a MAF threshold and a given number of SNP per genomic region
 }
 \usage{
-filter.rare.variants(x, filter=c("whole", "controls", "any"), 
-                     maf.threshold=0.01, min.nb.snps)
+filter.rare.variants(x, ref.level, filter=c("whole", "controls", "any"), 
+                     maf.threshold=0.01, min.nb.snps, group)
 }
 \arguments{
   \item{x}{ A bed.matrix }
+  \item{ref.level}{ The level corresponding to the controls group, only needed if \code{filter=="controls"} }
   \item{filter}{ On which group the filter will be applied }
   \item{maf.threshold}{ The MAF threshold used to define a rare variant}
   \item{min.nb.snps}{ The minimum number of snps needed to keep a genomic region}
+  \item{group}{ A vector or factor indicating the group of each individual, if missing, \code{x@ped$pheno} is taken}
 }
 \value{
   A bed.matrix with filtered variants
