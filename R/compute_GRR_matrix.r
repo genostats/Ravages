@@ -13,7 +13,10 @@ compute.GRR.matrix <- function(file.pop.maf=Kryukov, n.case.groups=2, GRR=c("con
 
   ##Check on multiplicative values
   if(is.null(GRR.multiplicative.factor) & n.case.groups>1) stop("Needs 'GRR.multiplicative.factor'")
-  if(!is.null(GRR.multiplicative.factor) & n.case.groups==1) warning("Only one group of cases, 'GRR.multiplicative.factor' is ignored")
+  if(!is.null(GRR.multiplicative.factor)){ 
+    if(n.case.groups==1) warning("Only one group of cases, 'GRR.multiplicative.factor' is ignored")
+    if(length(GRR.multiplicative.factor)!=(n.case.groups-1)) stop("Wrong number of multiplicative factors")
+  }
                       
   ##Same GRR for all variants
   if(GRR=="constant"){
@@ -22,22 +25,32 @@ compute.GRR.matrix <- function(file.pop.maf=Kryukov, n.case.groups=2, GRR=c("con
       warning("Only one GRR value needed, only the first value will be used")
       GRR.value <- GRR.value[1]
     }
-    #Need n.groups-1 multiplicative factor: multiplication between group of case 1 and other groups of cases
-    if(length(GRR.multiplicative.factor)!=(n.case.groups-1)) stop("Wrong number of multiplicative factors")
-    GRR.matrix <- matrix(rbind(rep(GRR.value, n.variants), t(sapply(GRR.multiplicative.factor, function(z) z*rep(GRR.value, n.variants)))), nrow=n.case.groups)
+    #If only one group
+    if(n.case.groups==1){
+      GRR.matrix <- matrix(rep(GRR.value, n.variants),nrow=n.case.groups)
+    }else{
+      #Need n.groups-1 multiplicative factor: multiplication between group of case 1 and other groups of cases
+      GRR.matrix <- matrix(rbind(rep(GRR.value, n.variants), t(sapply(GRR.multiplicative.factor, function(z) z*rep(GRR.value, n.variants)))), nrow=n.case.groups)
+    }
   }
                                                                                                   
   if(GRR=="SKAT"){
     if(is.null(pop.maf)) stop("Needs MAF in the population to compute GRR")
-    if(length(GRR.multiplicative.factor)!=(n.case.groups-1)) stop("Wrong number of multiplicative factors")
-    GRR.matrix <- matrix(rbind(exp(0.402*abs(log10(pop.maf))), t(sapply(GRR.multiplicative.factor, function(z) z*exp(0.402*abs(log10(pop.maf)))))), nrow=n.case.groups)
+    if(n.case.groups==1){
+      GRR.matrix <- matrix(exp(0.402*abs(log10(pop.maf))), nrow=n.case.groups)
+    }else{
+      GRR.matrix <- matrix(rbind(exp(0.402*abs(log10(pop.maf))), t(sapply(GRR.multiplicative.factor, function(z) z*exp(0.402*abs(log10(pop.maf)))))), nrow=n.case.groups)
+    }
   }
                                                                               
   if(GRR=="variable"){
     if(is.null(pop.maf)) stop("Needs MAF in the population to compute GRR")
     if(is.null(GRR.function)) stop("Needs a function to compute GRR")
-    if(length(GRR.multiplicative.factor)!=(n.case.groups-1)) stop("Wrong number of multiplicative factors")
-    GRR.matrix <- matrix(rbind(do.call(GRR.function, list(pop.maf)), t(sapply(GRR.multiplicative.factor, function(z) z*do.call(GRR.function, list(pop.maf))))), nrow=n.case.groups, byrow=FALSE)
+    if(n.case.groups==1){
+      GRR.matrix <- matrix(do.call(GRR.function, list(pop.maf)),nrow=n.case.groups, byrow=FALSE)
+    }else{
+      GRR.matrix <- matrix(rbind(do.call(GRR.function, list(pop.maf)), t(sapply(GRR.multiplicative.factor, function(z) z*do.call(GRR.function, list(pop.maf))))), nrow=n.case.groups, byrow=FALSE)
+    }
   }
   return(GRR.matrix)
 }
