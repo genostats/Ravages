@@ -1,17 +1,17 @@
 ##random.bed.matrix with GRR
-random.bed.matrix.GRR <- function(file.pop.maf = Kryukov, size, baseline, replicates, 
+random.bed.matrix.GRR <- function(genes.maf = Kryukov, size, baseline, replicates, 
                                   GRR.matrix, GRR.matrix.pro=NULL, prop.del = 0.5, prop.pro = 0, 
-                                  same.variant=c(FALSE, TRUE), fixed.variant.prop = c(TRUE, FALSE), 
+                                  same.variant=FALSE, fixed.variant.prop = TRUE, 
                                   genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
   
-  if (nlevels(file.pop.maf$gene) > 1){ 
+  if (nlevels(genes.maf$gene) > 1){ 
     if(is.null(select.gene)){
       warning("More than one gene in the file, only the first one is used")
-      select.gene <- levels(file.pop.maf$gene)[[1]]
+      select.gene <- levels(genes.maf$gene)[[1]]
     }
-    pop.maf <- subset(file.pop.maf, file.pop.maf$gene %in% select.gene)$maf
+    pop.maf <- subset(genes.maf, genes.maf$gene %in% select.gene)$maf
   }else{
-    pop.maf <- file.pop.maf$maf
+    pop.maf <- genes.maf$maf
   }
   
   ##Check GRR
@@ -23,6 +23,9 @@ random.bed.matrix.GRR <- function(file.pop.maf = Kryukov, size, baseline, replic
     }
   GRR <- GRR.matrix[[1]]
   }
+
+  genetic.model <- match.arg(genetic.model)
+
   if (length(GRR.matrix) == 1) {
     if (genetic.model == "general") {
       stop("Needs two GRR matrices in the general model")
@@ -112,7 +115,7 @@ random.bed.matrix.GRR <- function(file.pop.maf = Kryukov, size, baseline, replic
     }else{
       GRR.2=NULL
     }    
-    MAFS <- genotypic.freq(file.pop.maf=file.pop.maf, GRR=GRR, GRR.2=GRR.2, baseline=baseline, select.gene=select.gene, genetic.model=genetic.model)
+    MAFS <- genotypic.freq(genes.maf=genes.maf, GRR=GRR, GRR.2=GRR.2, baseline=baseline, select.gene=select.gene, genetic.model=genetic.model)
   #Check if problems with model
     if(any(MAFS$freq.homo.ref[1,]>1 | MAFS$freq.het[1,]<0 | MAFS$freq.homo.alt[1,]<0)) stop("Impossible genetic model, please change your parametrization")
     .Call("oz_random_filling_bed_matrix_noHW", PACKAGE = "Ravages", x@bed, MAFS$freq.homo.ref, MAFS$freq.het, size, (b-1)*GRR.pars$n.variants)

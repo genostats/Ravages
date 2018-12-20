@@ -12,7 +12,7 @@ importFrom("mlogit", "mFormula", "mlogit", "mlogit.data")
 useDynLib(Ravages)
 
 export(CAST, WSS)
-export(set.genomic.region.by.gene)
+export(set.genomic.region)
 export(Jaccard)
 export(filter.rare.variants)
 export(burden.mlogit)

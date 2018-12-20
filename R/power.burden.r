@@ -1,12 +1,17 @@
 power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), min.nb.snps = NULL, maf.threshold = 0.01, 
               CAST = c(TRUE, FALSE), WSS = c(TRUE, FALSE), other.score=NULL, 
               pooled.analysis=c(TRUE, FALSE), non.pooled.analysis=c(TRUE, FALSE), analysis.by.group=c(TRUE, FALSE),
-              file.pop.maf=Kryukov, select.gene=NULL, 
-              size=c(1000, 500, 500), baseline=c(0.001, 0.001), replicates=1000, 
-              same.variant=c(FALSE, TRUE), fixed.variant.prop = c(TRUE, FALSE),
-              genetic.model=c("multiplicative", "general", "recessive", "dominant"),
-              GRR.matrix, GRR.matrix.pro=NULL, prop.del=0.5, prop.pro=0,              
-              formula = NULL, data = NULL, ref.level="0"){
+              model.pars = list(), formula = NULL, data = NULL, ref.level="0"){
+
+# dans model.pars 
+#              genes.maf=Kryukov, select.gene=NULL, 
+#              size=c(1000, 500, 500), baseline=c(0.001, 0.001), replicates=1000, 
+#              same.variant=c(FALSE, TRUE), fixed.variant.prop = c(TRUE, FALSE),
+#              genetic.model=c("multiplicative", "general", "recessive", "dominant"),
+#              GRR.matrix, GRR.matrix.pro=NULL, prop.del=0.5, prop.pro=0,              
+# pour compute GRR
+# n.case.groups = length(baseline) (si fournis)
+# GGR, GRR.value, GRR.function, GRR.mutiplicative.factor, select.gene
 
 ##Check if another score is asked
   if(!is.null(other.score)){
@@ -14,10 +19,19 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
   }      
 
 ##Arguments for data simulation
-  model.pars <- list(file.pop.maf=file.pop.maf, size=size, baseline=baseline, replicates=replicates, GRR.matrix=GRR.matrix, GRR.matrix.pro=GRR.matrix.pro, same.variant=same.variant, fixed.variant.prop = fixed.variant.prop, genetic.model=genetic.model, select.gene=select.gene, prop.del = prop.del, prop.pro=prop.pro)
+#  model.pars <- list(genes.maf=genes.maf, size=size, baseline=baseline, replicates=replicates, GRR.matrix=GRR.matrix, GRR.matrix.pro=GRR.matrix.pro, same.variant=same.variant, fixed.variant.prop = fixed.variant.prop, genetic.model=genetic.model, select.gene=select.gene, prop.del = prop.del, prop.pro=prop.pro)
   
 ##Data simulation
-  x <- do.call(random.bed.matrix.GRR, model.pars)
+
+  GRRmat.args <- model.pars[ intersect( names(model.pars), names(formals(compute.GRR.matrix))) ]
+  random.bm.args <- model.pars[ intersect( names(model.pars), names(formals(random.bed.matrix.GRR))) ]
+  if( !("GRR.matrix" %in% names(random.bm.args) ) {
+    GRRmat <- do.call( compute.GRR.matrix, GRRmat.args)
+    random.bm.args$GRR.matrix <- GRRmat
+  }
+
+  x <- do.call(random.bed.matrix.GRR, random.bm.args)
+
   x <- filter.rare.variants(x, filter=filter, maf.threshold=maf.threshold, min.nb.snps = min.nb.snps)
   pheno.pooled <- ifelse(x@ped$pheno==0, 0, 1)
   if (!is.null(other.score)) score <- other.score(x)

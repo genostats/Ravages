@@ -1,13 +1,13 @@
-compute.GRR.matrix <- function(file.pop.maf=Kryukov, n.case.groups=2, GRR=c("constant", "SKAT", "variable"), GRR.value=NULL, GRR.function=NULL, GRR.multiplicative.factor=2, select.gene=NULL){
+compute.GRR.matrix <- function(genes.maf=Kryukov, n.case.groups=2, GRR=c("constant", "SKAT", "variable"), GRR.value=NULL, GRR.function=NULL, GRR.multiplicative.factor=2, select.gene=NULL){
   ##Select MAF from the file given by the user  
-  if(nlevels(file.pop.maf$gene)>1){
+  if(nlevels(genes.maf$gene)>1){
     if(is.null(select.gene)){
       warning("More than one gene in the file, only the first one is used")
-      select.gene <- levels(file.pop.maf$gene)[[1]]
+      select.gene <- levels(genes.maf$gene)[[1]]
     }
-    pop.maf <- subset(file.pop.maf, file.pop.maf$gene %in% select.gene)$maf
+    pop.maf <- subset(genes.maf, genes.maf$gene %in% select.gene)$maf
   }else{
-    pop.maf <- file.pop.maf$maf
+    pop.maf <- genes.maf$maf
   }
   n.variants <- length(pop.maf)
 

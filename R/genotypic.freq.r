@@ -1,18 +1,18 @@
 #We only accept matrices of good dimensions
-genotypic.freq <- function(file.pop.maf = Kryukov, GRR, GRR.2=NULL, baseline, genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
+genotypic.freq <- function(genes.maf = Kryukov, GRR, GRR.2=NULL, baseline, genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
 
   #Test if a good genetic model is given
   if(!(genetic.model %in% c("general", "multiplicative", "dominant", "recessive"))) stop("Wrong genetic.model")
 
   #Selection of maf
-  if (nlevels(file.pop.maf$gene) > 1) {
+  if (nlevels(genes.maf$gene) > 1) {
     if(is.null(select.gene)){
       warning("More than one gene in the file, only the first one is used")
-      select.gene <- levels(file.pop.maf$gene)[[1]]
+      select.gene <- levels(genes.maf$gene)[[1]]
     }
-    pop.maf <- subset(file.pop.maf, file.pop.maf$gene %in% select.gene)$maf
+    pop.maf <- subset(genes.maf, genes.maf$gene %in% select.gene)$maf
   }else{
-    pop.maf <- file.pop.maf$maf
+    pop.maf <- genes.maf$maf
   }
 
   #test dimensions of GRR

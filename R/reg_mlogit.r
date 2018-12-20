@@ -1,5 +1,5 @@
 
-burden.mlogit <- function(x=NULL, group = x@ped$pheno,
+burden.mlogit <- function(x, group = x@ped$pheno,
                           genomic.region = x@snps$genomic.region, 
                           burden, maf.threshold = 0.01, 
                           ref.level, formula = NULL, data = NULL, get.OR.value=FALSE, alpha=0.05){
@@ -26,10 +26,10 @@ burden.mlogit <- function(x=NULL, group = x@ped$pheno,
     }
     score <- burden
   } else if(burden == "CAST"){
-    if(is.null(x)) stop("a bed.matrix 'x' is needed to compute CAST score")
+    if(missing(x)) stop("a bed.matrix 'x' is needed to compute CAST score")
     score <- CAST(x, genomic.region, maf.threshold)
   } else if(burden == "WSS"){
-    if(is.null(x)) stop("a bed.matrix 'x' is needed to compute WSS score")
+    if(missing(x)) stop("a bed.matrix 'x' is needed to compute WSS score")
     score <- WSS(x, genomic.region)
   } else {
     stop("'burden' should be \"CAST\", \"WSS\", or a matrix of pre-computed burdens");

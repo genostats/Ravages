@@ -13,3 +13,7 @@ Notes après réunion du 12 sept:
 * Il faut vérifier la fonction burden.mlogit pour modèles emboites
 (pour l'instant mauvaises p-valeurs)
 + Il faut modifier le manuel correspondant et la vignette
+
+** dec 2018
+
+quand le package est chargé on n'a pas l'aide des data (Kryukov, GnomeADgenes)
