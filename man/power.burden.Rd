@@ -13,7 +13,7 @@ power.burden(alpha = 2.5e-06, filter = c("whole", "controls", "any"),
              pooled.analysis = c(TRUE, FALSE), 
              non.pooled.analysis = c(TRUE, FALSE), 
              analysis.by.group = c(TRUE, FALSE), 
-             file.pop.maf = Kryukov, select.gene=NULL,
+             genes.maf = Kryukov, select.gene=NULL,
              size = c(1000, 500, 500), baseline = c(0.001, 0.001), 
              replicates = 1000, 
              same.variant = c(FALSE, TRUE), fixed.variant.prop = c(TRUE, FALSE),
@@ -34,8 +34,8 @@ power.burden(alpha = 2.5e-06, filter = c("whole", "controls", "any"),
   \item{pooled.analysis}{ TRUE/FALSE: whether to calculate the power of the pooled analysis, i.e. comparing all the cases to the controls}
   \item{non.pooled.analysis}{ TRUE/FALSE: whether to calculate the power of the non-pooled analysis, i.e. considering all the groups of individuals}
   \item{analysis.by.group}{ TRUE/FALSE: whether to calculate the power of the analysis by group, i.e. comparing each group of cases to the controls}
-  \item{file.pop.maf}{ A file containing the MAF in the general population (column maf) for variants grouped in genes (column gene), by default the file Kryukov is used}
-  \item{select.gene}{ Which gene to choose from \code{file.pop.maf$gene} if multiple genes are present}
+  \item{genes.maf}{ A file containing the MAF in the general population (column maf) for variants grouped in genes (column gene), by default the file Kryukov is used}
+  \item{select.gene}{ Which gene to choose from \code{genes.maf$gene} if multiple genes are present}
   \item{size}{ A vector giving the size of each group of individuals. By default: one group of 1,000 controls and two groups of 500 cases}
   \item{baseline}{ A vector giving the baseline of each group of cases, by default 0.001 for the two groups of cases}
   \item{replicates}{ The number of simulations to perform for power calculation. 1,000 by default}
@@ -73,7 +73,7 @@ power.burden(alpha = 2.5e-06, filter = c("whole", "controls", "any"),
 }
 \examples{
 #GRR values according to the SKAT formula
-GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, 
+GRR.del <- compute.GRR.matrix(GRR = "SKAT", genes.maf = Kryukov, 
                               n.case.groups = 2, select.gene = "R1",
                               GRR.multiplicative.factor=2)
                                  

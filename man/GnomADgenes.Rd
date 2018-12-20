@@ -1,5 +1,6 @@
 \name{GnomADgenes}
 \docType{data}
+\alias{GnomADgenes}
 
 \title{GnomADgenes dataset}
 

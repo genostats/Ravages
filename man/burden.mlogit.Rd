@@ -45,13 +45,13 @@ burden.mlogit(x, group = x@ped$pheno,
 }
 \examples{
 #Data simulation: GRR values according to the SKAT formula
-GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, 
+GRR.del <- compute.GRR.matrix(GRR = "SKAT", genes.maf = Kryukov, 
                               select.gene="R1", n.case.groups = 2,
                               GRR.multiplicative.factor=2)
 
 #Simulation of one group of 1,000 controls and two groups of 500 cases,
 #50% of deleterious, 5 genomic regions are simulated.
-x <- random.bed.matrix.GRR(file.pop.maf=Kryukov,
+x <- random.bed.matrix.GRR(genes.maf=Kryukov,
                            size = c(1000, 500, 500), baseline = c(0.001, 0.001),
                            GRR.matrix = GRR.del, prop.del = 0.5,
                            same.variant = FALSE, fixed.variant.prop = TRUE,

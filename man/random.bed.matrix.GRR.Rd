@@ -7,7 +7,7 @@
   Generates a bed.matrix with genotypes for cases and controls based on simulation parameters
 }
 \usage{
-random.bed.matrix.GRR(file.pop.maf = Kryukov, size, baseline, 
+random.bed.matrix.GRR(genes.maf = Kryukov, size, baseline, 
                       replicates, GRR.matrix, GRR.matrix.pro=NULL, 
                       prop.del = 0.5, prop.pro = 0, 
                       same.variant = c(FALSE,TRUE), 
@@ -16,7 +16,7 @@ random.bed.matrix.GRR(file.pop.maf = Kryukov, size, baseline,
                       "dominant", "recessive"), select.gene = NULL)
 }
 \arguments{
-  \item{file.pop.maf}{ A file containing the MAF in the general population (column maf) for variants grouped in genes (column gene), by default the file Kryukov is used}
+  \item{genes.maf}{ A file containing the MAF in the general population (column maf) for variants grouped in genes (column gene), by default the file Kryukov is used}
   \item{size}{ A vector containing the size of the controls group and of each cases group }
   \item{baseline}{ A vector containing the baseline for each group of cases}
   \item{replicates}{ The number of simulations to perform }
@@ -27,10 +27,10 @@ random.bed.matrix.GRR(file.pop.maf = Kryukov, size, baseline,
   \item{same.variant}{ TRUE/FALSE: whether the causal variants are the same in the different groups of cases}
   \item{fixed.variant.prop}{ TRUE/FALSE: whether the arguments \code{prop.del} and \code{prop.pro} correspond to the final proportion of deleterious and protective variants (TRUE) or to the probability for each variant of being deleterious or protective (FALSE)}
   \item{genetic.model}{ The genetic model of the disease }
-  \item{select.gene}{ Which gene to choose from \code{file.pop.maf$gene} if multiple genes are present. If missing, only the first level is kept.}
+  \item{select.gene}{ Which gene to choose from \code{genes.maf$gene} if multiple genes are present. If missing, only the first level is kept.}
 }
 \value{
-  A bed.matrix with as much columns (variants) as \code{replicates}*length(\code{file.pop.maf$maf}).
+  A bed.matrix with as much columns (variants) as \code{replicates}*length(\code{genes.maf$maf}).
   The field \code{x@snps$genomic.region} contains the replicate number and the field \code{x@ped$pheno} contrains the group of each individual, "0" being the controls group.
 }
 \details{
@@ -39,21 +39,21 @@ random.bed.matrix.GRR(file.pop.maf = Kryukov, size, baseline,
   If \code{genetic.model="multiplicative"}, we assume that the the GRR associated to the homozygous for the alternate allele is the square of the GRR associated to the heterozygous: only one GRR matrix is needed.
   If \code{genetic.model="dominant"}, we assume that the GRR associated to the heterozygous and the GRR associated to the homozygous for the alternate allele are equal: only one GRR matrix is needed.
   If \code{genetic.model="recessive"}, we assume that the GRR associated to the heterozygous is equal to 1: the GRR given is the one associated to the homozygous for the alternate allele.  
-  The files Kryukov or GnomADgenes available with the package Ravages can be used as the argument \code{file.pop.maf}.
+  The files Kryukov or GnomADgenes available with the package Ravages can be used as the argument \code{genes.maf}.
 }
 \author{
   Herve Perdry and Ozvan Bocher
 }
 \examples{
 #GRR values calculated with the SKAT formula
-GRR.del <- compute.GRR.matrix(GRR = "SKAT", file.pop.maf = Kryukov, 
+GRR.del <- compute.GRR.matrix(GRR = "SKAT", genes.maf = Kryukov, 
                               n.case.groups = 2, select.gene = "R1",
                               GRR.multiplicative.factor=2)
                               
 #Simulation of one group of 1,000 controls and two groups of 500 cases, 
 #each one with a prevalence of 0.001
 #with 50% of deleterious variants, 5 genomic regions are simulated.
-x <- random.bed.matrix.GRR(file.pop.maf = Kryukov, size = c(1000, 500, 500), 
+x <- random.bed.matrix.GRR(genes.maf = Kryukov, size = c(1000, 500, 500), 
                            baseline = c(0.001, 0.001), GRR.matrix = GRR.del, 
                            prop.del = 0.5, prop.pro = 0, select.gene="R1",
                            same.variant = FALSE, fixed.variant.prop = TRUE, 

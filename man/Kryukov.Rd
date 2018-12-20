@@ -1,5 +1,6 @@
 \name{Kryukov}
 \docType{data}
+\alias{Kryukov}
 
 \title{Kryukov data set}
 

@@ -31,12 +31,12 @@ Herve Perdry and Ozvan Bocher
 }
 \examples{
 #GRR values according to the SKAT formula
-GRR.del <- compute.GRR.matrix(file.pop.maf=Kryukov, select.gene="R1",
+GRR.del <- compute.GRR.matrix(genes.maf=Kryukov, select.gene="R1",
                               GRR = "SKAT", GRR.multiplicative.factor=2)
   
 #Simulation of one group of 1,000 controls and two groups of 500 cases, 
 #50% of deleterious variants, 5 genomic regions are simulated.
-x <- random.bed.matrix.GRR(file.pop.maf=Kryukov, size = c(1000, 500, 500), 
+x <- random.bed.matrix.GRR(genes.maf=Kryukov, size = c(1000, 500, 500), 
                            baseline = c(0.001, 0.001), select.gene="R1",
                            GRR.matrix = GRR.del, prop.del = 0.5, 
                            same.variant=FALSE, fixed.variant.prop=TRUE,
