@@ -2,7 +2,7 @@
 burden.mlogit <- function(x, group = x@ped$pheno,
                           genomic.region = x@snps$genomic.region, 
                           burden, maf.threshold = 0.01, 
-                          ref.level, formula = NULL, data = NULL, get.OR.value=FALSE, alpha=0.05){
+                          ref.level, formula=NULL, data=NULL, get.OR.value=FALSE, alpha=0.05){
 
   group <- if(!is.factor(group)) as.factor(group)
 

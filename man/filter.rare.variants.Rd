@@ -22,25 +22,24 @@ filter.rare.variants(x, ref.level, filter=c("whole", "controls", "any"),
   A bed.matrix with filtered variants
 }
 \details{
-  If the \code{filter="whole"}, only the variants having a MAF lower than the threshold in the entire sample are kept.
-  If the \code{filter="controls"}, only the variants having a MAF lower than the threshold in the controls group are kept.
-  If the \code{filter="any"}, only the variants having a MAF lower than the threshold in any of the groups are kept.
-}
-\author{
-Herve Perdry and Ozvan Bocher
+  If \code{filter="whole"}, only the variants having a MAF lower than the threshold in the entire sample are kept.
+
+  If \code{filter="controls"}, only the variants having a MAF lower than the threshold in the controls group are kept.
+
+  If \code{filter="any"}, only the variants having a MAF lower than the threshold in any of the groups are kept.
 }
 \examples{
 #GRR values according to the SKAT formula
-GRR.del <- compute.GRR.matrix(genes.maf=Kryukov, select.gene="R1",
-                              GRR = "SKAT", GRR.multiplicative.factor=2)
+GRR.del <- GRR.matrix(genes.maf=Kryukov, select.gene="R1",
+                      GRR = "SKAT", GRR.multiplicative.factor=2)
   
 #Simulation of one group of 1,000 controls and two groups of 500 cases, 
 #50% of deleterious variants, 5 genomic regions are simulated.
-x <- random.bed.matrix.GRR(genes.maf=Kryukov, size = c(1000, 500, 500), 
-                           baseline = c(0.001, 0.001), select.gene="R1",
-                           GRR.matrix = GRR.del, prop.del = 0.5, 
-                           same.variant=FALSE, fixed.variant.prop=TRUE,
-                           genetic.model = "multiplicative", replicates = 5)
+x <- random.bed.matrix(genes.maf=Kryukov, size = c(1000, 500, 500), 
+                       baseline = c(0.001, 0.001), select.gene="R1",
+                       GRR.matrix.del = GRR.del, prop.del = 0.5, 
+                       same.variant=FALSE, fixed.variant.prop=TRUE,
+                       genetic.model = "multiplicative", replicates = 5)
                              
 #Filter of rare variants: only non-monomorphic variants with 
 #a MAF lower than 1% and regions with at least 5 variants are kept.

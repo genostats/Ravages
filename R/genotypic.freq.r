@@ -1,12 +1,13 @@
 #We only accept matrices of good dimensions
-genotypic.freq <- function(genes.maf = Kryukov, GRR, GRR.2=NULL, baseline, genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
-
+genotypic.freq <- function(genes.maf = Kryukov, GRR.het, GRR.homo.alt, baseline, genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene) {
+  
+  genetic.model <- match.arg(genetic.model)
   #Test if a good genetic model is given
   if(!(genetic.model %in% c("general", "multiplicative", "dominant", "recessive"))) stop("Wrong genetic.model")
 
   #Selection of maf
   if (nlevels(genes.maf$gene) > 1) {
-    if(is.null(select.gene)){
+    if(missing(select.gene)){
       warning("More than one gene in the file, only the first one is used")
       select.gene <- levels(genes.maf$gene)[[1]]
     }
@@ -15,22 +16,24 @@ genotypic.freq <- function(genes.maf = Kryukov, GRR, GRR.2=NULL, baseline, genet
     pop.maf <- genes.maf$maf
   }
 
-  #test dimensions of GRR
-  if(nrow(GRR) != length(baseline) | ncol(GRR) != length(pop.maf)) 
-    stop("GRR dimensions mismatch")
+  #test dimensions of GRR.het
+  if(nrow(GRR.het) != length(baseline) | ncol(GRR.het) != length(pop.maf)) 
+    stop("GRR.het dimensions mismatch")
     
-  #Test on GRR.2 only for general model , if not general model: only first GRR matrix used
+  #Test on GRR.homo.alt only for general model , if not general model: only first GRR.het matrix used
   if(genetic.model=="general"){
-    if(is.null(GRR.2)){
+    if(missing(GRR.homo.alt) | is.null(GRR.homo.alt)){
       stop("general model needs two GRR values per group")
     }else{
-      if(nrow(GRR)!=nrow(GRR.2) | ncol(GRR)!=ncol(GRR.2)){
-        stop("GRR and GRR.2 have different dimensions")
+      if(nrow(GRR.het)!=nrow(GRR.homo.alt) | ncol(GRR.het)!=ncol(GRR.homo.alt)){
+        stop("GRR.het and GRR.homo.alt have different dimensions")
       }
     }
   }else{
-    if(!is.null(GRR.2)){
+    if(!missing(GRR.homo.alt)){
+      if(!is.null(GRR.homo.alt) ){
       warning("Only one GRR matrix needed for this model, only the first one is used")
+      }
     }
   }
 
@@ -38,29 +41,29 @@ genotypic.freq <- function(genes.maf = Kryukov, GRR, GRR.2=NULL, baseline, genet
       
   #Creates matrix for each model
   if(genetic.model=="multiplicative"){
-    GRR.2 <- GRR**2
+    GRR.homo.alt <- GRR.het**2
   }
   
   if(genetic.model=="dominant"){
-    GRR.2 <- GRR
+    GRR.homo.alt <- GRR.het
   }
   
-  #GRR=1 for heterozygous if genetic.model=recessive
+  #GRR.het=1 for heterozygous if genetic.model=recessive
   if(genetic.model=="recessive"){
-    GRR.2 <- GRR
-    GRR <- matrix(rep(1, ncol(GRR)*nrow(GRR)), nrow=nrow(GRR)) 
+    GRR.homo.alt <- GRR.het
+    GRR.het <- matrix(rep(1, ncol(GRR.het)*nrow(GRR.het)), nrow=nrow(GRR.het)) 
   }    
 
   if(any(baseline < 0) | sum(baseline) > 1)
     stop("Unappropriate baseline values")
 
   #Frequencies calculation
-  homo.ref <- het <- homo.alt <- matrix(rep(0, ncol(GRR)*(nrow(GRR)+1)), nrow=nrow(GRR)+1)
-  p.c <- matrix(rep(0,ncol(GRR)*nrow(GRR)), nrow=nrow(GRR))
-  p.t <- numeric(ncol(GRR))
-  for (i in 1:ncol(GRR)){
-    freq.case <- p.case(pop.maf[i], GRR[,i], GRR.2[,i])
-    freq.controls <- p.tem.GRR(pop.maf[i], GRR[,i], GRR.2[,i], baseline=baseline)
+  homo.ref <- het <- homo.alt <- matrix(rep(0, ncol(GRR.het)*(nrow(GRR.het)+1)), nrow=nrow(GRR.het)+1)
+  p.c <- matrix(rep(0,ncol(GRR.het)*nrow(GRR.het)), nrow=nrow(GRR.het))
+  p.t <- numeric(ncol(GRR.het))
+  for (i in 1:ncol(GRR.het)){
+    freq.case <- p.case(pop.maf[i], GRR.het[,i], GRR.homo.alt[,i])
+    freq.controls <- p.tem.GRR(pop.maf[i], GRR.het[,i], GRR.homo.alt[,i], baseline=baseline)
 
     homo.ref[,i] <- c(freq.controls[3], freq.case[,3])
     het[,i] <- c(freq.controls[2], freq.case[,2])

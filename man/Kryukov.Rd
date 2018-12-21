@@ -5,8 +5,9 @@
 \title{Kryukov data set}
 
 \description{
-  These data are the data from Kryukov et al, 2009, containing deep resequencing data for the European population.
-  They contain 200 units corresponding to 200 genes. For each unit, the data set contains the maf in the European population, the selection coefficient and the position of each variant.
+  The data from Kryukov et al, 2009, contain simulated site frequency spectrum data using European demographic models with purifying selection.
+
+  200 units are present corresponding to 200 genes. For each unit, the data set contains the maf in the European population, the selection coefficient and the position of each variant.
 }
 
 \usage{data(Kryukov) }

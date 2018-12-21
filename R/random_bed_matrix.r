@@ -1,11 +1,11 @@
 ##random.bed.matrix with GRR
-random.bed.matrix.GRR <- function(genes.maf = Kryukov, size, baseline, replicates, 
-                                  GRR.matrix, GRR.matrix.pro=NULL, prop.del = 0.5, prop.pro = 0, 
-                                  same.variant=FALSE, fixed.variant.prop = TRUE, 
-                                  genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene=NULL) {
+random.bed.matrix <- function(genes.maf = Kryukov, size, baseline, replicates, 
+                              GRR.matrix.del, GRR.matrix.pro, prop.del = 0.5, prop.pro = 0, 
+                              same.variant=FALSE, fixed.variant.prop = TRUE, 
+                              genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene) {
   
   if (nlevels(genes.maf$gene) > 1){ 
-    if(is.null(select.gene)){
+    if(missing(select.gene)){
       warning("More than one gene in the file, only the first one is used")
       select.gene <- levels(genes.maf$gene)[[1]]
     }
@@ -15,34 +15,34 @@ random.bed.matrix.GRR <- function(genes.maf = Kryukov, size, baseline, replicate
   }
   
   ##Check GRR
-  if (!is.list(GRR.matrix)) {
-    if (is.matrix(GRR.matrix)) {
-      GRR.matrix <- list(GRR.matrix)
+  if (!is.list(GRR.matrix.del)) {
+    if (is.matrix(GRR.matrix.del)) {
+      GRR.matrix.del <- list(GRR.matrix.del)
     }else{
-      stop("GRR.matrix should be a list or a matrix")
+      stop("GRR.matrix.del should be a list or a matrix")
     }
-  GRR <- GRR.matrix[[1]]
+  GRR.het <- GRR.matrix.del[[1]]
   }
 
   genetic.model <- match.arg(genetic.model)
 
-  if (length(GRR.matrix) == 1) {
+  if (length(GRR.matrix.del) == 1) {
     if (genetic.model == "general") {
       stop("Needs two GRR matrices in the general model")
     }else{
-      GRR.2 <- NULL
+      GRR.homo.alt <- NULL
     }
   }else{
     if (genetic.model == "general") {
-      GRR.2 <- GRR.matrix[[2]]
+      GRR.homo.alt <- GRR.matrix.del[[2]]
     }else{
       warning("Only one GRR matrix needed for this model, only the first one is used")
-      GRR.2 <- NULL
+      GRR.homo.alt <- NULL
     }
   }
   
   ##Same for protective
-  if (!is.null(GRR.matrix.pro)) {
+  if (!missing(GRR.matrix.pro)) {
     if (!is.list(GRR.matrix.pro)) {
       if (is.matrix(GRR.matrix.pro)) {
         GRR.matrix.pro <- list(GRR.matrix.pro)
@@ -50,43 +50,43 @@ random.bed.matrix.GRR <- function(genes.maf = Kryukov, size, baseline, replicate
         stop("GRR.matrix.pro should be a list or a matrix")
       }
     }
-    GRR.pro <- GRR.matrix.pro[[1]]
+    GRR.het.pro <- GRR.matrix.pro[[1]]
     if (length(GRR.matrix.pro) == 1) {
       if (genetic.model == "general") {
         stop("Needs two GRR matrices in the general model")
       }else{
-        GRR.2.pro <- NULL
+        GRR.homo.alt.pro <- NULL
       }
     }else{
       if (genetic.model == "general") {
-        GRR.2.pro <- GRR.matrix.pro[[2]]
+        GRR.homo.alt.pro <- GRR.matrix.pro[[2]]
       }else{
         warning("Only one GRR matrix needed for this model, only the first one is used")
-        GRR.2.pro <- NULL
+        GRR.homo.alt.pro <- NULL
       }
     }
   }else{
-    GRR.pro <- 1/GRR
-    GRR.2.pro <- 1/GRR.2
+    GRR.het.pro <- 1/GRR.het
+    GRR.homo.alt.pro <- 1/GRR.homo.alt
   }
   
   ##Check on GRR values
-  if (any(GRR < 1) | any(GRR.2 < 1)) stop("Matrix of deleterious GRR has GRR values lower than 1")
-  if (!is.null(GRR.matrix.pro)) {
-    if (any(GRR.pro > 1) | any(GRR.2.pro > 1)) stop("Matrix of protective GRR has GRR values greater than 1")
+  if (any(GRR.het < 1) | any(GRR.homo.alt < 1)) stop("Matrix of deleterious GRR has GRR values lower than 1")
+  if (!missing(GRR.matrix.pro)) {
+    if (any(GRR.het.pro > 1) | any(GRR.homo.alt.pro > 1)) stop("Matrix of protective GRR has GRR values greater than 1")
   }
 
   ##Order arguments
-  GRR.pars <- list(OR.del = GRR, OR.pro = GRR.pro, prob.del = prop.del, prob.pro = prop.pro)
-  if (!is.null(GRR.2)) {
-    GRR.2.pars <- list(OR.del = GRR.2, OR.pro = GRR.2.pro)
+  GRR.pars <- list(OR.del = GRR.het, OR.pro = GRR.het.pro, prob.del = prop.del, prob.pro = prop.pro)
+  if (!is.null(GRR.homo.alt)) {
+    GRR.homo.alt.pars <- list(OR.del = GRR.homo.alt, OR.pro = GRR.homo.alt.pro)
   }else{
-    GRR.2.pars <- NULL
+    GRR.homo.alt.pars <- NULL
   }
 
   ##Check dimensions
-  if(!is.null(GRR.2.pars)){
-    if(nrow(GRR) != nrow(GRR.2.pars$OR.del) |  ncol(GRR) != ncol(GRR.2.pars$OR.del)) stop("GRR and GRR.2 have different dimensions")
+  if(!is.null(GRR.homo.alt.pars)){
+    if(nrow(GRR.het) != nrow(GRR.homo.alt.pars$OR.del) |  ncol(GRR.het) != ncol(GRR.homo.alt.pars$OR.del)) stop("GRR.het and GRR.homo.alt have different dimensions")
   }
   
   ##Choose the OR function
@@ -102,20 +102,20 @@ random.bed.matrix.GRR <- function(genes.maf = Kryukov, size, baseline, replicate
   x <- new.bed.matrix(nb_inds, nb_snps);
   for(b in 1:replicates) {
     if( prop.pro == 0 & prop.del == 0) {
-      GRR <- matrix(1, nrow = length(baseline), ncol = GRR.pars$n.variants)
+      GRR.het <- matrix(1, nrow = length(baseline), ncol = GRR.pars$n.variants)
     } else {
-      GRR <- do.call( variant.function, GRR.pars)
+      GRR.het <- do.call( variant.function, GRR.pars)
     }
-    if(!is.null(GRR.2.pars)){
-      #Give GRR>1 for the same variants as GRR
+    if(!is.null(GRR.homo.alt.pars)){
+      #Give GRR>1 for the same variants as GRR.het
       for(i in 1:length(baseline)){
-        GRR.2[i, which(GRR[i,]==1)] <- 1
-        GRR.2[i, which(GRR[i,]<1)] <- GRR.2.pars$OR.pro[i, which(GRR[i,]<1)]
+        GRR.homo.alt[i, which(GRR.het[i,]==1)] <- 1
+        GRR.homo.alt[i, which(GRR.het[i,]<1)] <- GRR.homo.alt.pars$OR.pro[i, which(GRR.het[i,]<1)]
       }
     }else{
-      GRR.2=NULL
+      GRR.homo.alt=NULL
     }    
-    MAFS <- genotypic.freq(genes.maf=genes.maf, GRR=GRR, GRR.2=GRR.2, baseline=baseline, select.gene=select.gene, genetic.model=genetic.model)
+    MAFS <- genotypic.freq(genes.maf=genes.maf, GRR.het=GRR.het, GRR.homo.alt=GRR.homo.alt, baseline=baseline, select.gene=select.gene, genetic.model=genetic.model)
   #Check if problems with model
     if(any(MAFS$freq.homo.ref[1,]>1 | MAFS$freq.het[1,]<0 | MAFS$freq.homo.alt[1,]<0)) stop("Impossible genetic model, please change your parametrization")
     .Call("oz_random_filling_bed_matrix_noHW", PACKAGE = "Ravages", x@bed, MAFS$freq.homo.ref, MAFS$freq.het, size, (b-1)*GRR.pars$n.variants)

@@ -7,15 +7,15 @@
   Calculates the three genotypic frequencies in the controls group and each group of cases based on MAF in the general population and GRR values
 }
 \usage{
-genotypic.freq(genes.maf = Kryukov, GRR, GRR.2 = NULL, baseline, 
+genotypic.freq(genes.maf = Kryukov, GRR.het, GRR.homo.alt, baseline, 
                genetic.model = c("general", "multiplicative", 
                                  "dominant", "recessive"), 
-               select.gene=NULL)
+               select.gene)
 }
 \arguments{
   \item{genes.maf}{ A file containing the MAF in the general population (column maf) for variants grouped in genes (column gene), by default the file Kryukov is used}
-  \item{GRR}{ A matrix giving the GRR of the heterozygous genotype compared to the homozygous reference genotype with one row per cases group and one column per variant }
-  \item{GRR.2}{ A matrix giving the GRR of the homozygous alternate genotype compared to the homozygous reference genotype with one row per cases group and one column per variant, only need if \code{genetic.model="general"}}
+  \item{GRR.het}{ A matrix giving the GRR of the heterozygous genotype compared to the homozygous reference genotype with one row per cases group and one column per variant }
+  \item{GRR.homo.alt}{ A matrix giving the GRR of the homozygous alternate genotype compared to the homozygous reference genotype with one row per cases group and one column per variant, only need if \code{genetic.model="general"}}
   \item{baseline}{ A vector containing the baseline values for each group of cases}
   \item{genetic.model}{ The genetic model of the disease }
   \item{select.gene}{ Which gene to choose from \code{genes.maf$gene} if multiple genes are present. If missing, only the first level is kept.}
@@ -45,18 +45,16 @@ genotypic.freq(genes.maf = Kryukov, GRR, GRR.2 = NULL, baseline,
 
   The data frames Kryukov or GnomADgenes available with the package Ravages can be used for the argument \code{genes.maf}.
 }
-\author{
-  Herve Perdry and Ozvan Bocher
-}
+\seealso{ \code{\link{GRR.matrix }}, \code{\link{random.bed.matrix }} }
 \examples{
 #Construction of the GRR matrix using the formula from SKAT
 #GRR in the second group are twice as high as in the first group
-GRR.del <- compute.GRR.matrix(GRR = "SKAT", GRR.multiplicative.factor=2,
-                              select.gene="R1")
+GRR.del <- GRR.matrix(GRR = "SKAT", GRR.multiplicative.factor=2,
+                      select.gene="R1")
 
 #Calculation of frequency in the three groups of individuals 
 #under a multilpicative model of the disease
-geno.freq.groups <- genotypic.freq(genes.maf = Kryukov, GRR = GRR.del, 
+geno.freq.groups <- genotypic.freq(genes.maf = Kryukov, GRR.het = GRR.del, 
                                    baseline = c(0.001, 0.001), 
                                    genetic.model = "multiplicative", 
                                    select.gene = "R1") 

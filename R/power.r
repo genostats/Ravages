@@ -1,40 +1,43 @@
-power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), min.nb.snps = NULL, maf.threshold = 0.01, 
-              CAST = c(TRUE, FALSE), WSS = c(TRUE, FALSE), other.score=NULL, 
-              pooled.analysis=c(TRUE, FALSE), non.pooled.analysis=c(TRUE, FALSE), analysis.by.group=c(TRUE, FALSE),
-              model.pars = list(), formula = NULL, data = NULL, ref.level="0"){
+power <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), min.nb.snps, maf.threshold = 0.01, 
+                  CAST = TRUE, WSS = TRUE, other.score, 
+                  pooled.analysis=TRUE, non.pooled.analysis=TRUE, analysis.by.group=TRUE,
+                  formula=NULL, data=NULL, ref.level="0",
+                  model.pars=list(genes.maf=Kryukov, select.gene="R1", size=c(1000, 500, 500),
+                                  baseline=c(0.001, 0.001), n.case.groups=2, replicates=1000,
+                                  GRR="SKAT", GRR.multiplicative.factor=2,
+                                  same.variant=FALSE, fixed.variant.prop = TRUE,
+                                  genetic.model="multiplicative",
+                                  prop.del=0.5, prop.pro=0)){
 
 # dans model.pars 
-#              genes.maf=Kryukov, select.gene=NULL, 
+#              genes.maf=Kryukov, select.gene, 
 #              size=c(1000, 500, 500), baseline=c(0.001, 0.001), replicates=1000, 
-#              same.variant=c(FALSE, TRUE), fixed.variant.prop = c(TRUE, FALSE),
+#              same.variant=FALSE, fixed.variant.prop = TRUE,
 #              genetic.model=c("multiplicative", "general", "recessive", "dominant"),
-#              GRR.matrix, GRR.matrix.pro=NULL, prop.del=0.5, prop.pro=0,              
+#              GRR.matrix.del, GRR.matrix.pro, prop.del=0.5, prop.pro=0,              
 # pour compute GRR
 # n.case.groups = length(baseline) (si fournis)
 # GGR, GRR.value, GRR.function, GRR.mutiplicative.factor, select.gene
 
 ##Check if another score is asked
-  if(!is.null(other.score)){
+  if(!missing(other.score)){
     if(!is.function(other.score)) stop("other.score needs to be a function depending on a bed.matrix")
   }      
-
-##Arguments for data simulation
-#  model.pars <- list(genes.maf=genes.maf, size=size, baseline=baseline, replicates=replicates, GRR.matrix=GRR.matrix, GRR.matrix.pro=GRR.matrix.pro, same.variant=same.variant, fixed.variant.prop = fixed.variant.prop, genetic.model=genetic.model, select.gene=select.gene, prop.del = prop.del, prop.pro=prop.pro)
   
 ##Data simulation
 
-  GRRmat.args <- model.pars[ intersect( names(model.pars), names(formals(compute.GRR.matrix))) ]
-  random.bm.args <- model.pars[ intersect( names(model.pars), names(formals(random.bed.matrix.GRR))) ]
-  if( !("GRR.matrix" %in% names(random.bm.args) ) {
-    GRRmat <- do.call( compute.GRR.matrix, GRRmat.args)
-    random.bm.args$GRR.matrix <- GRRmat
+  GRRmat.args <- model.pars[ intersect( names(model.pars), names(formals(GRR.matrix))) ]
+  random.bm.args <- model.pars[ intersect( names(model.pars), names(formals(random.bed.matrix))) ]
+  if( !("GRR.matrix.del" %in% names(random.bm.args) )) {
+    GRRmat <- do.call( GRR.matrix, GRRmat.args)
+    random.bm.args$GRR.matrix.del <- GRRmat
   }
 
-  x <- do.call(random.bed.matrix.GRR, random.bm.args)
+  x <- do.call(random.bed.matrix, random.bm.args)
 
   x <- filter.rare.variants(x, filter=filter, maf.threshold=maf.threshold, min.nb.snps = min.nb.snps)
   pheno.pooled <- ifelse(x@ped$pheno==0, 0, 1)
-  if (!is.null(other.score)) score <- other.score(x)
+  if (!missing(other.score)) score <- other.score(x)
    	
   if(CAST){
     if(non.pooled.analysis){
@@ -52,16 +55,16 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
       power.pooled.CAST <- se.pooled.CAST <- NA
     }
     if(analysis.by.group){
-      cases <- lapply(1:length(baseline), function(z) select.inds(x, x@ped$pheno %in% c(0,z)))
+      cases <- lapply(1:length(model.pars$baseline), function(z) select.inds(x, x@ped$pheno %in% c(0,z)))
       cases.CAST.pval <- lapply(cases, function(z) burden.mlogit(z, burden="CAST", ref.level="0", formula=formula, data=data, maf.threshold=maf.threshold))
       power.cases.CAST <- unlist(lapply(cases.CAST.pval, function(z) mean(z[z$is.err==0, "p.value"]<alpha)))
       se.cases.CAST <- unlist(lapply(cases.CAST.pval, function(z) sqrt(( mean(z[z$is.err==0, "p.value"]<alpha) * (1-mean(z[z$is.err==0, "p.value"]<alpha)) ) / nrow(z[z$is.err==0,]))))
     }else{
-      power.cases.CAST <- se.cases.CAST <- rep(NA, length(baseline))
+      power.cases.CAST <- se.cases.CAST <- rep(NA, length(model.pars$baseline))
     }    
   }else{
     power.CAST <- se.CAST <- power.pooled.CAST <- se.pooled.CAST <- NA
-    power.cases.CAST <- se.cases.CAST <- rep(NA, length(baseline))
+    power.cases.CAST <- se.cases.CAST <- rep(NA, length(model.pars$baseline))
   }
    
   
@@ -81,19 +84,19 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
       power.pooled.WSS <- se.pooled.WSS <- NA
     }
     if(analysis.by.group){
-      cases <- lapply(1:length(baseline), function(z) select.inds(x, x@ped$pheno %in% c(0,z)))
+      cases <- lapply(1:length(model.pars$baseline), function(z) select.inds(x, x@ped$pheno %in% c(0,z)))
       cases.WSS.pval <- lapply(cases, function(z) burden.mlogit(z, burden="WSS", ref.level="0", formula=formula, data=data, maf.threshold=maf.threshold))
       power.cases.WSS <- unlist(lapply(cases.WSS.pval, function(z) mean(z[z$is.err==0, "p.value"]<alpha)))
       se.cases.WSS <- unlist(lapply(cases.WSS.pval, function(z) sqrt(( mean(z[z$is.err==0, "p.value"]<alpha) * (1-mean(z[z$is.err==0, "p.value"]<alpha)) ) / nrow(z[z$is.err==0,]))))
     }else{
-      power.cases.WSS <- se.cases.WSS <- rep(NA, length(baseline))
+      power.cases.WSS <- se.cases.WSS <- rep(NA, length(model.pars$baseline))
     }
   }else{
     power.WSS <- se.WSS <- power.pooled.WSS <- se.pooled.WSS <- NA
-    power.cases.WSS <- se.cases.WSS <- rep(NA, length(baseline))
+    power.cases.WSS <- se.cases.WSS <- rep(NA, length(model.pars$baseline))
   }  
   
-  if(!is.null(other.score)){
+  if(!missing(other.score)){
     burden <- other.score(x) ; colnames(burden) <- levels(x@snps$genomic.region) ; rownames(burden) <- x@ped$id
     if(non.pooled.analysis){
       other.score.pval <- burden.mlogit(x, group=x@ped$pheno, genomic.region=x@snps$genomic.region, ref.level = ref.level, burden = burden, formula=formula, data=data, maf.threshold=maf.threshold, get.OR.value = FALSE)
@@ -110,16 +113,16 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
       power.pooled.other.score <- se.pooled.other.score <- NA
     }
     if(analysis.by.group){
-      cases <- lapply(1:length(baseline), function(z) select.inds(x, x@ped$pheno %in% c(0,z)))
+      cases <- lapply(1:length(model.pars$baseline), function(z) select.inds(x, x@ped$pheno %in% c(0,z)))
       cases.other.score.pval <- lapply(cases, function(z) burden.mlogit(z, burden=burden[z@ped$id,], ref.level="0", formula=formula, data=data, maf.threshold=maf.threshold))
       power.cases.other.score <- unlist(lapply(cases.other.score.pval, function(z) mean(z[z$is.err==0, "p.value"]<alpha)))
       se.cases.other.score <- unlist(lapply(cases.other.score.pval, function(z) sqrt(( mean(z[z$is.err==0, "p.value"]<alpha) * (1-mean(z[z$is.err==0, "p.value"]<alpha)) ) / nrow(z[z$is.err==0,]))))
     }else{
-      power.cases.other.score <- se.cases.other.score <- rep(NA, length(baseline))
+      power.cases.other.score <- se.cases.other.score <- rep(NA, length(model.pars$baseline))
     }
   }else{
     power.other.score <- se.other.score <- power.pooled.other.score <- se.pooled.other.score <- NA
-    power.cases.other.score <- se.cases.other.score <- rep(NA, length(baseline))
+    power.cases.other.score <- se.cases.other.score <- rep(NA, length(model.pars$baseline))
   }
       
   
@@ -132,12 +135,12 @@ power.burden <- function(alpha = 2.5e-6, filter=c("whole", "controls", "any"), m
                            ifelse(WSS & non.pooled.analysis, nrow(WSS.pval[WSS.pval$is.err == 0,]), NA),
                            if(WSS & analysis.by.group) unlist(lapply(cases.WSS.pval, function(z) nrow(z[z$is.err==0,]))) else power.cases.WSS,
                            ifelse(WSS & pooled.analysis, nrow(pooled.WSS.pval[pooled.WSS.pval$is.err == 0,]), NA),
-                           ifelse(!is.null(other.score) & non.pooled.analysis, nrow(other.score.pval[other.score.pval$is.err == 0,]), NA),
-                           if(!is.null(other.score) & analysis.by.group) unlist(lapply(cases.other.score.pval, function(z) nrow(z[z$is.err==0,]))) else power.cases.other.score,
-                           ifelse(!is.null(other.score) & pooled.analysis, nrow(pooled.other.score.pval[pooled.other.score.pval$is.err == 0,]), NA)),
-  			 row.names = c("CAST", paste(paste("Cases", 1:length(baseline), sep=""), "vsControls.CAST", sep=""), "pooled.CAST", 
-  			 			   "WSS", paste(paste("Cases", 1:length(baseline), sep=""), "vsControls.WSS", sep=""), "pooled.WSS",
-  			 			   "other.score", paste(paste("Cases", 1:length(baseline), sep=""), "vsControls.other.score", sep=""), "pooled.other.score")
+                           ifelse(!missing(other.score) & non.pooled.analysis, nrow(other.score.pval[other.score.pval$is.err == 0,]), NA),
+                           if(!missing(other.score) & analysis.by.group) unlist(lapply(cases.other.score.pval, function(z) nrow(z[z$is.err==0,]))) else power.cases.other.score,
+                           ifelse(!missing(other.score) & pooled.analysis, nrow(pooled.other.score.pval[pooled.other.score.pval$is.err == 0,]), NA)),
+  			 row.names = c("CAST", paste(paste("Cases", 1:length(model.pars$baseline), sep=""), "vsControls.CAST", sep=""), "pooled.CAST", 
+  			 			   "WSS", paste(paste("Cases", 1:length(model.pars$baseline), sep=""), "vsControls.WSS", sep=""), "pooled.WSS",
+  			 			   "other.score", paste(paste("Cases", 1:length(model.pars$baseline), sep=""), "vsControls.other.score", sep=""), "pooled.other.score")
  			)
 }
 		

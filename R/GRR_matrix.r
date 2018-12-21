@@ -1,7 +1,7 @@
-compute.GRR.matrix <- function(genes.maf=Kryukov, n.case.groups=2, GRR=c("constant", "SKAT", "variable"), GRR.value=NULL, GRR.function=NULL, GRR.multiplicative.factor=2, select.gene=NULL){
+GRR.matrix <- function(genes.maf=Kryukov, n.case.groups=2, GRR=c("SKAT", "constant", "variable"), GRR.value, GRR.function, GRR.multiplicative.factor=2, select.gene){
   ##Select MAF from the file given by the user  
   if(nlevels(genes.maf$gene)>1){
-    if(is.null(select.gene)){
+    if(missing(select.gene)){
       warning("More than one gene in the file, only the first one is used")
       select.gene <- levels(genes.maf$gene)[[1]]
     }
@@ -17,10 +17,12 @@ compute.GRR.matrix <- function(genes.maf=Kryukov, n.case.groups=2, GRR=c("consta
     if(n.case.groups==1) warning("Only one group of cases, 'GRR.multiplicative.factor' is ignored")
     if(length(GRR.multiplicative.factor)!=(n.case.groups-1)) stop("Wrong number of multiplicative factors")
   }
+
+  GRR <- match.arg(GRR)
                       
   ##Same GRR for all variants
   if(GRR=="constant"){
-    if(is.null(GRR.value)) stop("Needs 'GRR.value' for variants")
+    if(missing(GRR.value)) stop("Needs 'GRR.value' for variants")
     if(length(GRR.value)>1){
       warning("Only one GRR value needed, only the first value will be used")
       GRR.value <- GRR.value[1]
@@ -45,7 +47,7 @@ compute.GRR.matrix <- function(genes.maf=Kryukov, n.case.groups=2, GRR=c("consta
                                                                               
   if(GRR=="variable"){
     if(is.null(pop.maf)) stop("Needs MAF in the population to compute GRR")
-    if(is.null(GRR.function)) stop("Needs a function to compute GRR")
+    if(missing(GRR.function)) stop("Needs a function to compute GRR")
     if(n.case.groups==1){
       GRR.matrix <- matrix(do.call(GRR.function, list(pop.maf)),nrow=n.case.groups, byrow=FALSE)
     }else{

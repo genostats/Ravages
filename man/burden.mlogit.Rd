@@ -10,13 +10,13 @@
 burden.mlogit(x, group = x@ped$pheno, 
               genomic.region = x@snps$genomic.region, 
               burden, maf.threshold = 0.01, ref.level, 
-              formula = NULL, data = NULL,
+              formula=NULL, data=NULL,
               get.OR.value = FALSE, alpha = 0.05)
 }
 \arguments{
-  \item{x}{ A bed matrix, only needed if \code{burden}="CAST" or \code{burden}="WSS"}
-  \item{group}{ A factor containing the group of each individual, x@ped$pheno by default}
-  \item{genomic.region}{ A factor containg the genomic region of each SNP, x@snps$genomic.region by default, only needed if \code{burden}="CAST" or \code{burden}="WSS"}
+  \item{x}{ A bed matrix, only needed if \code{burden="CAST"} or \code{burden="WSS"}}
+  \item{group}{ A factor containing the group of each individual, \code{x@ped$pheno} by default}
+  \item{genomic.region}{ A factor containg the genomic region of each SNP, \code{x@snps$genomic.region} by default, only needed if \code{burden}="CAST" or \code{burden}="WSS"}
   \item{burden}{"CAST" or "WSS" to directly compute the CAST or the WSS genetic score; or a matrix with one row per individual and one column per \code{genomic.region} containing another genetic score.}
   \item{maf.threshold}{ The MAF threshold to use for the definition of a rare variant in the CAST score}
   \item{ref.level}{ The reference group of individuals for the regression}
@@ -27,9 +27,15 @@ burden.mlogit(x, group = x@ped$pheno,
 }
 \details{
   This function will return results from the regression on each genomic region.
-  If only two groups of individuals are present, a classical logistic regression is performed. If more than two groups of individuals are present, a non-ordinal multinomial regression is performed, comparing each group of individuals to the reference group indicated by the argument \code{ref.level}.
+
+  If only two groups of individuals are present, a classical logistic regression is performed. 
+  If more than two groups of individuals are present, a non-ordinal multinomial regression is performed, 
+  comparing each group of individuals to the reference group indicated by the argument \code{ref.level}.
+
   The genetic score corresponding to CAST or WSS is directly computed in the function if \code{burden}="CAST" or "WSS". 
-  If another genetic score is wanted, a matrix with one row per individual and one column per \code{genomic.region} containing this score should be given to \code{burden}. In this situation, no bed matrix for \code{x} is needed.
+ 
+  If another genetic score is wanted, a matrix with one row per individual and one column per \code{genomic.region} 
+  containing this score should be given to \code{burden}. In this situation, no bed matrix \code{x} is needed.
 }
 \value{
   A dataframe with one row per genomic region and at least two columns:
@@ -40,22 +46,20 @@ burden.mlogit(x, group = x@ped$pheno,
   \item{l.lower}{ The lower bound of the confidence interval of each OR}
   \item{l.upper}{ The upper bound of the confidence interval of each OR}
 }
-\author{
-  Ozvan Bocher and Herve Perdry
-}
+\seealso{ \code{\link{power}}, \code{\link{CAST}}, \code{\link{WSS}} }
 \examples{
 #Data simulation: GRR values according to the SKAT formula
-GRR.del <- compute.GRR.matrix(GRR = "SKAT", genes.maf = Kryukov, 
+GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov, 
                               select.gene="R1", n.case.groups = 2,
                               GRR.multiplicative.factor=2)
 
 #Simulation of one group of 1,000 controls and two groups of 500 cases,
 #50% of deleterious, 5 genomic regions are simulated.
-x <- random.bed.matrix.GRR(genes.maf=Kryukov,
-                           size = c(1000, 500, 500), baseline = c(0.001, 0.001),
-                           GRR.matrix = GRR.del, prop.del = 0.5,
-                           same.variant = FALSE, fixed.variant.prop = TRUE,
-                           genetic.model = "multiplicative", replicates=5)
+x <- random.bed.matrix(genes.maf=Kryukov,
+                       size = c(1000, 500, 500), baseline = c(0.001, 0.001),
+                       GRR.matrix.del = GRR.del, prop.del = 0.5,
+                       same.variant = FALSE, fixed.variant.prop = TRUE,
+                       genetic.model = "multiplicative", replicates=5)
 
 #Keep only rare variant
 x <- filter.rare.variants(x, filter = "any", maf.threshold = 0.01, 
