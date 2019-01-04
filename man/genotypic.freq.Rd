@@ -45,7 +45,7 @@ genotypic.freq(genes.maf = Kryukov, GRR.het, GRR.homo.alt, baseline,
 
   The data frames Kryukov or GnomADgenes available with the package Ravages can be used for the argument \code{genes.maf}.
 }
-\seealso{ \code{\link{GRR.matrix }}, \code{\link{random.bed.matrix }} }
+\seealso{ \code{\link{GRR.matrix}}, \code{\link{random.bed.matrix}} }
 \examples{
 #Construction of the GRR matrix using the formula from SKAT
 #GRR in the second group are twice as high as in the first group

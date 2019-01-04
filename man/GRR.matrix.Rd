@@ -37,7 +37,7 @@ GRR.matrix(genes.maf = Kryukov, n.case.groups = 2,
 
   \code{GRR.matrix} returns a matrix that can be used in other simulation functions such as \code{random.bed.matrix}.
 }
-\seealso{ \code{\link{ random.bed.matrix }}, \code{ \link{ power }} }
+\seealso{ \code{\link{random.bed.matrix}}, \code{\link{power}} }
 \examples{
 #GRR calculated on the MAF from the first unit of the file Kryukov
 #using the formula from the SKAT paper, with the second group of cases 

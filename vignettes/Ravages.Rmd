@@ -22,28 +22,29 @@ To learn more about all options of the functions, the reader is advised to look 
 
 ##Defining genomic regions
 For rare variant association tests, the unit of analysis is not a single variant but a genomic region, typically a gene. The difficulty in this type of study is therefore to define the genomic region. The function **set.genomic.region()** can be used to group variant according to given gene positions. It works on a bed.matrix and simply adds a column "genomic.region" to the slot x@snps containing the gene assigned to each variant. By default, only variants within known genes will be assigned to a genomic region, the other ones being left out. Gene positions can be extended to annotate more variants using the argument *flank.width* corresponding to the number of base pair upstream and downstream the gene. If *flank.width=Inf*, each variant will be assigned to the nearest gene. If two genes overlap, variants in the overlapping zone will be attributed to the second one (in the order given by the position of their starting point on the genome).  
-The files **genes.b37** and **genes.b38** available in Ravages which contain gene positions from ENSEMBL versions GRCh37 and GRCh38 can be used to define gene positions.
+The files **genes.b37** and **genes.b38** available in Ravages which contain gene positions from ENSEMBL versions GRCh37 and GRCh38 can be used to define gene positions. An example of this function is shown below using the example data "LCT" from gaston.
 ```{r}
 x <- as.bed.matrix(LCT.gen, LCT.fam, LCT.bim)
-     #Group variants within known genes
-     x <- set.genomic.region(x)
-     table(x@snps$genomic.region)
-     #Group variants within know genes +/- 500bp
-     x <- set.genomic.region(x, flank.width=500)
-     table(x@snps$genomic.region)
+#Group variants within known genes
+x <- set.genomic.region(x)
+table(x@snps$genomic.region)
+#Group variants within know genes by extended their positions
+#500bp upstream and downstream
+x <- set.genomic.region(x, flank.width=500)
+table(x@snps$genomic.region)
 ```
 
 
 ##Simulation of genetic data
 Genetic data for two or more groups of individuals can be simulated using the package Ravages.
 
-###Calculation of frequencies in each group of individuals
-The first step to simulate genetic data is to compute genotypic frequencies in each group of individuals based on frequencies in the general population and on genetic relative risk (GRR) values. GRR correspond to the increased risk of a disease for a given genotype compared to a reference genotype, here the homozygous reference genotype. More precisely, the GRR associated to the heterozygous genotype in the group $c$ corresponds to the ratio between the penetrance of phenotype $c$ for the heterozygous genotype and the penetrance of phenotype $c$ for the homozygous reference genotype as follow: $$GRR_{Aa} = \frac{P(Y=c | Aa)}{P(Y=c | AA)}$$ With A the reference allele, and a the alternate allele. The frequency of each genotype in each group of cases $c$ can be calculated using Bayes theorem:
+###Calculation of genotypic frequencies in each group of individuals
+The first step to simulate genetic data is to compute genotypic frequencies in each group of individuals based on frequencies in the general population and on genetic relative risk (GRR) values. GRR correspond to the increased risk of a disease for a given genotype compared to the homozygous reference genotype. More precisely, the GRR associated to the heterozygous genotype in the group $c$ corresponds to the ratio between the penetrance of phenotype $c$ for the heterozygous genotype and the penetrance of phenotype $c$ for the homozygous reference genotype as follow: $$GRR_{Aa} = \frac{P(Y=c | Aa)}{P(Y=c | AA)}$$ With A the reference allele, and a the alternate allele. The frequency of each genotype in each group of cases $c$ can be calculated using Bayes theorem:
 $$P(Aa | Y=c) = \frac{P(Y=c | Aa)*P(Aa)}{\sum_{Geno=AA, Aa, aa} P(Y=c | Geno)*P(Geno)} = \frac{GRR_{Aa}*P(Aa)}{P(AA)+GRR_{Aa}*P(Aa)+GRR_{aa}*P(aa)}$$
 P(AA), P(Aa) and P(aa) correspond to the genotypic probabilities in the general population.
 The three genotypic frequencies can then be calculated in the controls group using the rule of total probability:
 $$P(Geno | Y=1)=P(Geno) - \sum{_{c=2}^{c=C} P(Geno | Y=c)*P(Y=c)}$$
-The function **genotypic.freq()** performs these calculations to obtain the three genotypic frequencies in the different groups of individuals. To do so, the user needs to give *P(Y=c)*, the prevalence of each group of cases (argument *baseline*); and the GRR values. GRR values need to be in a matrix with one row per cases group and one column per variant. If there is no supposed link between the GRR associated to the heterozygous genotype and the GRR associated to the homozygous alternate genotype (general model of the disease, $genetic.model="general"$), the user needs to specify two GRR matrices: one for $GRR_{Aa}$ (argument *GRR.het*) and one for $GRR_{aa}$ (argument *GRR.homo.alt*). If *genetic.model="recessive"*, *"multiplicative"* or *"dominant"*, only one GRR matrix is needed. **genotypic.freq()** will return a list with three matrices, one for each genotype containing the genotypic frequencies, with one row per group of individuals and one column per variant.  
+The function **genotypic.freq()** performs these calculations to obtain the three genotypic frequencies in the different groups of individuals. To do so, the user needs to give *P(Y=c)*, the prevalence of each group of cases (argument *baseline*); and the GRR values. GRR values need to be in a matrix with one row per cases group and one column per variant. If there is no supposed link between the GRR associated to the heterozygous genotype and the GRR associated to the homozygous alternate genotype (general model of the disease, $genetic.model="general"$), the user needs to specify two GRR matrices: one for $GRR_{Aa}$ (argument *GRR.het*) and one for $GRR_{aa}$ (argument *GRR.homo.alt*). If *genetic.model="recessive"*, *"multiplicative"* or *"dominant"*, only one GRR matrix is needed. By default, *genetic.model="multiplicative"* and thus the GRR associated to the homozygote alternate genotype is the square of the GRR associated to the heterozygous genitype. **genotypic.freq()** will return a list with three matrices, one for each genotype containing the genotypic frequencies, with one row per group of individuals and one column per variant.  
 To help the user with the construction of the GRR matrix for **genotypic.freq()**, we implemented the function **GRR.matrix()**.  
 To use this function, the user needs to specify how the GRR should be calculated (argument *GRR*):  
 
@@ -68,7 +69,7 @@ GRR.del[,1:5]
 #All variants are deleterious and the prevalence in each group of cases is 0.001
 
 geno.freq.groups <- genotypic.freq(genes.maf = Kryukov, select.gene="R1", 
-                                   GRR = GRR.del, baseline = c(0.001, 0.001),
+                                   GRR.het = GRR.del, baseline = c(0.001, 0.001),
                                    genetic.model = "multiplicative")
 str(geno.freq.groups)
 geno.freq.groups$freq.homo.alt[,1:5]
@@ -83,10 +84,12 @@ geno.freq.groups$freq.homo.alt[,1:5] + 0.5*geno.freq.groups$freq.het[,1:5]
 ###Simulation of genotypes
 In addition to calculate the genotypic frequencies in each group of individuals, it is possible to directly simulate these genotypes. This can be done using the function **random.bed.matrix()** which relies on the function **genotypic.freq()** explained previously.
 The arguments *genes.maf*, *select.gene*, *baseline* and *genetic.model* are the same as in the function **genotypic.freq()**.  
-In **random.bed.matrix()**, the proportion of deleterious and protective variants simulated in the genomic region should be specified to *prop.del* and *prop.pro* respectively. The argument *GRR.matrix.del* should contain a matrix with GRR values as if all the variants were deleterious. If *genetic.model="general"*, two GRR matrices need to be given as a list to the argument *GRR.matrix.del* (one for the heterozygous genotype and the other for the homozygous alternate genotype).  
-If the user wants to simulate protective variants in addition to deleterious variants, a similar argument to *GRR.matrix* should be given to *GRR.matrix.pro* with GRR values as if all variants were protective. If the argument *GRR.matrix.pro* is empty and *prop.pro*>0, the GRR values for protective variants will be calculated as 1/GRR of the deleterious variants. 
-These protective and deleterious GRR values will then be assigned to the sampled protective and deleterious variants in the simulations, the non-causal variants having GRR values of 1.   
-The size of the different groups of individuals should be a vector specified to *size*, and the user should choose whether the causal variants will be the same between the different groups of cases with the argument *same.variant*. Using the argument *fixed.variant.prop*, the user needs also to choose if the argument *prop.del* (or *prop.pro*) corresponds to the final proportion of deleterious (or protective) variants, i.e. *fixed.variant.prop=TRUE* or to the probability associated to each variant of being deletrious (or protective), i.e. *fixed.variant.prop=FALSE*.  
+In **random.bed.matrix()**, the proportion of deleterious and protective variants simulated in the genomic region should be specified to *prop.del* and *prop.pro* respectively.  
+The argument *GRR.matrix.del* should contain a matrix with GRR values as if all the variants were deleterious (or protective). If *genetic.model="general"*, two GRR matrices need to be given as a list to the argument *GRR.matrix.del* (one for the heterozygous genotype and the other for the homozygous alternate genotype).   
+If the user wants to simulate protective variants in addition to deleterious variants, a similar argument to *GRR.matrix.del* should be given to *GRR.matrix.pro* with GRR values as if all variants were protective. If the argument *GRR.matrix.pro* is empty and *prop.pro*>0, the GRR values for protective variants will be calculated as 1/GRR of the deleterious variants.  
+These protective and deleterious GRR values will then be assigned to the sampled protective and deleterious variants in the simulations, the non-causal variants having GRR values of 1.  
+The size of the different groups of individuals should be a vector specified to *size*, and the user should choose whether the causal variants will be the same between the different groups of cases with the argument *same.variant*.  
+Using the argument *fixed.variant.prop*, the user needs also to choose if the argument *prop.del* (or *prop.pro*) corresponds to the final proportion of deleterious (or protective) variants, i.e. *fixed.variant.prop=TRUE* or to the probability associated to each variant of being deletrious (or protective), i.e. *fixed.variant.prop=FALSE*.  
 Finally, the number of genomic regions simulated is specified with the argument *replicates*.  
 **random.bed.matrix()** will return a bed matrix with the group of each individual in the field *@ped$pheno*, the first one being considered by default as the controls group, and the replicate number corresponding to the genomic region in the field *@snps$genomic.region*.  
 The example below shows how to simulate a group of 1,000 controls and two groups of 500 cases with 50% of deleterious variants having GRR values from the previous example. The deleterious variants are different between the two groups of cases and 5 genomic regions are simulated.
@@ -106,14 +109,14 @@ table(x@snps$genomic.region)
 ##Rare variant definition
 To perform rare variant analysis, it is important to define what is a rare variant in order to leave out common ones. The function **filter.rare.variants()** enables to keep only variants of interest based on a given MAF threshold. This function uses and returns a bed.matrix which can be filtered in three different ways:  
 
-* If *filter="whole"* is used, all the variants with a MAF lower than the threshold in the entire sample will be kept. 
-* If *filter="controls"* is chosen, all the variants with a MAF lower than the threshold in the controls group will be kept.
-* If *filter="any"* is used, all the variants with a MAF lower than the threshold in any of the groups will be kept.  
+* If *filter="whole"*, all the variants with a MAF lower than the threshold in the entire sample will be kept. 
+* If *filter="controls"*, all the variants with a MAF lower than the threshold in the controls group will be kept. In this situation, the controls group needs to be specified to the argument *ref.level*.
+* If *filter="any"*, all the variants with a MAF lower than the threshold in any of the groups will be kept.  
 
 Monomorphic variants are also filtered out using this function. It is also possible to specify the minimum number of variants needed in a genomic region to keep it using the parameter *min.nb.snps*.
 ```{r}
 #Filter of rare variants to keep only variants with a MAF below 1% in any of the groups,
-# and genomic regions with at least 5 variants
+#and genomic regions with at least 5 variants
 x.filter <- filter.rare.variants(x, filter = "any", maf.threshold = 0.01,
                                  min.nb.snps = 5)
 x.filter
@@ -127,7 +130,7 @@ We have implemented two rare variant burden association tests extensions: CAST a
 ###Genetic score
 
 ####CAST
-CAST is based on a binary score which has a value of one if an individual carries at least one variant in the considered genomic region, 0 otherwise. A MAF threshold for the definition of a rare variant is therefore needed. This score can be computed using the function **CAST()** as shown here on the data simulated previously:
+CAST is based on a binary score which has a value of one if an individual carries at least one variant in the considered genomic region, and 0 otherwise. A MAF threshold for the definition of a rare variant is therefore needed as an argument to *maf.threshold*. This score can be computed using the function **CAST()** as shown here on the data simulated previously:
 ```{r}
 #Calculation of the genetic score with a maf threshold of 1%
 CAST.score <- CAST(x = x.filter, genomic.region = x.filter@snps$genomic.region, 
@@ -137,7 +140,7 @@ head(CAST.score)
 No statistical test is performed using this function but the user can calculate the classical chi-square associated to the CAST score as follow:
 ```{r}
 #Chi-square test associated to the CAST score:
-apply(CAST.score, 2, function (z) chisq.test(z)$p.value)
+apply(CAST.score, 2, function (z) chisq.test(z, simulate.p.value = TRUE)$p.value)
 ```
 
 ####WSS
@@ -151,24 +154,27 @@ head(WSS.score)
 
 ### Regressions
 We have extended CAST and WSS using non-ordinal multinomial regression models. Let consider $C$ groups of individuals including a group of controls ($c=1$) and $C-1$ groups of cases with different sub-phenotypes of the disease. We can compute $C-1$ probability ratios, one for each group of cases: $$ln \frac{P(Y_{j}=c)}{P(Y_{j}=1)} = \beta_{0,c} + \beta_{G,c}X_{G} + \beta_{k1,c}K_{1}+...+\beta_{kl,c}K_{l}$$
-Where $Y_{j}$ corresponds to the phenotyphe of the individual $j$ and $K_{l}$ is a vector for the $l$th covariate with the corresponding coefficient $\beta_{kl}$. The genetic effect is represented by $X_{G}$ and correspond to the genetic score CAST or WSS with $\beta_{G,c}$ the log-odds ratio associated to this burden score.  
+Where $Y_{j}$ corresponds to the phenotype of the individual $j$ and $K_{l}$ is a vector for the $l$th covariate with the corresponding coefficient $\beta_{kl}$. The genetic effect is represented by $X_{G}$ and correspond to the genetic score CAST or WSS with $\beta_{G,c}$ the log-odds ratio associated to this burden score.  
 The p-value associated to the genetic effect is calculated using a likelihood ratio test comparing this model to the same model without the genetic effect (null hypothesis). If only two groups are compared, a classical logistic regression is performed.  
-This regression can be performed on a bed.matrix using the function **burden.mlogit()** which relies on the package mlogit. To do so, he user needs to specify a vector with the phenotype of each individual (argument *group*) and the gene of each variant (argument *genomic.region*). The  CAST or WSS genetic score can directly be calculated in the regression (*burden="CAST"* or *"WSS"*). The user can also use another genetic score in the regression, which has to be specified as a matrix with one individual per row and one column per genomic region to *burden*.  Potential covariates could also be included in the regression as a matrix with one row per individual and one covariate per column to the argument *data*. If only a subset of covariates from *data* are to be included in the model, a R formula should be given to *formula* with these covariates.
-**burden.mlogit()** will return the p-value associated to the regression for each genomic region. If there is a convergence problem with the regression, the function will return 1 in the column *is.err*. The odds ratio associated in each group of cases with its confidence interval at a given alpha threshold (argument *alpha*) can also be obtained if *get.OR.value=TRUE*.   
+This regression can be performed on a bed.matrix using the function **burden.mlogit()** which relies on the package mlogit. To do so, the user needs to specify a vector with the phenotype of each individual (argument *group*) and the gene of each variant (argument *genomic.region*).  
+The  CAST or WSS genetic scores can be directly calculated in the regression (*burden="CAST"* or *burden="WSS"*). The user can also use another genetic score in the regression, which has to be specified as a matrix with one individual per row and one genomic region per column to *burden*.  
+The reference group of individuals should be given to the argument *ref.level*.
+Potential covariates could also be included in the regression as a matrix with one row per individual and one column per covariate to the argument *data*. If only a subset of covariates from *data* are to be included in the model, a R formula should be given to *formula* with these covariates, otherwise all the covariates will be included.  
+**burden.mlogit()** will return the p-value associated to the regression for each genomic region. If there is a convergence problem with the regression, the function will return 1 in the column *is.err*. The odds ratio associated to each group of cases compared to the reference group with its confidence interval at a given alpha threshold (argument *alpha*) can also be obtained if *get.OR.value=TRUE*.   
 An example of the p-value and OR calculation with its 95% confidence interval for CAST and WSS on the data simulated previously using a non-ordinal multinomial regression on three groups is shown below.
 
 ```{r}
 ##CAST
 burden.mlogit(x=x.filter, group=x.filter@ped$pheno, 
-                 genomic.region=x.filter@snps$genomic.region,
-                 burden="CAST", maf.threshold=0.01, ref.level="0",
-                 alpha=0.05, get.OR.value=TRUE)
+              genomic.region=x.filter@snps$genomic.region,
+              burden="CAST", maf.threshold=0.01, ref.level="0",
+              alpha=0.05, get.OR.value=TRUE)
 
 ##WSS
 burden.mlogit(x=x.filter, group=x.filter@ped$pheno, 
-                 genomic.region=x.filter@snps$genomic.region,
-                 burden="WSS", maf.threshold=0.01, ref.level="0",
-                 alpha=0.05, get.OR.value=TRUE)
+              genomic.region=x.filter@snps$genomic.region,
+              burden="WSS", maf.threshold=0.01, ref.level="0",
+              alpha=0.05, get.OR.value=TRUE)
 
 ##Simulation of covariates
 covar <- data.frame( sex = c(sample(0:1, 1000, TRUE, c(0.2,0.8)), 
@@ -177,27 +183,65 @@ covar <- data.frame( sex = c(sample(0:1, 1000, TRUE, c(0.2,0.8)),
 
 ##Regression with the covariate "sex"
 burden.mlogit(x=x.filter, group=x.filter@ped$pheno, 
-                 genomic.region=x.filter@snps$genomic.region,
-                 burden="WSS", maf.threshold=0.01, ref.level="0",
-                 alpha=0.05, get.OR.value=TRUE,
-                 data=covar, formula = ~ sex)
+              genomic.region=x.filter@snps$genomic.region,
+              burden="WSS", maf.threshold=0.01, ref.level="0",
+              alpha=0.05, get.OR.value=TRUE,
+              data=covar, formula = ~ sex)
+```
+
+
+##Data managment
+Data in the plink format or in the vcf format can be loaded in R using the functions **read.bed.matrix()** and **read.vcf()** respectively from the package gaston.  
+If the data for the controls and the different groups of cases are in different files, they can be loaded separately and then combined using the function **gaston:::rbind()** as long as the same variants are present between the different groups of individuals.  
+An example is given below where the simulated data have been split according the the group of each individual, and then combined in a bed.matrix:
+
+```{r}
+#Selection of each group of individuals
+x.controls <- select.inds(x.filter, pheno=="0")
+x.controls
+x.cases1 <- select.inds(x.filter, pheno=="1")
+x.cases1
+x.cases2 <- select.inds(x.filter, pheno=="2")
+x.cases2
+
+#Combine in one file:
+x.filter
+x.all <- rbind(x.controls, x.cases1, x.cases2)
+x.all
 ```
 
 
 ##Power calculation
-The power of burden tests extensions can be directly calculated on simulations previously explained using the function **power()**. Many arguments are needed to run this function, corresponding to the arguments from the simulations and the arguments from the regression models. The arguments needed to run the simulations should be given as a list to *model.pars*: this list should contain the arguments needed to **random.bed.matrix**; in addition, a GRR matrix should be given to *model.pars$GRR.matrix.del* (and/or *model.pars$GRR.matrix.pro*) or the arguments from **GRR.matrix** should be given to compute this GRR matrix.  
+The power of burden tests extensions can be directly calculated on simulations previously explained using the function **power()**. Many arguments are needed to run this function, corresponding to the arguments from the simulations and the arguments from the regression models. The arguments needed to run the simulations should be given as a list to *model.pars*: this list should contain the arguments needed to **random.bed.matrix**; in addition, a GRR matrix should be given to *model.pars$GRR.matrix.del* (and/or *model.pars$GRR.matrix.pro*) or the arguments from the function **GRR.matrix()** should be given to compute this GRR matrix.  
 The significance threshold used to calculate the power should also be specified in the argument *alpha*. As this function calculates only the power of the tests, individual p-value and OR values are not returned.  
 An example of this function to estimate the power at a 0.1% significance threshold of CAST and WSS with 100 replicates using the same parameters for the simulations as previously is shown below:
 ```{r}
 power(alpha = 0.001, WSS = TRUE, CAST = TRUE, maf.threshold=0.01,
-           filter = "any", min.nb.snps = 5,
-           pooled.analysis = TRUE, non.pooled.analysis = TRUE,
-           analysis.by.group = TRUE, ref.level="0",
-           formula=NULL, data=NULL,
-           model.pars=list(genes.maf=Kryukov, select.gene="R1", size=c(1000, 500, 500),
-                           baseline=c(0.001, 0.001), n.case.groups=2, replicates=100,
-                           GRR="SKAT", GRR.multiplicative.factor=2,
-                           same.variant=FALSE, fixed.variant.prop = TRUE,
-                           genetic.model="multiplicative",
-                           prop.del=0.5, prop.pro=0) )
+      filter = "any", min.nb.snps = 5,
+      pooled.analysis = TRUE, non.pooled.analysis = TRUE,
+      analysis.by.group = TRUE, ref.level="0",
+      formula=NULL, data=NULL,
+      model.pars=list(genes.maf=Kryukov, select.gene="R1", size=c(1000, 500, 500),
+                      baseline=c(0.001, 0.001), n.case.groups=2, replicates=100,
+                      GRR="SKAT", GRR.multiplicative.factor=2,
+                      same.variant=FALSE, fixed.variant.prop = TRUE,
+                      genetic.model="multiplicative",
+                      prop.del=0.5, prop.pro=0) )
+```
+
+Another example below replicates one of the results from the paper "Rare variant association testing for multi-category phenotype" submitted to Genetic Epidemiology. These simulations correspond to the scenario DG where genetic effects are present only in the second group of cases with 50% of causal variants:
+```{r}
+#GRR matrix used for the DG scenario where genetic effects are present only in 
+#the second group of cases (i.e. GRR=1 in the first group of cases for all the variants)
+GRR.DG <- matrix(c(rep(1, nrow(subset(Kryukov, gene=="R1"))), 
+                   exp(0.402 * abs(log10(subset(Kryukov, gene=="R1")$maf)))),
+                 nrow=2, byrow=TRUE)
+GRR.DG[,1:5]
+#Calculation of power
+power(alpha=2.5e-6, filter="any", CAST=TRUE, WSS=TRUE, pooled.analysis=TRUE, 
+      non.pooled.analysis=TRUE, analysis.by.group=TRUE, ref.level="0", 
+      model.pars=list(genes.maf = Kryukov, select.gene = "R1", size = c(1000, 500, 500), 
+                      baseline = c(0.001, 0.001), n.case.groups = 2, replicates = 1000, 
+                      genetic.model = "multiplicative",prop.del = 0.5, prop.pro = 0, 
+                      GRR.matrix.del=GRR.DG))
 ```
