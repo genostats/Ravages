@@ -19,7 +19,7 @@ set.genomic.region <- function(x, genes = genes.b37, flank.width = 0L) {
   }
   
   # if asked define larger regions
-  flank.width <- as.integer(flank.width)
+  if(is.finite(flank.width)) flank.width <- as.integer(flank.width)
   if(flank.width > 0L) {
     M <- as.integer(max(x@snps$pos, genes$End))  # joue le rôle de la position infinie !
     b <- genes$Chr[2:n] == genes$Chr[1:(n-1)]

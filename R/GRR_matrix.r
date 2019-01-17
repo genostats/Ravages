@@ -14,8 +14,11 @@ GRR.matrix <- function(genes.maf=Kryukov, n.case.groups=2, GRR=c("SKAT", "consta
   ##Check on multiplicative values
   if(is.null(GRR.multiplicative.factor) & n.case.groups>1) stop("Needs 'GRR.multiplicative.factor'")
   if(!is.null(GRR.multiplicative.factor)){ 
-    if(n.case.groups==1) warning("Only one group of cases, 'GRR.multiplicative.factor' is ignored")
-    if(length(GRR.multiplicative.factor)!=(n.case.groups-1)) stop("Wrong number of multiplicative factors")
+    if(n.case.groups==1){
+       warning("Only one group of cases, 'GRR.multiplicative.factor' is ignored")
+    }else{
+      if(length(GRR.multiplicative.factor)!=(n.case.groups-1)) stop("Wrong number of multiplicative factors")
+    }
   }
 
   GRR <- match.arg(GRR)
