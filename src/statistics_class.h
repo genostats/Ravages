@@ -12,42 +12,55 @@ class Stats {
   private: 
   Stats();
   public:
-  uint8_t ** full_data;
-  const int ncol, true_ncol, full_nb_snps;
+  uint8_t ** full_data;                     // TOUS les snps (pointeur vers l'élément data d'une bed.matrix)
+  const int ncol, true_ncol, full_nb_snps;  // les dims de cette bed matrix [ncol et true_ncol = dim relatives aux individus, reste constant]
 
-  const IntegerVector full_snp_group; // facteur pour grouper les SNPs
-  const int nb_snp_groups;                // son nombre de niveaux
+  const IntegerVector full_snp_group; // facteur pour grouper les SNPs   (TOUS les SNPs)
+  const int nb_snp_groups;            // son nombre de niveaux
+  LogicalVector which_snps_orig;      // le vecteur booleen des SNPs à conserver tel qu'il est AU DEBUT des calculs
 
-  LogicalVector which_snps_orig;
-  std::vector<bool> which_snps;
-  int nb_snps;
-  std::vector<uint8_t *> data;
-  std::vector<int> snp_group;
-  std::vector<int> nb_snp_in_group; // le nombre de snps à TRUE dans which_snp, pour chaque groupe de SNPs
+  std::vector<bool> which_snps;       // le même, à l'étape en cours (utilisé par update_snp, mis à jour par permute_stats)
+  int nb_snps;                        // nb snps conservés à l'étape en cours
+  std::vector<uint8_t *> data;        // les SNPs conservés à l'étape en cours
+  std::vector<int> snp_group;         // facteur pour grouper les SNPs conservés à l'étape en cours
+
+  std::vector<int> nb_snp_in_group;   // le nombre de snps à TRUE dans which_snp, pour chaque groupe de SNPs (étape en cours)
 
   // concernant les individus 
-  int nb_ind_groups;          // nb de groupes
+  int nb_ind_groups;           // nb de groupes d'individus
   std::vector<int> ind_group;  // groupe des individus
  
-  // pour les calculs exacts
+  // pour les calculs exacts : vecteur des individus avec ou sans variants rares
   std::vector<int> no_var, some_var;
 
   // output
   NumericVector stats;
-  // la fonction qui renvoie un vecteur de stats de longueur nb_snp_groups
+
+  // la fonction qui renvoie un vecteur de stats de longueur nb_snp_groups [une pour chaque groupe de SNP donc]
+  // ** cette fonction devrait logiquement utiliser
+  // ** data = les SNPs courants (dims ncol, true_ncol, nb_snps)
+  // ** ind_group = le groupe de chaque individus (longueur ncol, parmi nb_ind_groups)
+  // ** snp_group = le groupe de chaque SNP (longueur nb_snps, parmi nb_snp_groups)
+  // ** nb_snp_in_group = longueur nb_snp_groups
   virtual void compute_stats() = 0;
 
+
+  // Le constructeur par défaut...
+  // pA = pointeur vers une bed matrix
+  // _which_snps = vecteur des SNPs à conserver
+  // SNPgroup =   *facteur* des groupes de SNP
+  // _ind_group = *facteur* des groupes d'individus
   Stats(const XPtr<matrix4> pA, LogicalVector _which_snps, IntegerVector SNPgroup, IntegerVector _ind_group) : 
     full_data(pA->data), 
     ncol(pA->ncol), 
     true_ncol(pA->true_ncol), 
     full_nb_snps(pA->nrow), 
     full_snp_group(SNPgroup),
-    nb_snp_groups(as<CharacterVector>(SNPgroup.attr("levels")).size()),
+    nb_snp_groups(as<CharacterVector>(SNPgroup.attr("levels")).size()),   // attribut "levels" : SNPgroup doit être un facteur
     which_snps_orig(_which_snps), 
     which_snps(full_nb_snps),
     nb_snp_in_group(nb_snp_groups),
-    nb_ind_groups(as<CharacterVector>(_ind_group.attr("levels")).size()),
+    nb_ind_groups(as<CharacterVector>(_ind_group.attr("levels")).size()), // idem : _ind_group doit être un facteur
     ind_group(ncol),
     stats(nb_snp_groups)
   {
@@ -64,6 +77,7 @@ class Stats {
   }
 
   // permutation aléatoire des groupes d'individus
+  // met à jour le vecteur ind_group 
   void permute_pheno() {
     for(int i = ncol - 1; i > 0; i--) {
       int j = (int) std::floor(i*R::runif(0,1));
@@ -74,10 +88,16 @@ class Stats {
   }
 
   // pour ne pas avoir à tout redéfinir dans la classe dérivée
+  // cette fonction permet de faire des mises à jour supplémentaire après que which_snps ait été modifié
+  // !!! SI REDEFINIE, PENSER A L'APPELER DANS LE CONSTRUCTEUR DE LA CLASSE DERIVEE !!!
+  // en effet lors de l'appel du constructeur par défaut c'est la définition ci-dessous qui est utilisée
   virtual void extra_update_snps() {
   }
 
   // comme son nom l'indique...
+  // à partir des valeurs courantes de which_snps
+  // cette fonction met à jour nb_snps, data, snp_group, nb_snp_in_group
+  // et appelle extra_update_snps
   virtual void update_snps() {
     // Rcout << "original update\n";
     // count 'true' in which_snps
@@ -103,6 +123,9 @@ class Stats {
     extra_update_snps();
   }
 
+  // le coeur du problème (permutations dynamiques)
+  // appelle compute_stats, permute_pheno
+  // quand A_target est atteint met à jour which_snps puis appelle update_snps
   List permute_stats(int A_target, int B_max) {
     IntegerVector A(nb_snp_groups);
     IntegerVector B(nb_snp_groups);
@@ -151,6 +174,7 @@ class Stats {
 
 
   // Pour garder les n_keep plus hautes valeurs permutées parmi B 
+  // (pas de màj de which_snps ni d'appel à update_snps)
   List higher_permuted_stats(int n_keep, int B) {
     std::vector< std::vector<double> > Heaps(nb_snp_groups);
 
