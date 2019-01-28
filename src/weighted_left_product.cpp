@@ -61,8 +61,8 @@ NumericMatrix WLP(XPtr<matrix4> pA, const std::vector<double> & we, NumericMatri
 NumericMatrix WLP(const uint8_t ** A_data, size_t A_nrow, size_t A_ncol, size_t A_true_ncol, const std::vector<double> & we, NumericMatrix & v) {
   int n = A_nrow; // nb snps
   int m = A_ncol; // nb inds
-  Rcout << "m = " << m << " v.nrow = " << v.nrow() << "\n";
-  Rcout << "n = " << n << " we.size = " << we.size() << "\n";
+  // Rcout << "m = " << m << " v.nrow = " << v.nrow() << "\n";
+  // Rcout << "n = " << n << " we.size = " << we.size() << "\n";
   if(m != v.nrow() || n != we.size()) stop("Dimensions mismatch");
   int r = v.ncol();
 

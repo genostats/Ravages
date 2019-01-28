@@ -14,7 +14,10 @@ class SKAT : public Stats {
   public:
   NumericMatrix Pi;      // matrice des probabilités d'appartenir à chaque groupe
   NumericMatrix Y_Pi;    // Y_Pi = Y - Pi
-  NumericMatrix Moments; // les quatre premiers moments (non centrés), pour chaque SNPgroup
+  NumericVector M1;      // les quatre premiers moments (non centrés), pour chaque SNPgroup
+  NumericVector M2;
+  NumericVector M3;
+  NumericVector M4;
   std::vector<double> full_W; // poids des SNPs (full data)
   std::vector<double> W; // poids des SNPs (données courantes)
   std::vector<int> nb_ind_in_group; // nb individu dans chaque groupe
@@ -29,8 +32,8 @@ class SKAT : public Stats {
   //      dimensions ncol (= nb individus)  x  nb_ind_groups 
   // W = vecteur des poids des SNPs
   SKAT(const XPtr<matrix4> pA, LogicalVector which_snps, IntegerVector SNPgroup, IntegerVector ind_group, NumericMatrix Pi_, NumericVector W_)
-  : Stats(pA, which_snps, SNPgroup, ind_group), Pi(Pi_), Y_Pi(ncol, nb_ind_groups), Moments(4, nb_snp_groups), full_W(as<std::vector<double>>(W_)),
-    nb_ind_in_group(nb_ind_groups) { 
+  : Stats(pA, which_snps, SNPgroup, ind_group), Pi(Pi_), Y_Pi(ncol, nb_ind_groups), M1(nb_snp_groups), M2(nb_snp_groups), M3(nb_snp_groups), 
+    M4(nb_snp_groups), full_W(as<std::vector<double>>(W_)), nb_ind_in_group(nb_ind_groups), iterates(0) { 
     if(Pi.nrow() != ncol || Pi.ncol() != nb_ind_groups)
       stop("Pi dimensions mismatch");
     // pour compter combien d'individus dans chaque groupe
@@ -53,8 +56,8 @@ class SKAT : public Stats {
 
 
   void compute_stats() {
-    Rcout << "nb_snps = " << nb_snps << "\n";
-    Rcout << "nb_snp_groups = " << nb_snp_groups << "\n";
+    //Rcout << "nb_snps = " << nb_snps << "\n";
+    //Rcout << "nb_snp_groups = " << nb_snp_groups << "\n";
     if(nb_snps == 0 || nb_snp_groups == 0) {
       return;
     }
@@ -78,32 +81,39 @@ class SKAT : public Stats {
 */
 
     // Produit (Y - Pi) * G * W [ dimensions nb_snps x nb_ind_groups : elle est transposée ]
-Rcout << "Here I am\n";
     NumericMatrix Z = WLP(&data[0], nb_snps, ncol, true_ncol, W, Y_Pi);
-// Rcout << "Here I am again\n";
     
-
+/*
     NumericMatrix PPP = Z(Range(0,5), _);
     Rcout << PPP ;
     Rcout << "..." << "\n";
     PPP = Z( Range( Z.nrow() - 6, Z.nrow() - 1), _);
     Rcout << PPP ;
+*/
 
     // Vecteur de stats
     for(int i = 0; i < nb_snp_groups; i++) stats[i] = 0;
 
     for(int j = 0; j < nb_ind_groups; j++) {
-    Rcout << "j = " << j << " nb_ind_in_group[j] = " << nb_ind_in_group[j] << "\n";
       for(int i = 0; i < nb_snps; i++) {
-        Rcout << "snp_group = " << snp_group[i] << " ";
-        Rcout << "Z(i,j) = " << Z(i, j) << "\n";
         stats[ snp_group[i] - 1 ] += Z(i,j)*Z(i,j) / nb_ind_in_group[j];
       }
     }
  
     // Mise à jour moments;
     iterates++;
-
+    for(int i = 0; i < nb_snp_groups; i++) {
+      if(nb_snp_in_group[i] == 0) 
+        continue;
+      double s = stats[i];
+      double s2 = s * s;
+      double s3 = s2 * s;
+      double s4 = s3 * s;
+      M1[i] += (s  - M1[i])/iterates;
+      M2[i] += (s2 - M2[i])/iterates;
+      M3[i] += (s3 - M3[i])/iterates;
+      M4[i] += (s4 - M4[i])/iterates;
+    }
   }
 
 };
@@ -114,7 +124,12 @@ List skat(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector region, Int
 
   SKAT B(p_A, which_snps, region, group, Pi, weights);
   if(B_max > 0) {
-    return B.permute_stats(A_target, B_max);
+    List L = B.permute_stats(A_target, B_max);
+    L["M1"] = B.M1;
+    L["M2"] = B.M2;
+    L["M3"] = B.M3;
+    L["M4"] = B.M4;
+    return L;
   } else {
     B.compute_stats();
     List L;
