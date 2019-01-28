@@ -11,7 +11,7 @@ using namespace RcppParallel;
 
 struct allelecounter2 : public Worker {
   // input 
-  uint8_t ** data;
+  const uint8_t ** data;
   const size_t ncol;
   const size_t true_ncol; 
   const size_t nrow;
@@ -22,7 +22,7 @@ struct allelecounter2 : public Worker {
   int * R;
 
   //constructeur
-  allelecounter2(uint8_t ** data, const size_t ncol, const size_t true_ncol, const size_t nrow, const size_t nlevels, std::vector<int> group, std::vector<bool> inverse);
+  allelecounter2(const uint8_t ** data, const size_t ncol, const size_t true_ncol, const size_t nrow, const size_t nlevels, std::vector<int> group, std::vector<bool> inverse);
   //constructeur pour le split
   allelecounter2(allelecounter2 & Q, Split);
   // destructeur

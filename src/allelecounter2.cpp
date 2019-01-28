@@ -9,7 +9,7 @@ using namespace Rcpp;
 using namespace RcppParallel;
 
  //constructeur
- allelecounter2::allelecounter2(uint8_t ** data, const size_t ncol, const size_t true_ncol, const size_t nrow, const size_t nlevels, std::vector<int> group, std::vector<bool> inverse) 
+ allelecounter2::allelecounter2(const uint8_t ** data, const size_t ncol, const size_t true_ncol, const size_t nrow, const size_t nlevels, std::vector<int> group, std::vector<bool> inverse) 
             : data(data), ncol(ncol), true_ncol(true_ncol), nrow(nrow), nlevels(nlevels), group(group), inverse(inverse) {
     R = new int[2*nlevels*nrow];
     std::fill(R, R+2*nlevels*nrow, 0); 
@@ -77,7 +77,7 @@ List alleles_by_factor(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVecto
  
 
   // extraction des données pertinentes...
-  uint8_t ** data = new uint8_t * [nb_snps];
+  const uint8_t ** data = new const uint8_t * [nb_snps];
   std::vector<bool> inv(nb_snps);
   size_t k = 0;
   for(size_t i = 0; i < n; i++) {

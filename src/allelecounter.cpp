@@ -8,7 +8,7 @@ using namespace Rcpp;
 using namespace RcppParallel;
 
 //constructeur
-allelecounter::allelecounter(uint8_t ** data, const size_t ncol, const size_t true_ncol, const size_t nrow, const size_t nlevels, std::vector<int> group) 
+allelecounter::allelecounter(const uint8_t ** data, const size_t ncol, const size_t true_ncol, const size_t nrow, const size_t nlevels, std::vector<int> group) 
           : data(data), ncol(ncol), true_ncol(true_ncol), nrow(nrow), nlevels(nlevels), group(group) {
   R = new int[2*nlevels*nrow];
   std::fill(R, R+2*nlevels*nrow, 0);

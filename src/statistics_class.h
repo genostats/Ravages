@@ -21,7 +21,7 @@ class Stats {
 
   std::vector<bool> which_snps;       // le même, à l'étape en cours (utilisé par update_snp, mis à jour par permute_stats)
   int nb_snps;                        // nb snps conservés à l'étape en cours
-  std::vector<uint8_t *> data;        // les SNPs conservés à l'étape en cours
+  std::vector<const uint8_t *> data;        // les SNPs conservés à l'étape en cours
   std::vector<int> snp_group;         // facteur pour grouper les SNPs conservés à l'étape en cours
 
   std::vector<int> nb_snp_in_group;   // le nombre de snps à TRUE dans which_snp, pour chaque groupe de SNPs (étape en cours)
@@ -220,7 +220,7 @@ class Stats {
   void set_no_var_some_var() {
     // stat Individus
     std::vector<int> stat_inds(16*true_ncol);
-    for(uint8_t * da : data) {
+    for(const uint8_t * da : data) {
       for(size_t j = 0; j < true_ncol; j++) {
         uint8_t d = da[j];
         stat_inds[16*j + ((int) d&3)]++;
