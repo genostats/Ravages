@@ -1,6 +1,6 @@
 SKAT <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, Pi, weights = rep(1, ncol(x)), maf.threshold = 0.01, perm.target = 100, perm.max = 1e4) {
 
-  which.snps <- (x@p < maf.threshold) & (x@p > 0)
+  which.snps <- (x@snps$maf < maf.threshold) & (x@snps$maf > 0)
   genomic.region <- as.factor(genomic.region)
   group <- as.factor(group)
 
