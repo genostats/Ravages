@@ -4,7 +4,7 @@ burden.mlogit <- function(x, group = x@ped$pheno,
                           burden, maf.threshold = 0.01, 
                           ref.level, formula=NULL, data=NULL, get.OR.value=FALSE, alpha=0.05){
 
-  group <- if(!is.factor(group)) as.factor(group)
+  if(!is.factor(group)) group <- as.factor(group)
 
   if(is.numeric(ref.level)) ref.level <- as.character(ref.level)
 
