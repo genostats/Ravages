@@ -24,6 +24,10 @@ class SKAT : public Stats {
 
   int iterates; // compteur (pour la mise à jour des moments)
 
+
+// std::vector<double> debug;
+
+
   // pA = la matrice de genotypes
   // which_snps = les snp à considérer
   // SNP_group = facteur donnant le groupe pour tous les SNPs
@@ -99,21 +103,23 @@ class SKAT : public Stats {
         stats[ snp_group[i] - 1 ] += Z(i,j)*Z(i,j) / nb_ind_in_group[j];
       }
     }
- 
+
     // Mise à jour moments;
-    iterates++;
-    for(int i = 0; i < nb_snp_groups; i++) {
-      if(nb_snp_in_group[i] == 0) 
-        continue;
-      double s = stats[i];
-      double s2 = s * s;
-      double s3 = s2 * s;
-      double s4 = s3 * s;
-      M1[i] += (s  - M1[i])/iterates;
-      M2[i] += (s2 - M2[i])/iterates;
-      M3[i] += (s3 - M3[i])/iterates;
-      M4[i] += (s4 - M4[i])/iterates;
+    if(iterates > 0) {
+      for(int i = 0; i < nb_snp_groups; i++) {
+        if(nb_snp_in_group[i] == 0) 
+          continue;
+        double s = stats[i];
+        double s2 = s * s;
+        double s3 = s2 * s;
+        double s4 = s3 * s;
+        M1[i] += (s  - M1[i])/iterates;
+        M2[i] += (s2 - M2[i])/iterates;
+        M3[i] += (s3 - M3[i])/iterates;
+        M4[i] += (s4 - M4[i])/iterates;
+      }
     }
+    iterates++;
   }
 
 };
