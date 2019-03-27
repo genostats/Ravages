@@ -27,7 +27,10 @@ SKAT <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region,
   B$stat.skew <- m3/S2**1.5
   B$stat.kurt <- m4/S2**2
 
-  df <- 12/(B$stat.kurt - 3)
+  # l'astuce pour le cas kurtosis < 3 vient de SKAT
+  # ça revient à prendre une approximation normale
+  df <- ifelse(B$stat.kurt > 3, 12/(B$stat.kurt - 3), 1e5)
+
   chi2val <- df + sqrt(2*df / S2)*(B$stat - B$M1)
   B$p.chi2 <- pchisq(chi2val, df, lower.tail=FALSE)
 
