@@ -18,4 +18,5 @@ export(filter.rare.variants)
 export(burden.mlogit)
 export(genotypic.freq, random.bed.matrix, GRR.matrix)
 export(power)
+export(SKAT)
 
