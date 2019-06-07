@@ -3,7 +3,7 @@ genotypic.freq <- function(genes.maf = Kryukov, GRR.het, GRR.homo.alt, baseline,
   
   genetic.model <- match.arg(genetic.model)
   #Test if a good genetic model is given
-  if(!(genetic.model %in% c("general", "multiplicative", "dominant", "recessive"))) stop("Wrong genetic.model")
+  genetic.model <- match.arg(genetic.model)
 
   #Selection of maf
   if (nlevels(genes.maf$gene) > 1) {

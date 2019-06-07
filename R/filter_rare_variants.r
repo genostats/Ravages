@@ -1,7 +1,7 @@
 
 filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "any"), maf.threshold = 0.01, min.nb.snps, group) {
   #Check if good filter
-  if(!(filter %in% c("whole", "controls", "any"))) stop ("Wrong filter specified")
+  filter <- match.arg(filter)
 
   #if filter on another factor than x@ped$pheno
   if(!missing(group)){
