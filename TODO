@@ -17,3 +17,7 @@ Notes après réunion du 12 sept:
 ** dec 2018
 
 quand le package est chargé on n'a pas l'aide des data (Kryukov, GnomeADgenes)
+
+** juillet 2018
+
+SKAT plante quand il y a des genomic region = NA

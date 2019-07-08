@@ -1,9 +1,9 @@
-Pi.matrix <- function(group, data=NULL, formula=NULL, ref.level){
+Pi.matrix <- function(group, formula, data, ref.level){
     group <- if (!is.factor(group)) factor(group, levels=unique(group))
     if (is.numeric(ref.level)) ref.level <- as.character(ref.level)
     if (!(ref.level %in% levels(group))) stop("'ref.level' is not a level of 'group'")
     
-    if (is.null(data)) {
+    if (missing(data)) {
       stop("Needs data to calculate probailities")
     }else{
       if (nrow(data) != length(group)) { stop("'data' has wrong dimensions") }
@@ -12,7 +12,7 @@ Pi.matrix <- function(group, data=NULL, formula=NULL, ref.level){
     alt.levels <- levels(group)[levels(group) != ref.level]
    
     data.reg <- as.data.frame(data)
-    if (is.null(formula)){
+    if(missing(formula)){
       formula <- as.formula(paste("~", paste(colnames(data), collapse = "+")))}
     
     data.reg <- cbind(ind.pheno = group, data.reg)

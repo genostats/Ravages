@@ -1,4 +1,5 @@
-SKAT <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, Pi, weights = (1-x@snps$maf)**24, maf.threshold = 0.5, perm.target = 100, perm.max = 1e4) {
+SKAT <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, 
+                 Pi, weights = (1-x@snps$maf)**24, maf.threshold = 0.5, perm.target = 100, perm.max = 1e4) {
 
   which.snps <- (x@snps$maf <= maf.threshold) & (x@snps$maf > 0)
   genomic.region <- as.factor(genomic.region)
@@ -9,7 +10,7 @@ SKAT <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region,
     a <- table(group)/nrow(x)
     Pi <- matrix( a, ncol = nlevels(group), nrow = nrow(x), byrow = TRUE)
   }
-  Pi <<- Pi
+
   B <- .Call('skat', PACKAGE = "Ravages", x@bed, which.snps, genomic.region, group, Pi, weights, perm.target, perm.max);
 
   names(B)[5] <- "p.perm"
@@ -36,7 +37,7 @@ SKAT <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region,
 
   names(B)[6] <- "stat.mean"
   B$p.value <- ifelse(B$nb.perm < perm.max, B$p.perm, B$p.chi2)
-
-  return(as.data.frame(B));
+ 
+  return(as.data.frame(B, row.names = levels(genomic.region)))
 }
 

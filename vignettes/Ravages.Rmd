@@ -25,14 +25,29 @@ For rare variant association tests, the unit of analysis is not a single variant
 The files **genes.b37** and **genes.b38** available in Ravages which contain gene positions from ENSEMBL versions GRCh37 and GRCh38 can be used to define gene positions. An example of this function is shown below using the example data "LCT" from gaston.
 ```{r}
 x <- as.bed.matrix(LCT.gen, LCT.fam, LCT.bim)
-#Group variants within known genes
+
+# Group variants within known genes
 x <- set.genomic.region(x)
-table(x@snps$genomic.region)
-#Group variants within know genes by extended their positions
-#500bp upstream and downstream
+table(x@snps$genomic.region, useNA = "ifany")
+
+# Group variants within know genes by extending their positions
+# 500bp upstream and downstream
 x <- set.genomic.region(x, flank.width=500)
-table(x@snps$genomic.region)
+table(x@snps$genomic.region, useNA = "ifany")
+
+# Filter SNPs with maf (computed on whole sample) < 0.025
+# keeping only genomic region with at least 10 SNPs
+x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
+table(x1@snps$genomic.region, useNA="ifany")
+
+# run burden test WSS, using the 1000 genome population as "outcome"
+burden.mlogit(x1, LCT.pop, burden = "WSS", ref.level = "CEU")
+
+# run SKAT
+SKAT(x1, LCT.pop)
+
 ```
+
 
 
 ##Simulation of genetic data
@@ -241,7 +256,7 @@ GRR.DG[,1:5]
 power(alpha=2.5e-6, filter="any", CAST=TRUE, WSS=TRUE, pooled.analysis=TRUE, 
       non.pooled.analysis=TRUE, analysis.by.group=TRUE, ref.level="0", 
       model.pars=list(genes.maf = Kryukov, select.gene = "R1", size = c(1000, 500, 500), 
-                      baseline = c(0.001, 0.001), n.case.groups = 2, replicates = 1000, 
+                      baseline = c(0.001, 0.001), n.case.groups = 2, replicates = 100, 
                       genetic.model = "multiplicative",prop.del = 0.5, prop.pro = 0, 
                       GRR.matrix.del=GRR.DG))
 ```
