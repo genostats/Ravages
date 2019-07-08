@@ -1,8 +1,7 @@
-
 burden.mlogit <- function(x, group = x@ped$pheno,
                           genomic.region = x@snps$genomic.region, 
                           burden, maf.threshold = 0.01, 
-                          ref.level, formula=NULL, data=NULL, get.OR.value=FALSE, alpha=0.05){
+                          ref.level, formula, data, get.OR.value=FALSE, alpha=0.05){
 
   if(!is.factor(group)) group <- as.factor(group)
 
@@ -15,14 +14,9 @@ burden.mlogit <- function(x, group = x@ped$pheno,
     if(!is.matrix(burden)){
       stop("Score is not a matrix")
     } else {
-      #If burden is a matrix: no need to specify genomic.region  
       if(is.null(colnames(burden))){ 
-        genomic.region <- factor(paste("genomic.region", 1:ncol(burden), sep="."))
-      }else{
-        genomic.region <- as.factor(colnames(burden))
+        colnames(burden) <- make.names(1:ncol(burden))
       }
-      if(ncol(burden) != nlevels(genomic.region) | nrow(burden) != length(group))
-        stop("Score has wrong dimensions")
     }
     score <- burden
   } else if(burden == "CAST"){
@@ -35,15 +29,21 @@ burden.mlogit <- function(x, group = x@ped$pheno,
     stop("'burden' should be \"CAST\", \"WSS\", or a matrix of pre-computed burdens");
   }
   score <- as.data.frame(score)
+  # to ensure syntactically correct formulas
+  old.names <- colnames(score)
+  names(score) <- make.names(names(score))
 
-  if(!is.null(data)){
+  if(missing(data)) 
+    data <- NULL
+  if(missing(formula))
+    formula <- NULL
+
+  if(!is.null(data)) {
     if(nrow(data) != length(group)){
       stop("'data' has wrong dimensions")
     }
   }
 
-  genomic.region <- as.factor(genomic.region)
-  
   alt.levels <- levels(group)[levels(group) != ref.level]
 
   # preparation data / formula
@@ -51,14 +51,15 @@ burden.mlogit <- function(x, group = x@ped$pheno,
     data.reg <- cbind(ind.pheno = group, score)
   } else {
     data.reg <- as.data.frame(data)
-    if(is.null(formula)) 
+    if(is.null(formula))  
       formula <- as.formula( paste("~", paste(colnames(data), collapse = "+")))
     data.reg <- cbind(ind.pheno = group, score, data.reg)
   }
+
   rownames(data.reg) <- NULL # is this useful ??
   data.reg <- mlogit.data(data.reg, varying=NULL, shape="wide", choice="ind.pheno", alt.levels=levels(group))
  
-  R <- sapply( levels(genomic.region), 
+  R <- sapply( names(score), 
                function(reg) 
                   run.mlogit(pheno = group, score = score, region = reg, 
                   ref.level = ref.level, alt.levels = alt.levels, formula = formula, data = data.reg, 
@@ -71,7 +72,7 @@ burden.mlogit <- function(x, group = x@ped$pheno,
   else
     colnames(R) <- c("p.value", "is.err")
 
-  rownames(R) <- levels(genomic.region)
+  rownames(R) <- old.names
 
   return(R)
 }

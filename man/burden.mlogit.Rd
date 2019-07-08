@@ -10,8 +10,8 @@
 burden.mlogit(x, group = x@ped$pheno, 
               genomic.region = x@snps$genomic.region, 
               burden, maf.threshold = 0.01, ref.level, 
-              formula=NULL, data=NULL,
-              get.OR.value = FALSE, alpha = 0.05)
+              formula, data, get.OR.value = FALSE, 
+              alpha = 0.05)
 }
 \arguments{
   \item{x}{ A bed matrix, only needed if \code{burden="CAST"} or \code{burden="WSS"}}
