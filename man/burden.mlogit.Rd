@@ -48,33 +48,27 @@ burden.mlogit(x, group = x@ped$pheno,
 }
 \seealso{ \code{\link{power}}, \code{\link{CAST}}, \code{\link{WSS}} }
 \examples{
-#Data simulation: GRR values according to the SKAT formula
-GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov, 
-                              select.gene="R1", n.case.groups = 2,
-                              GRR.multiplicative.factor=2)
+#Import 1000Genome data from region around LCT gene
+x <- as.bed.matrix(LCT.gen, LCT.fam, LCT.bim)
 
-#Simulation of one group of 1,000 controls and two groups of 500 cases,
-#50% of deleterious, 5 genomic regions are simulated.
-x <- random.bed.matrix(genes.maf=Kryukov,
-                       size = c(1000, 500, 500), baseline = c(0.001, 0.001),
-                       GRR.matrix.del = GRR.del, prop.del = 0.5,
-                       same.variant = FALSE, fixed.variant.prop = TRUE,
-                       genetic.model = "multiplicative", replicates=5)
+#Group variants within known genes
+x <- set.genomic.region(x)
 
-#Keep only rare variant
-x <- filter.rare.variants(x, filter = "any", maf.threshold = 0.01, 
-                          min.nb.snps = 5)
-  							
+#Filter of rare variants: only non-monomorphic variants with
+#a MAF lower than 2.5%
+#keeping only genomic regions with at least 10 SNPs
+x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
+
+#run burden test WSS, using the 1000Genome population as "outcome"
+#The population is available in the object LCT.pop
+burden.mlogit(x1, LCT.pop, burden = "WSS", ref.level="CEU", get.OR.value=TRUE)
+
 #Simulation of covariates
-X <- data.frame(sex = c(sample(0:1, 1000, TRUE, c(0.2,0.8)), 
-                      sample(0:1, 1000, TRUE, c(0.8,0.2))), 
-                u = runif(1000))
-  				  
-#Regression on 3 groups with the score WSS and OR values without covariates
-burden.mlogit(x, burden = "WSS", maf.threshold=0.01, ref.level="0", 
-              get.OR.value=TRUE, alpha = 0.05)
+#with different probabilities in GBR/CEU/FIN and IBS/TSI
+covar <- data.frame( sex = c(sample(0:1, sum(table(LCT.pop)[c("CEU", "GBR", "FIN")]), TRUE, c(0.2,0.8)), 
+                             sample(0:1, sum(table(LCT.pop)[c("TSI", "IBS")]), TRUE, c(0.8,0.2))), 
+                     u = runif(length(LCT.pop)))
               
-#Regression on 3 groups with the score WSS and OR values with the covariate "sex"
-burden.mlogit(x, burden = "WSS", maf.threshold=0.01, ref.level="0", 
-              get.OR.value=TRUE, alpha = 0.05, formula = ~ sex, data = X)
+#with the covariate sex
+burden.mlogit(x1, burden = "WSS", ref.level="CEU", get.OR.value=TRUE, formula = ~ sex, data = covar)
 }   

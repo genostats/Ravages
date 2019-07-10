@@ -33,11 +33,12 @@ The same bed matrix as x with an additional column \code{x@snps$genomic.region} 
  \code{\link{genes.b37}}, \code{\link{genes.b38}}
 }
 \examples{
+#Import 1000Genome data from region around LCT gene
 x <- as.bed.matrix(LCT.gen, LCT.fam, LCT.bim)
 #Group variants within known genes
 x <- set.genomic.region(x)
 table(x@snps$genomic.region)
 #Group variants within know genes +/- 500bp
 x <- set.genomic.region(x, flank.width=500)
-table(x@snps$genomic.region)
+table(x@snps$genomic.region, useNA="ifany")
 }

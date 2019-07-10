@@ -29,20 +29,16 @@ filter.rare.variants(x, ref.level, filter=c("whole", "controls", "any"),
   If \code{filter="any"}, only the variants having a MAF lower than the threshold in any of the groups are kept.
 }
 \examples{
-#GRR values according to the SKAT formula
-GRR.del <- GRR.matrix(genes.maf=Kryukov, select.gene="R1",
-                      GRR = "SKAT", GRR.multiplicative.factor=2)
-  
-#Simulation of one group of 1,000 controls and two groups of 500 cases, 
-#50% of deleterious variants, 5 genomic regions are simulated.
-x <- random.bed.matrix(genes.maf=Kryukov, size = c(1000, 500, 500), 
-                       baseline = c(0.001, 0.001), select.gene="R1",
-                       GRR.matrix.del = GRR.del, prop.del = 0.5, 
-                       same.variant=FALSE, fixed.variant.prop=TRUE,
-                       genetic.model = "multiplicative", replicates = 5)
+#Import 1000Genome data from region around LCT gene
+x <- as.bed.matrix(LCT.gen, LCT.fam, LCT.bim)
+table(x@snps$genomic.region, useNA="ifany")
+
+#Group variants within known genes
+x <- set.genomic.region(x)
                              
 #Filter of rare variants: only non-monomorphic variants with 
-#a MAF lower than 1% and regions with at least 5 variants are kept.
-x.filter <- filter.rare.variants(x, filter = "any", 
-                                 maf.threshold = 0.01, min.nb.snps = 5)
+#a MAF lower than 2.5%
+#keeping only genomic regions with at least 10 SNPs
+x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
+table(x1@snps$genomic.region, useNA="ifany")
 }
