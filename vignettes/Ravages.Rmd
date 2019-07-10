@@ -15,7 +15,7 @@ require("Ravages")
 ``` 
 ## Introduction
 
-Ravages was developped to simulate genetic data and to perform rare variant association tests (burden tests and the varian-ce component test SKAT) on more than two groups of individuals (Bocher et al., 2019, Genetic Epidemiology). Ravages relies on the package Gaston developped by Herve Perdry and Claire Dandine-Roulland. Most functions are written in C++ thanks to the packages Rcpp, RcppParallel and RcppEigen.  
+Ravages was developped to simulate genetic data and to perform rare variant association tests (burden tests and the variance-component test SKAT) on more than two groups of individuals (Bocher et al., 2019, Genetic Epidemiology). Ravages relies on the package Gaston developped by Herve Perdry and Claire Dandine-Roulland. Most functions are written in C++ thanks to the packages Rcpp, RcppParallel and RcppEigen.  
 Functions of Ravages use bed.matrix to manipulate genetic data as in the package Gaston (see documentation of this package for more details).  
 In this vignette, we illustrate how to perform rare variant association tests on real data. A second vignette is available showing how to simulate genetic data and calculate power of the tests.
 To learn more about all options of the functions, the reader is advised to look at the manual pages.
@@ -101,19 +101,20 @@ An example of the p-value and OR calculation with its 95% confidence interval fo
 
 ```{r}
 
-##WSS 
+#WSS 
 burden.mlogit(x=x1, group=LCT.pop, burden="WSS", ref.level="CEU", alpha=0.05, get.OR.value=TRUE)
 
-##Simulation of covariates
+#Simulation of covariates
 #with different probabilities in GBR/CEU/FIN and IBS/TSI
+set.seed(1)
 covar <- data.frame( sex = c(sample(0:1, sum(table(LCT.pop)[c("CEU", "GBR", "FIN")]), TRUE, c(0.2,0.8)), 
                              sample(0:1, sum(table(LCT.pop)[c("TSI", "IBS")]), TRUE, c(0.8,0.2))), 
                      u = runif(length(LCT.pop)))
 
-##Regression with the covariate "sex"
+#Regression with the covariate "sex"
 burden.mlogit(x=x1, group=LCT.pop, burden="WSS", ref.level="CEU", alpha=0.05, get.OR.value=TRUE, data=covar, formula = ~ sex)
 
-##WSS using directly the score matrix computed previously
+#WSS using directly the score matrix computed previously
 burden.mlogit(burden=WSS.score, group=LCT.pop, ref.level="CEU", alpha=0.05, get.OR.value=TRUE)
 ```
 
@@ -132,7 +133,7 @@ SKAT(x1, group=LCT.pop, Pi=Pi.matrix.LCT)
 ```
 
 
-##Data managment
+##Data management
 Data in the plink format or in the vcf format can be loaded in R using the functions **read.bed.matrix()** and **read.vcf()** respectively from the package gaston.  
 If the data for the controls and the different groups of cases are in different files, they can be loaded separately and then combined using the function **gaston:::rbind()** as long as the same variants are present between the different groups of individuals.  
 An example is given below where the simulated data have been split according the the group of each individual, and then combined in a bed.matrix:

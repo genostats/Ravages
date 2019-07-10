@@ -1,5 +1,6 @@
 SKAT <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, 
-                 Pi, weights = (1-x@snps$maf)**24, maf.threshold = 0.5, perm.target = 100, perm.max = 1e4) {
+                 Pi, weights = (1-x@snps$maf)**24, maf.threshold = 0.5, 
+                 perm.target = 100, perm.max = 5e4, debug = FALSE) {
 
   which.snps <- (x@snps$maf <= maf.threshold) & (x@snps$maf > 0)
   genomic.region <- as.factor(genomic.region)
@@ -36,8 +37,12 @@ SKAT <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region,
   B$p.chi2 <- pchisq(chi2val, df, lower.tail=FALSE)
 
   names(B)[6] <- "stat.mean"
-  B$p.value <- ifelse(B$nb.perm < perm.max, B$p.perm, B$p.chi2)
+  B$p.value <- ifelse(B$nb.perm < perm.max, B$p.perm, B$p.chi2) 
  
-  return(as.data.frame(B, row.names = levels(genomic.region)))
+  B <- as.data.frame(B, row.names = levels(genomic.region))
+  if(debug) 
+    B
+  else
+    B[ , c("stat", "p.perm", "p.chi2", "p.value") ]
 }
 

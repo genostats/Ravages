@@ -1,5 +1,6 @@
 Pi.matrix <- function(group, formula, data, ref.level){
-    group <- if (!is.factor(group)) factor(group, levels=unique(group))
+    if (!is.factor(group)) 
+      group <- factor(group, levels=unique(group))
     if (is.numeric(ref.level)) ref.level <- as.character(ref.level)
     if (!(ref.level %in% levels(group))) stop("'ref.level' is not a level of 'group'")
     
