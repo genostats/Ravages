@@ -1,4 +1,4 @@
-Pi.matrix <- function(group, formula, data, ref.level){
+Pi.matrix <- function(group, data, formula, ref.level){
     if (!is.factor(group)) 
       group <- factor(group, levels=unique(group))
     if (is.numeric(ref.level)) ref.level <- as.character(ref.level)

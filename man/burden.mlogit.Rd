@@ -70,5 +70,5 @@ covar <- data.frame( sex = c(sample(0:1, sum(table(LCT.pop)[c("CEU", "GBR", "FIN
                      u = runif(length(LCT.pop)))
               
 #with the covariate sex
-burden.mlogit(x1, burden = "WSS", ref.level="CEU", get.OR.value=TRUE, formula = ~ sex, data = covar)
+burden.mlogit(x1, LCT.pop, burden = "WSS", ref.level="CEU", get.OR.value=TRUE, formula = ~ sex, data = covar)
 }   
