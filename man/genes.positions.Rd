@@ -26,5 +26,5 @@ data(genes.b38) }
   }
 }  
 
-\source{The data were obtained from the Ensembl website (see \url{http://grch37.ensembl.org/biomart/martview/} and \url{http://ensembl.org/biomart/martview/}).}
+\source{The data were obtained from the Ensembl website (see \url{http://grch37.ensembl.org/biomart/martview/} and \url{http://www.ensembl.org/biomart/martview/}).}
 

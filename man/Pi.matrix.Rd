@@ -21,9 +21,9 @@ A matrix containing probabilities for each individual of belonging to each group
 #Simulation of covariates (one binary variable and one continuous variable)
 #Binary variable: different probability depending on the origin
 set.seed(1)
-covar <- data.frame( sex = c(sample(0:1, sum(table(LCT.pop)[c("CEU", "GBR", "FIN")]), TRUE, c(0.2,0.8)),
-                             sample(0:1, sum(table(LCT.pop)[c("TSI", "IBS")]), TRUE, c(0.8,0.2))),
-                     u = runif(length(LCT.pop)))
+covar <- data.frame(sex=c(sample(0:1, sum(table(LCT.pop)[c("CEU", "GBR", "FIN")]),TRUE,c(0.2,0.8)),
+                          sample(0:1, sum(table(LCT.pop)[c("TSI", "IBS")]),TRUE,c(0.8,0.2))),
+                    u=runif(length(LCT.pop)))
 
 #Probabilities depending on the binary variable
 Pi.matrix.LCT.sex <- Pi.matrix(group=LCT.pop, data=covar, formula= ~ sex, ref.level="CEU")

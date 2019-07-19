@@ -4,7 +4,8 @@
 \description{ Peforms the multi group SKAT test }
 \usage{
 SKAT(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, Pi, 
-     weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, perm.target = 100, perm.max = 5e4)
+     weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
+     perm.target = 100, perm.max = 5e4, debug=FALSE)
 }
 \arguments{
   \item{x}{ A bed.matrix }
@@ -15,6 +16,7 @@ SKAT(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, Pi,
   \item{maf.threshold}{ The MAF above which variants are eliminated (default is to keep all variants)}
   \item{perm.target}{ The number of permutations to reach to estimate the p-value and stop the permutation procedure. If not reached, \code{perm.max} permutations will be used}
   \item{perm.max}{ The maximum number of permutations to perform to estimate the p-value, will be used if \code{perm.target} is not reached}
+  \item{debug}{ Whether to print details about the permutations (moments estimators, skewness, kurtosis, ...) in addition to the p-values, FALSE by default }
 }
 \value{
 A data frame containing for each genomic region the statistic values, informations about the permutations, and 
@@ -38,9 +40,9 @@ SKAT(x1, LCT.pop)
 
 #Simulation of covariates
 #with different probabilities in GBR/CEU/FIN and IBS/TSI
-covar <- data.frame( sex = c(sample(0:1, sum(table(LCT.pop)[c("CEU", "GBR", "FIN")]), TRUE, c(0.2,0.8)), 
-                             sample(0:1, sum(table(LCT.pop)[c("TSI", "IBS")]), TRUE, c(0.8,0.2))), 
-                     u = runif(length(LCT.pop)))
+covar <- data.frame(sex=c(sample(0:1, sum(table(LCT.pop)[c("CEU", "GBR", "FIN")]),TRUE,c(0.2,0.8)), 
+                          sample(0:1, sum(table(LCT.pop)[c("TSI", "IBS")]),TRUE,c(0.8,0.2))), 
+                    u=runif(length(LCT.pop)))
 
 #Compute probabilities of each individual belonging to the different groups
 Pi.matrix.LCT <- Pi.matrix(group=LCT.pop, data=covar, formula= ~ sex, ref.level="CEU")
