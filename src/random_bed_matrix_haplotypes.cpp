@@ -69,6 +69,9 @@ XPtr<matrix4> random_bed_matrix_haplotypes_thresholds(NumericMatrix haplos, Nume
       }
     }
     // on tire d'un coup reps*size[k] diplotypes
+    // les arguments booleens sont replace = true, one_based = false
+    // La fonction sample commence par "normaliser" P
+    // (cf code dans Rcpp/sugar/functions/sample.h)
     IntegerVector DIP = sample(n_diplos, reps*size[k], true, P, false);
     int d = 0; // numéro de diplotype
     for(int rep = 0; rep < reps; rep++) { // replicats
