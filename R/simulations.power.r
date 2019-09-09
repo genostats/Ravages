@@ -1,4 +1,4 @@
-simulated.bedmatrix.haplo <- function(haplos, weights.variants=weights, maf.threshold, p.causal, p.protect = 0, nb.causal, h2, prev, normal.approx = TRUE, scenario, size = c(1000, 500, 500), replicates = 10, power, alpha.threshold=2.5e-6){
+simulated.bedmatrix.haplo <- function(haplos, weights.variants=weights, maf.threshold = 0.01, p.causal, p.protect = 0, nb.causal, h2, prev, normal.approx = TRUE, scenario, size = c(1000, 500, 500), replicates = 10, power, alpha.threshold=2.5e-6){
   if(!is.matrix(haplos)) stop("haplos is not a matrix")
 
   if(!is.function(weights.variants)){
@@ -11,12 +11,12 @@ simulated.bedmatrix.haplo <- function(haplos, weights.variants=weights, maf.thre
 
   #Get burdens, thresholds, ...
   if(scenario != "DVSG"){
-    RR <- simu.prolego(haplos.matrix, weights.var, nb.causal = nb.causal, h2 = h2, prev = prev) #1 seul groupe d'individus
+    RR <- simu.prolego(haplos, weights.var, nb.causal = nb.causal, h2 = h2, prev = prev) #1 seul groupe d'individus
     x <- do.call(scenario, list(RR, size, replicates))
 
   }else{
-    RR1 <- simu.prolego(haplos.matrix, weights.var, nb.causal = nb.causal, h2 = h2, prev = prev)
-    RR2 <- simu.prolego(haplos.matrix, weights.var, nb.causal = nb.causal, h2 = h2, prev = prev)
+    RR1 <- simu.prolego(haplos, weights.var, nb.causal = nb.causal, h2 = h2, prev = prev)
+    RR2 <- simu.prolego(haplos, weights.var, nb.causal = nb.causal, h2 = h2, prev = prev)
     x <- do.call(scenario, list(RR1, RR2, size, replicates))
   }
 

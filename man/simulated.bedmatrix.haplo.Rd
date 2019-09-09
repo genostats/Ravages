@@ -7,7 +7,8 @@
   Simulates genetic data with respect to allele frequency spectrum and linkage disequilibrium pattern observed on given haplotype data
 }
 \usage{
-  simulated.bedmatrix.haplo(haplos, weights.variants=weights, p.causal, p.protect = 0, nb.causal, 
+  simulated.bedmatrix.haplo(haplos, weights.variants=weights, maf.threshold = 0.01, 
+                            p.causal, p.protect = 0, nb.causal, 
                             h2, prev, normal.approx=TRUE, scenario, size=c(1000, 500, 500), 
                             replicates=10, power, alpha.threshold=2.5e-6)
 }
@@ -16,7 +17,7 @@
   \item{weights.variants}{ A function to compute the weight of each variant}
   \item{p.causal}{ The proportion of causal variants. Incompatible with \code{nb.causal}}
   \item{p.protect}{ The proportion of protective variants among causal variants}
-  \item{nb.causal}{ The number of causal variants. Incompatible with \code{p.causal}
+  \item{nb.causal}{ The number of causal variants. Incompatible with \code{p.causal}}
   \item{h2}{ The heritability explained by the variants in the gene}
   \item{prev}{ A vector with the prevalence of each sub-phenotype, i.e with length=number of groups-1}
   \item{normal.approx}{ Whether to use a standard normal distribution to estimate the threshold for each sub-phenotype}

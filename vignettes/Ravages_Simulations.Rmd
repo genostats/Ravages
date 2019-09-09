@@ -1,10 +1,10 @@
 ---
-title: "Package Ravages (RAre Variant Analysis and GEnetic Simulation)"
+title: "Package Ravages (RAre Variant Analysis and GEnetic Simulation), Simulations"
 author: "Herve Perdry and Ozvan Bocher"
 date: "`r Sys.Date()`"
 output: pdf_document
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{"Ravages_Simulations"}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
