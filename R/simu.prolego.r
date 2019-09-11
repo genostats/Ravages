@@ -1,9 +1,9 @@
 #Compute weights of variants for the simulations
-weights <- function(haplos, threshold = 0.01) {
+burden.weights <- function(haplos, maf.threshold = 0.01) {
   fr <- colMeans(haplos)
   we <- -0.4*log10(fr)  # le 0.4 pourrait disparaÃ®tre puisqu'aprÃ¨s on remet Ã  l'Ã©chelle
   # on met Ã  0 les SNPs monomorphes et ceux qui sont trop frÃ©quents
-  we[ fr == 0 | fr > threshold ] <- 0
+  we[ fr == 0 | fr > maf.threshold ] <- 0
   we
 }
 
