@@ -12,24 +12,19 @@ burden.weights <- function(haplos, maf.threshold = 0.01) {
 #Sample causal variants, compute haplotypes burden
 #and thresholds corresponding to the desired prevalence
 #p.causal=P(causal variant) ; p.protect=P(protective variant | causal variant)
-simu.prolego <- function(haplos, weights, directions, p.causal, p.protect = 0, nb.causal, h2, prev, normal.approx = TRUE) {
-  if(!missing(p.causal) & !missing(nb.causal)) 
-    stop("Please give either nb.causal or p.causal but not both")
+simu.prolego <- function(haplos, weights, p.protect, nb.causal, h2, prev, normal.approx) {
+  w <- which(weights > 0) # parmi les SNPs potentiellement causaux
+  if(nb.causal > length(w)) 
+    stop("There are not enough positively weighted variants to pick", nb.causal, "ones")
 
-  # si l'utilisateur n'a pas passÃ© 'directions' (un vecteur de -1, 0, 1 qui donne les directions
-  # des effets), on le gÃ©nÃ¨re ici Ã  partir p.causal et p.protect
-  if(missing(directions)) {
-    # sampling qui impose exactement les proportions demandÃ©es !
-    w <- which(weights > 0) # parmi les SNPs potentiellement causaux
-    if(missing(nb.causal)){
-      nb.causal <- ceiling(p.causal*length(w))
-    }
-    nb.pro <- round(nb.causal * p.protect)
-    nb.del <- nb.causal - nb.pro
-    w.causal <- sample(w, nb.causal)
-    directions <- numeric(length(weights))
-    directions[w.causal] <- c(rep(-1,nb.pro), rep(1,nb.del))
-  }
+  nb.pro <- round(nb.causal * p.protect)
+  nb.del <- nb.causal - nb.pro
+
+  
+  w.causal <- sample(w, nb.causal)
+  directions <- numeric(length(weights))
+  directions[w.causal] <- c(rep(-1,nb.pro), rep(1,nb.del))
+
 
   ## calcul des fardeaux (composante gÃ©nÃ©tique de la liabilitÃ©) 
   ## Ã  partir des poids du vecteur 'weights'
@@ -55,5 +50,5 @@ simu.prolego <- function(haplos, weights, directions, p.causal, p.protect = 0, n
     s <- quantile(BRD, 1 - prev)
   }
 
-  list(haplos = haplos, burdens = burdens, directions = directions, h2 = h2, thresholds = s)
+  list(burdens = list(burdens), thr1 = s, thr2 = Inf)
 }

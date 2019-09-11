@@ -1,6 +1,6 @@
 
-random.bed.matrix.haplos <- function(haplos, freqs, size, B) {
-  bed <- .Call('random_bed_matrix_haplotypes_freqs', PACKAGE = "Ravages", haplos, freqs, size, B)
+rbm.haplos.freqs <- function(haplos, freqs, size, B) {
+  bed <- .Call('rbm_haplos_freqs', PACKAGE = "Ravages", haplos, freqs, size, B)
 
   nb_inds <- sum(size);
 
@@ -25,15 +25,14 @@ random.bed.matrix.haplos <- function(haplos, freqs, size, B) {
   x
 }
 
-random.bed.matrix.haplos.thresholds <- function(haplos, burdens, sd, thr1, thr2, size, B) {
-  bed <- .Call('random_bed_matrix_haplotypes_thresholds', PACKAGE = "Ravages", haplos, burdens, sd, thr1, thr2, size, B)
+rbm.haplos.thresholds <- function(haplos, burdens, sd, thr1, thr2, size, B) {
+  bed <- .Call('rbm_haplos_thresholds', PACKAGE = "Ravages", haplos, burdens, sd, thr1, thr2, size, B)
 
   nb_inds <- sum(size);
 
   ids <- sprintf("A%0*d", log10(nb_inds) + 1, 1:nb_inds)
   ped <- data.frame(famid = ids,  id = ids, father = 0, mother = 0, sex = 0,
-            pheno = unlist(mapply(rep, 1:length(size), each = size, SIMPLIFY = FALSE)) - 1, 
-            stringsAsFactors = FALSE)
+            pheno = rep( seq(0, length(size)-1), size ), stringsAsFactors = FALSE)
 
   snps <- data.frame(chr = NA, id = NA, dist = NA, pos = NA, A1 = NA, A2 = NA, 
                genomic.region = factor( rep(sprintf("R%0*d", log10(B) + 1, 1:B), each = ncol(haplos)) ),
