@@ -13,26 +13,24 @@ CAST(x, genomic.region = x@snps$genomic.region, maf.threshold = 0.01)
 \value{
 A matrix containing the CAST genetic score with one row per individual and one column per \code{genomic.region}
 }
-\seealso{ \code{\link{WSS}} }
+\seealso{ \code{\link{WSS}}, \code{\link{burden.mlogit}} }
 \examples{
-#Data simulation with GRR values according to the SKAT formula
-GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov, 
-                      n.case.groups = 2, select.gene="R1",
-                      GRR.multiplicative.factor=2)
-                                
-#Simulation of one group of 1,000 controls and two groups of 500 cases, 
-#50% of deleterious, 5 genomic regions are simulated.
-x <- random.bed.matrix(genes.maf=Kryukov, size = c(1000, 500, 500),
-                       baseline = c(0.001, 0.001), same.variant=FALSE,
-                       fixed.variant.prop=TRUE, select.gene="R1",
-                       GRR.matrix.del = GRR.del, prop.del = 0.5, 
-                       genetic.model = "multiplicative", replicates=5)
-                             
-#Keep only rare variant
-x <- filter.rare.variants(x, filter = "any", maf.threshold = 0.01, 
-                          min.nb.snps = 5)
-                            
-#Compute the CAST score
-score <- CAST(x, genomic.region = x@snps$genomic.region, 
-              maf.threshold = 0.01)
+#Importation of data in a bed matrix
+x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
+#Add population
+x@ped[,c("pop", "superpop")] <- LCT.matrix.pop1000G[,c("population", "super.population")]
+
+#Select EUR superpopulation
+x <- select.inds(x, superpop=="EUR")
+x@ped$pop <- droplevels(x@ped$pop)
+
+# Group variants within known genes
+x <- set.genomic.region(x)
+
+# Filter variants with maf (computed on whole sample) < 0.025
+# keeping only genomic region with at least 10 SNPs
+x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
+
+# run burden test CAST, using the 1000Genome population as "outcome"
+score.CAST <- CAST(x1, maf.threshold=0.025)
 }

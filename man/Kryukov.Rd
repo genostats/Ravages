@@ -5,7 +5,7 @@
 \title{Kryukov data set}
 
 \description{
-  The data from Kryukov et al, 2009, contain simulated site frequency spectrum data using European demographic models with purifying selection.
+  The data from \emph{Kryukov et al, 2009}, contain simulated site frequency spectrum data using European demographic models with purifying selection.
 
   200 units are present corresponding to 200 genes. For each unit, the data set contains the maf in the European population, the selection coefficient and the position of each variant.
 }

@@ -1,20 +1,16 @@
-OR.matrix.fix.same.variant <- function (n.variants, OR.del, OR.pro = 1/OR.del, prob.del, prob.pro){
+OR.matrix.same.variant <- function (n.variants, OR.del, OR.pro = 1/OR.del, p.causal, prob.pro){
     if (length(OR.del) != length(OR.pro))
         stop("Dimensions mismatch")
-    OR <- cbind(1, OR.del, OR.pro, deparse.level = 0)
-    v <- 1:n.variants
-    v.del <- sample(v, prob.del*n.variants)
-    v.pro <- if(length(v.del)==0){ sample(v, prob.pro*n.variants) }else{ sample(v[-v.del], prob.pro*n.variants)}
-    #On estime qu'on a toujours plus qu'un variant protecteur
-    v.neutres <- if(length(v.pro)>1){ v[-c(v.del, v.pro)] }else{ v[-v.del]}
-    #Si que des variants neutres
-    if(prob.del==0 & prob.pro==0){
-      OR.tot <- matrix(rep(1, n.variants*nrow(OR.del)), nrow=nrow(OR.del))    
-    }else{
-      OR.tot <- matrix(rep(NA, n.variants*nrow(OR.del)), nrow=nrow(OR.del))
-      OR.tot[,v.neutres] <- 1
-      if(prob.del>0){OR.tot[,v.del] <- OR[,v.del+1]}
-      if(prob.pro>0){OR.tot[,v.pro] <- OR[,v.pro+1+n.variants]}
-    }
+
+    nb.causal <- n.variants*p.causal
+    #NULL vector if !condition
+    v.causal <- if(nb.causal>0) sample(1:n.variants, nb.causal) 
+    v.protect <- if(prob.pro>0) sample(v.causal, nb.causal*prob.pro)
+
+    OR.tot <- matrix(rep(1, n.variants*nrow(OR.del)), nrow=nrow(OR.del))    
+
+    #If NULL vector: OR.tot won't be change
+    OR.tot[,v.causal] <- OR.del[,v.causal]
+    OR.tot[,v.protect] <- OR.pro[,v.protect]
     return(OR.tot)
 }

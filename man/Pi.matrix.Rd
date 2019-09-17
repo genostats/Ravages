@@ -7,7 +7,7 @@ Pi.matrix(group, data, formula, ref.level)
 }
 \arguments{
   \item{group}{ A vector giving the group of each individual}
-  \item{data}{ A matrix containing the covariates to include in the model with one covariate per column and one individual per row}
+  \item{data}{ A matrix containing the covariates with one covariate per column and one individual per row}
   \item{formula}{ An R formula corresponding to the regression model indicating which covariates from \code{data} to include in the model if only some of them are to be included}
   \item{ref.level}{ The reference group of individuals for the regression}
 }
@@ -25,9 +25,9 @@ covar <- data.frame(sex=c(sample(0:1, sum(table(LCT.pop)[c("CEU", "GBR", "FIN")]
                           sample(0:1, sum(table(LCT.pop)[c("TSI", "IBS")]),TRUE,c(0.8,0.2))),
                     u=runif(length(LCT.pop)))
 
-#Probabilities depending on the binary variable
+#Probabilities depending on the binary covariate
 Pi.matrix.LCT.sex <- Pi.matrix(group=LCT.pop, data=covar, formula= ~ sex, ref.level="CEU")
 
-#Probabilities with the two variables
+#Probabilities based on the two covariates
 Pi.matrix.LCT <- Pi.matrix(group=LCT.pop, data=covar, ref.level="CEU")
 }

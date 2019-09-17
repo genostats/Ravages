@@ -9,22 +9,52 @@ SKAT(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, Pi,
 }
 \arguments{
   \item{x}{ A bed.matrix }
-  \item{group}{ A factor defining groups to be compared }
+  \item{group}{ A factor with the group of each individual }
   \item{genomic.region}{ A factor defining the genomic region of each variant }
   \item{Pi}{Matrix of probabilities of belonging to each group }
-  \item{weights}{ A vector with the weight of each variant. By default, the weight of each variant is inversely proportionnal to its MAF}
+  \item{weights}{ A vector with the weight of each variant. By default, the weight of each variant is inversely proportionnal to its MAF, as it was computed in the original SKAT method}
   \item{maf.threshold}{ The MAF above which variants are eliminated (default is to keep all variants)}
-  \item{perm.target}{ The number of permutations to reach to estimate the p-value and stop the permutation procedure. If not reached, \code{perm.max} permutations will be used}
+  \item{perm.target}{ The number of times to exceed the observed statistics. If not reached, \code{perm.max} permutations will be used}
   \item{perm.max}{ The maximum number of permutations to perform to estimate the p-value, will be used if \code{perm.target} is not reached}
   \item{debug}{ Whether to print details about the permutations (moments estimators, skewness, kurtosis, ...) in addition to the p-values, FALSE by default }
 }
-\value{
-A data frame containing for each genomic region the statistic values, informations about the permutations, and 
-the corresponding p-values.
+\details{
+The matrix of probabilities needed for \code{Pi} can be computed using the function \code{Pi.matrix}.
+P-values estimation is based on permutations and a sequential procedure: permutated statistics are computed and each one is compared to the observed statistics, the progamms stops when either \code{perm.target} or \code{perm.max} is reached.
+P-values are then computed using a mixed procedure: 
+if \code{perm.target} is reached, the p-value is computed as : \code{perm.target} divided by the number of permutations used to reach \code{perm.target}; 
+if \code{perm.max} is reached, the SKAT small sample procedure is used, and p-values are approximated using a chi-square distributions based on statistics' moments 1, 2 and 4 computed from the permutated values. 
+If \code{debug}==TRUE, more informations about the estimated statistics moments are given.
 }
+\value{
+A data frame containing for each genomic region: 
+  \item{stat}{ The observed statistics}
+  \item{p.perm}{ The p-value computed by permutations: number of times permutated is greater than observed statistics divided by the total number of permutations performed}
+  \item{p.chi2}{ The p-value computed by the chi-square approximation using the SKAT small sample procedure}
+  \item{p.value}{ \code{p.perm} if \code{perm.target} is reached, \code{p.chi2} if \code{perm.max} is reached. }
+
+If \code{debug}==TRUE, other informations are given about the moments estimation:
+  \item{nb.gep}{ The number of times a permutated statistics is greater or equal than the observed statistics \code{stat}}
+  \item{nb.eq}{ The number of times a permutated statistics is equal to the observed statistics \code{stat}}
+  \item{nb.perms}{ The total number of simulations performed }
+  \item{stat.mean}{ The mean of the permutated statistics}
+  \item{M2, M3, M4}{ The statistics' moments 2, 3 and 4}
+  \item{stat.var}{ The variance of the permutated statistics}
+  \item{stat.skew}{ The skweness of the permutated statistics}
+  \item{stat.kurt}{ The kurtosis of the permutated statistics}
+}
+\seealso{ \code{\link{Pi.matrix}}}
+\references{ Wu et al, 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029}
+
 \examples{
-#Import 1000Genome data from region around LCT gene
-x <- as.bed.matrix(LCT.gen, LCT.fam, LCT.bim)
+#Importation of data in a bed matrix
+x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
+#Add population
+x@ped[,c("pop", "superpop")] <- LCT.matrix.pop1000G[,c("population", "super.population")]
+
+#Select EUR superpopulation
+x <- select.inds(x, superpop=="EUR")
+x@ped$pop <- droplevels(x@ped$pop)
 
 #Group variants within known genes
 x <- set.genomic.region(x)
