@@ -32,6 +32,6 @@ x <- set.genomic.region(x)
 # keeping only genomic region with at least 10 SNPs
 x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
 
-# run burden test WSS, using the 1000Genome population as "outcome"
+# Compute burden score WSS
 score.WSS <- WSS(x1)
 }

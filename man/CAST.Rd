@@ -31,6 +31,6 @@ x <- set.genomic.region(x)
 # keeping only genomic region with at least 10 SNPs
 x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
 
-# run burden test CAST, using the 1000Genome population as "outcome"
+# Compute burden score CAST
 score.CAST <- CAST(x1, maf.threshold=0.025)
 }

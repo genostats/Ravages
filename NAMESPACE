@@ -11,7 +11,7 @@ importFrom("gaston", "rbind", "cbind", "select.snps", "select.inds", "set.stats"
 importFrom("mlogit", "mFormula", "mlogit", "mlogit.data")
 useDynLib(Ravages)
 
-export(CAST, WSS)
+export(CAST, WSS, burden.weighted.matrix)
 export(set.genomic.region)
 export(Jaccard)
 export(filter.rare.variants)
@@ -19,3 +19,4 @@ export(burden.mlogit)
 export(genotypic.freq, random.bed.matrix, GRR.matrix)
 export(SKAT, Pi.matrix)
 export(burden.weights, random.bed.matrix.haplos)
+export(bed.matrix.split.genomic.region)
