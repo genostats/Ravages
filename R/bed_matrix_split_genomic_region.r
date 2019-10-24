@@ -15,6 +15,6 @@ bed.matrix.split.genomic.region = function( x, changeID=TRUE, genomic.region=NUL
   bim = x@snps[nn,] ; row.names(bim)=NULL
   bim$genomic.region = unlist(genomic.region.split)
   if (changeID) { bim$id =  paste(bim$chr,bim$pos,bim$A1,bim$A2,bim$genomic.region,sep=":") }
-  y = as.bed.matrix( x=as.matrix(x)[,nn] , fam=x@ped , bim=bim ) 
+  y = as.bed.matrix( x=gaston:::as.matrix(x)[,nn] , fam=x@ped , bim=bim ) 
   return(y)
 }
