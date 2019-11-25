@@ -17,7 +17,7 @@ burden.mlogit(x, group = x@ped$pheno,
   \item{x}{ A bed matrix, only needed if \code{burden="CAST"} or \code{burden="WSS"}}
   \item{group}{ A factor containing the group of each individual, \code{x@ped$pheno} by default}
   \item{genomic.region}{ A factor containg the genomic region of each SNP, \code{x@snps$genomic.region} by default, only needed if \code{burden}="CAST" or \code{burden}="WSS"}
-  \item{burden}{"CAST" or "WSS" to directly compute the CAST or the WSS genetic score; or a matrix with one row per individual and one column per \code{genomic.region} containing another genetic score.}
+  \item{burden}{"CAST" or "WSS" to directly compute the CAST or the WSS genetic score; or a matrix with one row per individual and one column per \code{genomic.region} if another genetic score is wanted.}
   \item{maf.threshold}{ The MAF threshold to use for the definition of a rare variant in the CAST score}
   \item{ref.level}{ The reference group of individuals for the regression}
   \item{formula}{ An R formula corresponding to the regression model indicating which covariates from \code{data} to include in the model if only some of them are to be included}
@@ -26,15 +26,13 @@ burden.mlogit(x, group = x@ped$pheno,
   \item{alpha}{ The alpha threshold to use for the OR confidence interval}
 }
 \details{
-  This function will return results from the regression on each genomic region.
+  This function will return results from the regression of the phenotype on the genetic score for each genomic region.
 
   If only two groups of individuals are present, a classical logistic regression is performed. 
   If more than two groups of individuals are present, a non-ordinal multinomial regression is performed, 
-  comparing each group of individuals to the reference group indicated by the argument \code{ref.level}.
+  comparing each group of individuals to the reference group indicated by the argument \code{ref.level}. The choice of the reference group won't affect the p-values, but only the Odds Ratios.
 
-  The genetic score corresponding to CAST or WSS is directly computed in the function if \code{burden}="CAST" or "WSS". 
- 
-  If another genetic score is wanted, a matrix with one row per individual and one column per \code{genomic.region} 
+  If another genetic score than CAST or WSS is wanted, a matrix with one row per individual and one column per \code{genomic.region} 
   containing this score should be given to \code{burden}. In this situation, no bed matrix \code{x} is needed.
 }
 \value{
@@ -46,10 +44,18 @@ burden.mlogit(x, group = x@ped$pheno,
   \item{l.lower}{ The lower bound of the confidence interval of each OR}
   \item{l.upper}{ The upper bound of the confidence interval of each OR}
 }
-\seealso{ \code{\link{power}}, \code{\link{CAST}}, \code{\link{WSS}} }
+\seealso{ \code{\link{CAST}}, \code{\link{WSS}} }
+\references{ Bocher O, et al. \emph{Rare variant associationtesting for multicategory phenotype.} Genet.Epidemiol. 2019;43:646–656.}
 \examples{
-#Import 1000Genome data from region around LCT gene
-x <- as.bed.matrix(LCT.gen, LCT.fam, LCT.bim)
+#Importation of data in a bed matrix
+x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
+
+#Add population
+x@ped[,c("pop", "superpop")] <- LCT.matrix.pop1000G[,c("population", "super.population")]
+
+#Select EUR superpopulation
+x <- select.inds(x, superpop=="EUR")
+x@ped$pop <- droplevels(x@ped$pop)
 
 #Group variants within known genes
 x <- set.genomic.region(x)
@@ -65,10 +71,11 @@ burden.mlogit(x1, LCT.pop, burden = "WSS", ref.level="CEU", get.OR.value=TRUE)
 
 #Simulation of covariates
 #with different probabilities in GBR/CEU/FIN and IBS/TSI
-covar <- data.frame( sex = c(sample(0:1, sum(table(LCT.pop)[c("CEU", "GBR", "FIN")]), TRUE, c(0.2,0.8)), 
-                             sample(0:1, sum(table(LCT.pop)[c("TSI", "IBS")]), TRUE, c(0.8,0.2))), 
-                     u = runif(length(LCT.pop)))
+covar <- data.frame(sex=c(sample(0:1, sum(table(LCT.pop)[c("CEU", "GBR", "FIN")]),TRUE,c(0.2,0.8)), 
+                          sample(0:1, sum(table(LCT.pop)[c("TSI", "IBS")]), TRUE, c(0.8,0.2))), 
+                     u=runif(length(LCT.pop)))
               
 #with the covariate sex
-burden.mlogit(x1, burden = "WSS", ref.level="CEU", get.OR.value=TRUE, formula = ~ sex, data = covar)
+burden.mlogit(x1, LCT.pop, burden = "WSS", ref.level="CEU", get.OR.value=TRUE,
+              data=covar, formula = ~ sex)
 }   

@@ -42,7 +42,10 @@ class haplo_probs {
       stop("Dimensions mismatch");
   }
 
-  // renvoie un nombre proportionnel à p( i,j | burden(i) + burden(j) + E \in (th1, th2) )
+  // renvoie un nombre proportionnel à p( i,j | liability \in (th1, th2) )
+  // NOTE c'est juste Bayes : p(liability | i,j ) * p(i,j) / p(liability \in (th1, th2) )
+  // on a p(  liability \in (th1, th2) | i,j ) =  p(  burden(i) + burden(j) + E \in (th1, th2) )
+  // on ignore le dénominateur qui est constant
   // !!!! il faut 0 <= i <= j <= n, ça n'est pas testé pour plus de rapidité !!!!
   inline double operator()(size_t i, size_t j) {
     double b = burden[i] + burden[j];

@@ -2,7 +2,7 @@ import(methods)
 
 importFrom("grDevices", "heat.colors", "dev.off", "pdf", "rgb")
 importFrom("graphics", "contour", "image", "legend", "par", "plot", "polygon", "rect", "segments", "strheight", "strwidth", "text")
-importFrom("stats", "pchisq", "quantile", "rnorm", "kmeans", "glm", "binomial", "pt", "chisq.test", "kruskal.test", "qnorm", "uniroot")
+importFrom("stats", "pchisq", "quantile", "rnorm", "kmeans", "glm", "binomial", "pt", "chisq.test", "kruskal.test", "qnorm", "uniroot", "as.formula", "var")
 importFrom("utils", "read.table", "write.table", "head", "tail")
 importFrom("Rcpp", "evalCpp") # just to avoid << function 'enterRNGScope' not provided by package 'Rcpp' >> error
 importFrom("RcppParallel", "setThreadOptions", "defaultNumThreads")
@@ -11,12 +11,12 @@ importFrom("gaston", "rbind", "cbind", "select.snps", "select.inds", "set.stats"
 importFrom("mlogit", "mFormula", "mlogit", "mlogit.data")
 useDynLib(Ravages)
 
-export(CAST, WSS)
+export(CAST, WSS, burden.weighted.matrix)
 export(set.genomic.region)
 export(Jaccard)
 export(filter.rare.variants)
 export(burden.mlogit)
 export(genotypic.freq, random.bed.matrix, GRR.matrix)
-export(power)
 export(SKAT, Pi.matrix)
-
+export(burden.weights, random.bed.matrix.haplos)
+export(bed.matrix.split.genomic.region)

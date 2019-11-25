@@ -27,12 +27,11 @@ GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov,
                       GRR.multiplicative.factor=2)
 
 #Simulation of one group of 1,000 controls and two groups of 500 cases, 
-#50% of deleterious variants, 5 genomic regions are simulated.
+#50% of causal variants, 5 genomic regions are simulated.
 x <- random.bed.matrix(genes.maf=Kryukov, size = c(1000, 500, 500),
-                       baseline = c(0.001, 0.001),
-                       GRR.matrix.del = GRR.del, prop.del = 0.5,
-                       genetic.model = "multiplicative", replicates = 5,
-                       fixed.variant.prop=TRUE, select.gene="R1")
+                       prev = c(0.001, 0.001), select.gene = "R1", 
+                       GRR.matrix.del = GRR.del, p.causal = 0.5,
+                       genetic.model = "multiplicative", replicates = 5)
                            
 #Calculate the Jaccard matrix
 J <- Jaccard(x, maf.threshold = 0.01)

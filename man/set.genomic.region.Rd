@@ -17,13 +17,13 @@ set.genomic.region(x, genes = genes.b37, flank.width = 0L)
   \item{flank.width}{ An integer: width of the flanking regions in base pairs downstream and upstream the genes. }
 }
 \details{ 
-If \code{x@snps$chr} is not a vector of integers, it should be a factor with same levels as \code{genes$Chr}. In practice
-for human data we provide two data sets of genes on autosomes, \code{genes.b37} and \code{genes.b38}.
+If \code{x@snps$chr} is not a vector of integers, it should be a factor with same levels as \code{genes$Chr}.
+We provide two data sets of autosomal humain genes, \code{genes.b37} and \code{genes.b38}.
 
 If \code{flank.width} is null, only the variants having their position between the \code{genes$Start} and the \code{genes$End} of a gene will be attributed to the corresponding gene.  
 When two genes overlap, variants in the overlapping zone will be attributed to the second one (in the order given by the position of their starting point on the genome).
 
-If \code{flank.width} is a positive number, variants \code{flank.width} downstream or upstream a gene will be annotated as if in the gene. You can use \code{flank.width = Inf}
+If \code{flank.width} is a positive number, variants \code{flank.width} downstream or upstream a gene will be annotated annotated to this gene. You can use \code{flank.width = Inf}
 to have each variant included in the nearest gene.  
 }
 \value{

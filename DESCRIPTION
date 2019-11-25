@@ -9,7 +9,7 @@ Maintainer: Hervé Perdry <herve.perdry@u-psud.fr>
 Description: Rare variant analysis: burden tests, etc.
 License: GPL-3
 LinkingTo: Rcpp, RcppParallel, RcppEigen, gaston
-Depends: Rcpp, RcppParallel, methods, gaston, mlogit
+Depends: R (>= 2.10), Rcpp, RcppParallel, methods, gaston, mlogit
 NeedsCompilation: yes
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

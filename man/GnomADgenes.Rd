@@ -16,7 +16,7 @@
     \item{chr}{ The chromosome of the variant}
     \item{pos}{ The position of the variant}
     \item{consequence}{ The functionnal consequence of the variant predicted by Variant Effect Predictor (VEP)}
-    \item{gene}{ The gene of the variant predicted by VEP}
+    \item{gene}{ The gene associated predicted by VEP}
     \item{maf}{ The MAF of the variant in the NFE population}
   }
 }
