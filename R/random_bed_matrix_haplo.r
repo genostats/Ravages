@@ -5,9 +5,19 @@ rbm.haplos.freqs <- function(haplos, freqs, size, B) {
   nb_inds <- sum(size);
 
   ids <- sprintf("A%0*d", log10(nb_inds) + 1, 1:nb_inds)
+
+  if( ncol(freqs) != length(size) )
+    stop("Dimensions mismatch")
+
+  if(is.null(colnames(freqs)))
+    lev <- (1:ncol(freqs)) - 1
+  else
+    lev <- colnames(freqs)
+
+  pheno <- factor( unlist(mapply(rep, lev, each = size, SIMPLIFY = FALSE)) , levels = lev )
+
   ped <- data.frame(famid = ids,  id = ids, father = 0, mother = 0, sex = 0,
-            pheno = unlist(mapply(rep, 1:length(size), each = size, SIMPLIFY = FALSE)) - 1, 
-            stringsAsFactors = FALSE)
+            pheno = pheno, stringsAsFactors = FALSE)
 
   snps <- data.frame(chr = NA, id = NA, dist = NA, pos = NA, A1 = NA, A2 = NA, 
                genomic.region = factor( rep(sprintf("R%0*d", log10(B) + 1, 1:B), each = ncol(haplos)) ),
