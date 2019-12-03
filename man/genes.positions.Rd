@@ -9,7 +9,7 @@
 \description{
   Positions of human genes. These data were downloaded from Biomart on the Ensembl website with the GRCh37 and GRCh38 versions. Only genes present in GnomAD were kept.
 
-  The data contain the \code{Chr}, the \code{Start} position, the \code{End} position and the \code{Gene_Name} of all the genes in chromosomes 1 to 22 representing 19375 and 18278 genes in the two GRCh versions respectively.
+  Data contain the \code{Chr}, the \code{Start} position, the \code{End} position and the \code{Gene_Name} of all the genes in chromosomes 1 to 22 representing 19375 and 18278 genes in the two GRCh versions respectively.
 }
   
 \usage{data(genes.b37)
@@ -27,3 +27,4 @@ data(genes.b38) }
 
 \source{The data were obtained from the Ensembl website (see \url{http://grch37.ensembl.org/biomart/martview/} and \url{http://www.ensembl.org/biomart/martview/}).}
 
+\seealso{ \code{\link{set.genomic.region}} }

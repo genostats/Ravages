@@ -8,21 +8,15 @@ CAST(x, genomic.region = x@snps$genomic.region, maf.threshold = 0.01)
 \arguments{
   \item{x}{ A bed.matrix }
   \item{genomic.region}{ A factor defining the genomic region of each variant }
-  \item{maf.threshold}{ The MAF used for the definition of a rare variant, set as 0.01 by default}
+  \item{maf.threshold}{ The MAF used for the definition of a rare variant, set at 0.01 by default}
 }
 \value{
 A matrix containing the CAST genetic score with one row per individual and one column per \code{genomic.region}
 }
-\seealso{ \code{\link{WSS}}, \code{\link{burden.mlogit}} }
+\seealso{ \code{\link{WSS}}, \code{\link{burden.weighted.matrix}}, \code{\link{burden.mlogit}} }
 \examples{
 #Importation of data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
-#Add population
-x@ped[,c("pop", "superpop")] <- LCT.matrix.pop1000G[,c("population", "super.population")]
-
-#Select EUR superpopulation
-x <- select.inds(x, superpop=="EUR")
-x@ped$pop <- droplevels(x@ped$pop)
 
 # Group variants within known genes
 x <- set.genomic.region(x)

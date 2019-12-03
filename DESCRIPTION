@@ -6,10 +6,10 @@ Date: 2017-02-22
 Encoding: UTF-8
 Author: Hervé Perdry and Ozvan Bocher
 Maintainer: Hervé Perdry <herve.perdry@u-psud.fr>
-Description: Rare variant analysis: burden tests, etc.
+Description: Rare variant association tests (burden tests and SKAT) and genetic simulations.
 License: GPL-3
 LinkingTo: Rcpp, RcppParallel, RcppEigen, gaston
-Depends: R (>= 2.10), Rcpp, RcppParallel, methods, gaston, mlogit
+Depends: R (>= 3.5.0), Rcpp, RcppParallel, methods, gaston, mlogit
 NeedsCompilation: yes
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

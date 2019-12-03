@@ -1,18 +1,9 @@
-#Compute weights of variants for the simulations
-burden.weights <- function(haplos, maf.threshold = 0.01) {
-  fr <- colMeans(haplos)
-  we <- -0.4*log10(fr)  # le 0.4 pourrait disparaÃ®tre puisqu'aprÃ¨s on remet Ã  l'Ã©chelle
-  # on met Ã  0 les SNPs monomorphes et ceux qui sont trop frÃ©quents
-  we[ fr == 0 | fr > maf.threshold ] <- 0
-  we
-}
-
-
 #Function for the simulations
 #Sample causal variants, compute haplotypes burden
 #and thresholds corresponding to the desired prevalence
 #p.causal=P(causal variant) ; p.protect=P(protective variant | causal variant)
-simu.prolego <- function(haplos, weights, p.protect, nb.causal, h2, prev, normal.approx) {
+simus.parameters <- function(haplos, weights = -0.4*log10(colMeans(haplos)), maf.threshold = 0.01, nb.causal, p.protect, h2, prev, normal.approx) {
+  weights[colMeans(haplos) == 0 | colMeans(haplos) > maf.threshold ] <- 0
   w <- which(weights > 0) # parmi les SNPs potentiellement causaux
   if(nb.causal > length(w)) 
     stop("There are not enough positively weighted variants to pick", nb.causal, "ones")
@@ -50,5 +41,11 @@ simu.prolego <- function(haplos, weights, p.protect, nb.causal, h2, prev, normal
     s <- quantile(BRD, 1 - prev)
   }
 
-  list(burdens = list(burdens), thr1 = s, thr2 = Inf)
+  list(burdens = burdens, sd = sqrt(1-h2), thr1 = s)
+}
+
+
+get.rbm.thresholds <- function(haplos, weights = -0.4*log10(colMeans(haplos)), maf.threshold = 0.01, nb.causal, p.protect, h2, prev, normal.approx = TRUE){
+  RR <- mapply(simus.parameters, list(haplos), list(weights), maf.threshold, nb.causal, p.protect, h2, prev, normal.approx, SIMPLIFY=FALSE)
+  list(burdens = lapply(RR, function(z) z$burdens), sd = unlist(lapply(RR, function(z) z$sd)), thr1 = unlist(lapply(RR, function(z) z$thr1)) )
 }

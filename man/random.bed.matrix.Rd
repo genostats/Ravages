@@ -1,25 +1,24 @@
 \name{random.bed.matrix}
 \alias{random.bed.matrix}
 \title{
-  Simulation of a bed.matrix
+  Simulation of genetic data using GRR values
 }
 \description{
-  Generates a bed.matrix with genotypes for cases and controls based on GRR values
+  Generates a simulated bed.matrix with genotypes for cases and controls based on GRR values
 }
 \usage{
-random.bed.matrix(genes.maf = Kryukov, size, prev, 
-                  replicates, GRR.matrix.del, GRR.matrix.pro, 
-                  p.causal = 0.5, p.protect = 0, 
-                  same.variant = FALSE, 
+random.bed.matrix(genes.maf = Kryukov, size, prev, replicates, 
+                  GRR.matrix.del, GRR.matrix.pro, 
+                  p.causal = 0.5, p.protect = 0, same.variant = FALSE, 
                   genetic.model=c("general", "multiplicative", 
                   "dominant", "recessive"), select.gene)
 }
 \arguments{
-  \item{genes.maf}{ A data frame containing the MAF in the general population (column maf) for variants with their associated gene (column gene), by default the file Kryukov is used}
-  \item{size}{ A vector containing the size each group (the first one being the control group)}
-  \item{prev}{ A vector containing the prevalence for each group of cases}
+  \item{genes.maf}{ A dataframe containing at least the MAF in the general population (column maf) for variants with their associated gene (column gene), by default the file \code{Kryukov} is used}
+  \item{size}{ A vector containing the size of each group (the first one being the control group)}
+  \item{prev}{ A vector containing the prevalence of each group of cases}
   \item{replicates}{ The number of simulations to perform }
-  \item{GRR.matrix.del}{ A list containing the GRR matrix associated to the heterozygous compared to the homozygous for the reference allele for deleterious variants. An additional GRR matrix associated to the homozygous for the alternate allele is needed if \code{genetic.genetic.model="general"}}
+  \item{GRR.matrix.del}{ A list containing the GRR matrix associated to the heterozygous genotype compared to the homozygous reference genotype as if all variants are deleterious. An additional GRR matrix associated to the homozygous for the alternate allele is needed if \code{genetic.genetic.model="general"}}
   \item{GRR.matrix.pro}{ The same argument as \code{GRR.matrix.del} but for protective variants}
   \item{p.causal}{ The proportion of causal variants in cases}
   \item{p.protect}{ The proportion of protective variants in cases among causal variants}
@@ -34,14 +33,16 @@ random.bed.matrix(genes.maf = Kryukov, size, prev,
 \details{
   The genetic model of the disease needs to be specified in this function.
 
-  If \code{genetic.model="general"}, there is no link between the GRR associated to the heterozygous and the GRR associated to the homozygous for the alternate allele. 
-  Therefore, the user has to give two matrices of GRR, one for the heterozygous, the other for the homozygous for the alternate allele.
+  If \code{genetic.model="general"}, there is no link between the GRR for the heterozygous genotype and the GRR for the homozygous alternative genotype. 
+  Therefore, the user has to give two matrices of GRR, one for the heterozygous genotype, the other for the homozygous alternative genotype.
 
-  If \code{genetic.model="multiplicative"}, we assume that the the GRR associated to the homozygous for the alternate allele is the square of the GRR associated to the heterozygous. 
+  If \code{genetic.model="multiplicative"}, we assume that the the GRR for the homozygous alternative genotype is the square of the GRR for the heterozygous genotype. 
 
-  If \code{genetic.model="dominant"}, we assume that the GRR associated to the heterozygous and the GRR associated to the homozygous for the alternate allele are equal.
+  If \code{genetic.model="dominant"}, we assume that the GRR for the heterozygous genotype and the GRR for the homozygous alternative genotype are equal.
 
-  If \code{genetic.model="recessive"}, we assume that the GRR associated to the heterozygous is equal to 1: the GRR given is the one associated to the homozygous for the alternate allele.  
+  If \code{genetic.model="recessive"}, we assume that the GRR for the heterozygous genotype is equal to 1: the GRR given is the one associated to the homozygous alternative genotype.
+
+  \code{GRR.matrix.del} contains GRR values as if all variants are deleterious. These values will be used only for the proportion \code{p.causal} of variants that will be sampled as causal.  
 
   The files \code{Kryukov} or \code{GnomADgenes} available with the package Ravages can be used as the argument \code{genes.maf}.
 

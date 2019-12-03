@@ -1,6 +1,6 @@
 
-rbm.haplos.freqs <- function(haplos, freqs, size, B) {
-  bed <- .Call('rbm_haplos_freqs', PACKAGE = "Ravages", haplos, freqs, size, B)
+rbm.haplos.freqs <- function(haplos, freqs, size, replicates) {
+  bed <- .Call('rbm_haplos_freqs', PACKAGE = "Ravages", haplos, freqs, size, replicates)
 
   nb_inds <- sum(size);
 
@@ -20,7 +20,7 @@ rbm.haplos.freqs <- function(haplos, freqs, size, B) {
             pheno = pheno, stringsAsFactors = FALSE)
 
   snps <- data.frame(chr = NA, id = NA, dist = NA, pos = NA, A1 = NA, A2 = NA, 
-               genomic.region = factor( rep(sprintf("R%0*d", log10(B) + 1, 1:B), each = ncol(haplos)) ),
+               genomic.region = factor( rep(sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = ncol(haplos)) ),
                stringsAsFactors = FALSE)
  
   if( is.null(colnames(haplos)) )
@@ -35,8 +35,9 @@ rbm.haplos.freqs <- function(haplos, freqs, size, B) {
   x
 }
 
-rbm.haplos.thresholds <- function(haplos, burdens, sd, thr1, thr2, size, B) {
-  bed <- .Call('rbm_haplos_thresholds', PACKAGE = "Ravages", haplos, burdens, sd, thr1, thr2, size, B)
+rbm.haplos.thresholds <- function(haplos, burdens, sd, thr1, size, replicates) {
+  thr2 <- rep(Inf, length(thr1))
+  bed <- .Call('rbm_haplos_thresholds', PACKAGE = "Ravages", haplos, burdens, sd, thr1, thr2, size, replicates)
 
   nb_inds <- sum(size);
 
@@ -45,7 +46,7 @@ rbm.haplos.thresholds <- function(haplos, burdens, sd, thr1, thr2, size, B) {
             pheno = rep( seq(0, length(size)-1), size ), stringsAsFactors = FALSE)
 
   snps <- data.frame(chr = NA, id = NA, dist = NA, pos = NA, A1 = NA, A2 = NA, 
-               genomic.region = factor( rep(sprintf("R%0*d", log10(B) + 1, 1:B), each = ncol(haplos)) ),
+               genomic.region = factor( rep(sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = ncol(haplos)) ),
                stringsAsFactors = FALSE)
  
   if( is.null(colnames(haplos)) )

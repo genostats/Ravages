@@ -15,8 +15,8 @@ genotypic.freq(genes.maf = Kryukov, GRR.het, GRR.homo.alt, prev,
 \arguments{
   \item{genes.maf}{ A file containing the MAF in the general population (column maf) for variants with their associated gene (column gene), by default the file \code{Kryukov} is used}
   \item{GRR.het}{ A matrix giving the GRR of the heterozygous genotype compared to the homozygous reference genotype with one row per cases group and one column per variant }
-  \item{GRR.homo.alt}{ A matrix giving the GRR of the homozygous alternate genotype compared to the homozygous reference genotype with one row per cases group and one column per variant, only need if \code{genetic.model="general"}}
-  \item{prev}{ A vector containing the prevalence values for each group of cases}
+  \item{GRR.homo.alt}{ A matrix giving the GRR of the homozygous alternative genotype compared to the homozygous reference genotype with one row per cases group and one column per variant, only need if \code{genetic.model="general"}}
+  \item{prev}{ A vector containing the prevalence of each group of cases}
   \item{genetic.model}{ The genetic model of the disease }
   \item{select.gene}{ Which gene to choose from \code{genes.maf$gene} if multiple genes are present. If missing, only the first level is kept.}
 }
@@ -29,22 +29,22 @@ genotypic.freq(genes.maf = Kryukov, GRR.het, GRR.homo.alt, prev,
   The genetic model of the disease needs to be specified to \code{genetic.model}:
 
   If \code{genetic.model="general"}, there is no link between the GRR associated 
-  to the heterozygous genotype and the GRR associated to the homozygous alternate 
+  to the heterozygous genotype and the GRR associated to the homozygous alternative 
   genotype. Therefore, the user has to give two matrices of GRR, one for each of these genotypes.
 
   If \code{genetic.model="multiplicative"}, we assume that the GRR associated to the homozygous 
-  alternate genotype is the square of the GRR associated to the heterozygous genotype.
+  alternative genotype is the square of the GRR associated to the heterozygous genotype.
 
   If \code{genetic.model="dominant"}, we assume that the GRR associated to the heterozygous genotype 
-  and the GRR associated to the homozygous alternate genotype are equal.
+  and the GRR associated to the homozygous alternative genotype are equal.
 
   If \code{genetic.model="recessive"}, we assume that the GRR associated to the heterozygous genotype 
-  is equal to 1: the GRR given is the one associated to the homozygous alternate genotype.  
+  is equal to 1: the GRR given is the one associated to the homozygous alternative genotype.  
 
-  The \code{prev} corresponds to the proportion of each sub-group of cases in the population. 
+  \code{prev} corresponds to the proportion of each sub-group of cases in the population. 
   It is used only to calculate the MAF in the controls group.  
 
-  The data frames \code{Kryukov} or \code{GnomADgenes} available with the package Ravages can be used for the argument \code{genes.maf}.
+  The dataframes \code{Kryukov} or \code{GnomADgenes} available with the package Ravages can be used for the argument \code{genes.maf}.
 }
 \seealso{ \code{\link{GRR.matrix}}, \code{\link{random.bed.matrix}}, \code{\link{GnomADgenes}}, \code{\link{Kryukov}} }
 \examples{

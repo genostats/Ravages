@@ -17,7 +17,7 @@ require("Ravages")
 
 Ravages was developped to simulate genetic data and to perform rare variant association tests (burden tests and the variance-component test SKAT) on more than two groups of individuals (Bocher et al., 2019, Genetic Epidemiology). Ravages relies on the package Gaston developped by Herve Perdry and Claire Dandine-Roulland. Most functions are written in C++ thanks to the packages Rcpp, RcppParallel and RcppEigen.  
 Functions of Ravages use bed.matrix to manipulate genetic data as in the package Gaston (see documentation of this package for more details).  
-In this vignette, we illustrate how to perform genetic simulations and how to use it to compute power of rare variant association tests. See the main vignette for more details about rare association tests.  
+In this vignette, we illustrate how to perform genetic simulations and how to use it to compute power of rare variant association tests. See the main vignette for more details about rare variant association tests.  
 To learn more about all options of the functions, the reader is advised to look at the manual pages.  
 We develpped two main simulations procedures, one based on allelic frequencies and genetic relative risks (GRR), and the other one based on haplotypes and a liability model. All the functions can be used to simulate more than two groups of individuals.
 
@@ -28,7 +28,7 @@ $$P(Aa | Y=c) = \frac{P(Y=c | Aa)*P(Aa)}{\sum_{Geno=AA, Aa, aa} P(Y=c | Geno)*P(
 P(AA), P(Aa) and P(aa) corresponding to the genotypic probabilities in the general population.
 The three genotypic frequencies can then be calculated in the controls group using the rule of total probability:
 $$P(Geno | Y=1)=P(Geno) - \sum{_{c=2}^{c=C} P(Geno | Y=c)*P(Y=c)}$$
-The function **genotypic.freq()** performs these calculations to obtain the three genotypic frequencies in the different groups of individuals. To do so, the user needs to give *P(Y=c)*, the prevalence of each group of cases (argument *prev*), and the GRR values. GRR values need to be in a matrix form with one row per cases group and one column per variant. If there is no supposed link between the GRR associated to the heterozygous genotype and the GRR associated to the homozygous alternate genotype (general model of the disease, $genetic.model="general"$), the user needs to specify two GRR matrices: one for $GRR_{Aa}$ (argument *GRR.het*) and one for $GRR_{aa}$ (argument *GRR.homo.alt*). If *genetic.model="recessive"*, *"multiplicative"* or *"dominant"*, only one GRR matrix is needed. **genotypic.freq()** will return a list with three matrices, one for each genotype containing the genotypic frequencies, with one row per group of individuals and one column per variant.  
+The function **genotypic.freq()** performs these calculations to obtain the three genotypic frequencies in the different groups of individuals. To do so, the user needs to give *P(Y=c)*, the prevalence of each group of cases (argument *prev*), and the GRR values. GRR values need to be in a matrix form with one row per cases group and one column per variant. If there is no supposed link between the GRR associated to the heterozygous genotype and the GRR associated to the homozygous alternative genotype (general model of the disease, $genetic.model="general"$), the user needs to specify two GRR matrices: one for $GRR_{Aa}$ (argument *GRR.het*) and one for $GRR_{aa}$ (argument *GRR.homo.alt*). If *genetic.model="recessive"*, *"multiplicative"* or *"dominant"*, only one GRR matrix is needed. **genotypic.freq()** will return a list with three matrices, one for each genotype containing the genotypic frequencies, with one row per group of individuals and one column per variant.  
 To help the user with the construction of the GRR matrix for **genotypic.freq()**, we implemented the function **GRR.matrix()**.  
 To use this function, the user needs to specify how the GRR should be calculated (argument *GRR*):  
 
@@ -36,7 +36,7 @@ To use this function, the user needs to specify how the GRR should be calculated
 * the GRR is computed using the same formula fas in SKAT: $w=-0.4*|log_{10}(MAF)|$ (*GRR="SKAT"*);   
 * the GRR is computed using another function depending on MAF in the general population (*GRR="variable"*), this function being specified to *GRR.function*.  
 
-In the two last situations, a file containing the MAF in the general population with at least a column "maf" and a column "gene" should be given to the argument *genes.maf*. Two such files are available in Ravages: the file *Kryukov* containing MAF simulated under the demographic model of Kryukov and the file *GnomADgenes* containing MAF from the population NFE in GnomAD. As these files contain MAF for multiple genes, the user needs to specify which gene to choose to simulate the data with the argument *select.gene*. If this argument is empty, only the first gene will be kept in the simulation procedure.  
+In the two last situations, a file containing the MAF in the general population with at least a column "maf" and a column "gene" should be given to the argument *genes.maf*. Two such files are available in Ravages: the file *Kryukov* containing MAF simulated under the demographic model of Kryukov and the file *GnomADgenes* containing MAF from the NFE population in GnomAD. As these files contain MAF for multiple genes, the user needs to specify which gene to choose to simulate the data with the argument *select.gene*. If this argument is empty, only the first gene will be kept in the simulation procedure.  
 Finally, the multiplicative factor of the GRR between each group of cases compared to the first group of cases needs to be specified to the argument *GRR.multiplicative.factor* (number of values: number of cases groups - 1).  
 **GRR.matrix()** will return a GRR matrix in the appropriate format for the function **genotypic.freq()**.  
 Examples of these two functions are shown below:
@@ -57,7 +57,7 @@ geno.freq.groups <- genotypic.freq(genes.maf = Kryukov, select.gene="R1",
                                    genetic.model = "multiplicative")
 str(geno.freq.groups)
 
-#frequencies of the alternate homozygous genotype in the different groups
+#frequencies of the homozygous alternative genotype in the different groups
 geno.freq.groups$freq.homo.alt[,1:5]
 ```
 It is also possible to calculate the MAF in each group of individuals as follow:
@@ -69,11 +69,11 @@ geno.freq.groups$freq.homo.alt[,1:5] + 0.5*geno.freq.groups$freq.het[,1:5]
 ###Simulation of genotypes
 In addition to compute the genotypic frequencies in each group of individuals, it is possible to directly simulate genotypes for a group of controls and more than two groups of cases. This can be done using the function **random.bed.matrix()** which relies on the function **genotypic.freq()** explained previously.
 The arguments *genes.maf*, *select.gene*, *prev* and *genetic.model* are the same as in **genotypic.freq()**.  
-In **random.bed.matrix()**, the proportion of causal variants and protective variants (among causal variants) simulated in the genomic region should be specified to *p.causal* and *p.protect* respectively. The argument *GRR.matrix.del* should contain a matrix with GRR values as if all the variants were deleterious. If *genetic.model="general"*, two GRR matrices need to be given as a list to the argument *GRR.matrix.del* (one for the heterozygous genotype and the other for the homozygous alternate genotype).  
+In **random.bed.matrix()**, the proportion of causal variants and protective variants (among causal variants) simulated in the genomic region should be specified to *p.causal* and *p.protect* respectively. The argument *GRR.matrix.del* should contain a matrix with GRR values as if all the variants were deleterious. If *genetic.model="general"*, two GRR matrices need to be given as a list to the argument *GRR.matrix.del* (one for the heterozygous genotype and the other for the homozygous alternative genotype).  
 If the user wants to simulate protective variants in addition to deleterious variants, a similar argument to *GRR.matrix* should be given to *GRR.matrix.pro* with GRR values as if all variants were protective. If the argument *GRR.matrix.pro* is empty and *p.protect*>0, *GRR.matrix.pro* will correspond to 1/*GRR.matrix*. 
 These protective and deleterious GRR values will then be assigned to the sampled protective and deleterious variants in the simulations, the non-causal variants having GRR values of 1.   
-The size of the different groups of individuals should be a vector specified to *size*, and the user should choose whether the causal variants will be the same between the different groups of cases with the argument *same.variant*.  
-Finally, the number of genomic regions simulated is specified with the argument *replicates*.  
+The size of the different groups of individuals should be a vector specified to *size*, and the user has to choose whether the causal variants will be the same between the different groups of cases with the argument *same.variant*.  
+Finally, the number of simulations need to be specified to *replicates*.  
 **random.bed.matrix()** will return a bed matrix with the group of each individual in the field *@ped$pheno*, the first one being considered by default as the controls group, and the replicate number corresponding to the genomic region in the field *@snps$genomic.region*.  
 The example below shows how to simulate a group of 1 000 controls and two groups of 500 cases with 50% of deleterious variants having GRR values from the previous example. The deleterious variants are different between the two groups of cases and 5 genomic regions are simulated.
 
@@ -89,34 +89,48 @@ table(x@snps$genomic.region)
 
 
 ##Simulations based on haplotypes
-**Ravages** also offers the possibility to perform genetic simulations based on haplotypes to mimic linkage desequlibrium pattern observed on these data.  
+**Ravages** also offers the possibility to perform genetic simulations based on real data haplotypes to mimic linkage desequlibrium pattern observed on these data.  
+Two options are available to do so: genetic data are simulated using either haplotypes and their frequencies in different groups of individuals (function **rbm.haplos.freqs()**), or using haplotypes and a liability model on their burdens (function **rbm.haplos.thresholds()**).  
+For the first situation, **rbm.haplos.freqs()** requires a matrix of haplotypes (argument *haplos* with one row per haplotype and one column per variant), and a matrix with each haplotype frequency in each simulated group of individuals (argument *freqs* with one row per haplotype and one column per group of individuals). Observed haplotypes are then sampled in each group of individuals in respect to their frequencies in each one of them.  
+For the second situation, **rbm.haplos.thresholds()** requires a matrix of haplotypes (argument *haplos* as well), a matrix containing the burden of each haplotype (*burdens* with one row per haplotype), the standard deviation associated to non-genetic elements (*sd = sqrt(1-h2)*, *h2* being the phenotypic variance explained by the gene), and the threshold used to compute haplotypes probabilities in each group of individuals (*thr1*). This threshold is chosen from a liability distribution on adjusted burdens and each haplotype probability in each group of individuals is computed according to the fact that liability in this group is between *thr1* and +Inf. Pairs of haplotypes are then sampled for each individual according to these previous conditionnal probabilities. 
+The arguments *burdens*, *sd*, and *thr1* can be obtained using the function **get.rbm.thresholds()**. This function requires as the other ones the argument *haplos*, and a number of other arguments to draw the libaility model. *weights* is a vector whose length corresponds to the number of variants and is used to weight variant into burdens computation (by default, the same formula as in SKAT is used, which gives the higher weights to the rarest variants : $w=-0.4*|log_{10}(MAF)|$). *maf.threshold* corresponds to the maf threshold used to define a rare variants, i.e. all monomorphic variants and variants with a MAF upper than this threshold will have a weight of 0. In addition, the number of causal variants needs to be given to *nb.causal*, and the proportion of protective variants among causal variants needs to be given to *p.protect*. Haplotypes' burdens will be computed on these causal variants. Finally, *h2* corresponds to the phenotypic variant explained by the gene: haplotypes burdens will be adjusted on this value; and *prev* corresponds to the prevalence of each group of individuals: *thr1* will correspond to the quantile associated to 1-*prev*. This quantile is drawn from a standard normal distribution if *normal.approx*=TRUE (applicable for low *h2* value and pretty large *prev* values), otherwise, quantiles will be drawn from a distribution based on observed sampled burdens. If one wants to simulate a group of unselected controls, *prev* needs to be set at 1, regardless of the other arguments: haplotypes are sampled uniformly in the whole distribution.  
+*nb.causal*, *p.protect*, *h2* and *prev* should be vector of equal size as the number of groups. If they correspond to a single value, this value will be repeated.  
+As for the genetic simulations based on GRR, when using **rbm.haplos.freqs()** or **rbm.haplos.thresholds()**, the sizes of each group should be given to *size*, and the number of simulations to *replicates*. As before, the replicate number will be in the slot *@snps$genomic.region* and the group of individuals in *@ped$pheno*. If **rbm.haplos.freqs()** is used, phenotype values will correspond to the colnames of *freqs*.  
 
-This is performed using the function **random.bed.matrix.haplos()** which is based on a matrix of observed haplotypes with one row per haplotype and one column per variant (argument *haplos*). The number (argument *nb.causal*) or the proportion (arguments *p.causal*) of causal variants are sampled from observed variants for each simulation replicate. It is also possible to add protective variants with the argument *p.protect* which corresponds to the proportion of protective variants among causal variants. The burden of each haplotype is then computed by weighting the causal variants according to a function given to the argument *weights*. By default, the same formula as in SKAT is used, which gives the higher weights to the rarest variants : $w=-0.4*|log_{10}(MAF)|$.  
-Once these burdens are calculated, they are adjusted on a given *h2* value defined by the user which represents the variance of the phenotype explained by the gene. Burdens are considered under a liability model, and threshold from the standard gaussian distribution are considered to represent the prevalence of each sub-phenotype (argument *prev*). These thresholds are then used to compute the probability of each haplotype in each group of individuals, and pairs of haplotypes are finally sampled for each individual according to these previous conditionnal probabilities.  
-In addition to these arguments, **random.bed.matrix.haplos()** needs other information: as for the simulations based on the GRRs, the sizes of the different groups should be given to the argument *size*, and the number of replicates to the argument *replicates*.  The arguments *p.causal*/*nb.causal*, *p.protect*, *h2*, *prev* and *size* should have the same length as the total number of groups.   
-To simulate a group of controls, *prev* needs to be set as 1 in this group of individuals, regardless of the other arguments. By modifying the different arguments, the user can simulate genetic data under various scenarios: simulate similar genetic effects between the groups of cases (same *h2* and *prev*), simulate one group of cases as the controls group (*prev*=1 in this group of cases), ...    
-As before, the phenotype of each individual can be found in the field *@ped$pheno*, and the replicate number can be found in the field *@snps$genomic.region*.   
+ 
+Two examples to illustrate these functions are presented below. The first one enables the simulation of 5 groups of individuals, with haplotype frequencies from the five european populations for the LCT gene. The second one enables the simulation of one group of 100 controls and two groups of 50 cases based on the liability model with different genetic effects. Parameters for these simulations are obtained using **get.rbm.thresholds()**
 
-Below is an exemple of data simulation of one group of controls and two groups of cases, with genetic heterogeneity between the two groups of cases:
 ```{r}
 #Load LCT dataset for haplotype matrix
-#Selection of LCT gene (positions from GnomAD) and EUR superpop
 data(LCT.haplotypes)
-id.LCT <- subset(LCT.snps, pos>=136545410 & pos <= 136594750)$id
-haplo.matrix <- LCT.hap[which(LCT.sample$super.population=="EUR"),id.LCT]
 
-#Simulation of 200 controls, 100 individuals from two sub-phenotypes
-#with the second grave having half h2 and twice the prevalence compared to the first one
-#30 causal variants are present
-x <- random.bed.matrix.haplos(haplos=haplo.matrix, nb.causal=30, h2=c(0.01, 0.01, 0.02),
-                              prev=c(1, 0.01, 0.005), size=c(200,100,100), replicates=5)
-x
-table(x@ped$pheno)
-table(x@snps$genomic.region)
+#Simulation based on haplotypes frequencies
+#Haplotypes for the variants in the LCT gene in the EUR population
+LCT.gene.hap <- LCT.hap[which(LCT.sample$super.population=="EUR"),
+                        which(LCT.snps$pos>=136545410 & LCT.snps$pos<=136594750)]
+#Individuals from EUR
+LCT.sample.EUR <- subset(LCT.sample, super.population=="EUR")
+#Matrix of haplotype frequencies
+LCT.freqs <- sapply(unique(LCT.sample.EUR$population), function(z) 
+                   ifelse(LCT.sample.EUR$population==z, 
+                          1/table(LCT.sample.EUR$population)[z], 0))
+#Simulation of genetic data for five groups of 50 individuals
+x <- rbm.haplos.freqs(haplos=LCT.gene.hap, freqs=LCT.freqs, size=rep(50,5), replicates=5)
+
+
+#Simulations based on the liability model
+#Parameters for simulations with the second group of cases
+#having half h2 and twice the prevalence compared to the first one, 30 causal variants
+x.param <- get.rbm.thresholds(haplos=LCT.gene.hap, maf.threshold = 0.01, nb.causal=30,
+                              p.protect=0, h2=c(0.01, 0.01, 0.02), prev=c(1, 0.01, 0.005))
+
+#Simulation of 100 controls, and two groups of 50 cases using these parameters
+x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, burdens=x.param$burdens, sd=x.param$sd,
+                           thr1=x.param$thr1, size=c(100, 50, 50), replicates=5)
 ```
 
 ##Power calculation
-Power calculations are not directly implemented into **Ravages**, but the functions *burden.mlogit()* and *SKAT()* can be used to compute the power of burden tests and SKAT. To have more informations about these two functions, please refer to the main vignette of the package. After the simulation of a bedmatrix using one of the two previous methods explained, you can compute statistical power as follows:
+Power calculations are not directly implemented into **Ravages**, but the functions *burden.mlogit()* and *SKAT()* can be used to perform burden tests and SKAT. To have more informations about these two functions, please refer to the main vignette of the package. After the simulation of a bedmatrix using one of the two previously explained methods,statistical power can be computed as follows:
 
 ```{r}
 #Simulations using GRR values
@@ -130,34 +144,41 @@ x.GRR <- random.bed.matrix(genes.maf = Kryukov, size = c(200, 100, 100, 100),
                           replicates = 100, genetic.model = "multiplicative", 
                           select.gene = "R1")
 table(x.GRR@ped$pheno)
-#Comparing each group of cases to the controls
-x.GRR.1 <- select.inds(x.GRR, x.GRR@ped$pheno %in% c(0,1))
-x.GRR.2 <- select.inds(x.GRR, x.GRR@ped$pheno %in% c(0,2))
-x.GRR.3 <- select.inds(x.GRR, x.GRR@ped$pheno %in% c(0,3))
-skat.cas1 <- SKAT(x.GRR.1, maf.threshold = 1)
-skat.cas2 <- SKAT(x.GRR.2, maf.threshold = 1)
-skat.cas3 <- SKAT(x.GRR.3, maf.threshold = 1)
-mean(skat.cas1<0.05) ; mean(skat.cas2<0.05) ; mean(skat.cas3<0.05)
+#Selection of rare variants: MAF<1% in the entire sample
+x.GRR.filter <- filter.rare.variants(x.GRR, maf.threshold=0.01, filter="whole")
+
+#Comparing each group of cases to the controls with WSS
+x.GRR.1 <- select.inds(x.GRR.filter, x.GRR.filter@ped$pheno %in% c(0,1))
+x.GRR.2 <- select.inds(x.GRR.filter, x.GRR.filter@ped$pheno %in% c(0,2))
+x.GRR.3 <- select.inds(x.GRR.filter, x.GRR.filter@ped$pheno %in% c(0,3))
+wss.cas1 <- burden.mlogit(x.GRR.1, burden="WSS", ref.level=0)
+wss.cas2 <- burden.mlogit(x.GRR.2, burden="WSS", ref.level=0)
+wss.cas3 <- burden.mlogit(x.GRR.3, burden="WSS", ref.level=0)
+mean(wss.cas1<0.05) ; mean(wss.cas2<0.05) ; mean(wss.cas3<0.05)
 
 
 
-#Simulations based on haplotypes
-#One group of controls and two groups of cases genetically heterogeneous
-x <- random.bed.matrix.haplos(haplos=haplo.matrix, nb.causal=2, h2=c(0.01, 0.025, 0.05),
-                              prev=c(1, 0.025, 5e-3), size=c(200,100,100), replicates=100)
-#Power of the burden test CAST using the multinomial regression: each group is
+#Simulations based on haplotypes and the liability model
+#One group of controls and two groups of cases genetically heterogeneous 
+x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, burdens=x.param$burdens, sd=x.param$sd, 
+                           thr1=x.param$thr1, size=c(200, 100, 100), replicates=100)
+#Filtering of rare variants: MAF<1% in the entire sample
+x.filter <- filter.rare.variants(x, maf.threshold = 0.01, filter="whole")
+
+#Power of SKAT using the multinomial regression: each group is
 #considered separately; significance level=5%
-cast <- burden.mlogit(x, burden="CAST", ref.level=0)$p.value
-mean(cast<0.05)
+skat <- SKAT(x.filter)$p.value
+mean(skat<0.05)
 #Considering all the cases as one group and compare them to the controls
-pheno.pooled <- ifelse(x@ped$pheno == 0, 0, 1)
-cast.pooled <- burden.mlogit(x, group=pheno.pooled, burden="CAST", ref.level=0)$p.value
-mean(cast.pooled<0.05)
-#Power of the burden test WSS comparing each group of cases to the controls
-#at a 1% significance threshold
-x.1 <- select.inds(x, x@ped$pheno != 2)
-x.2 <- select.inds(x, x@ped$pheno != 1)
-wss.cas1 <- burden.mlogit(x.1, burden="WSS", ref.level=0)$p.value
-wss.cas2 <- burden.mlogit(x.2, burden="WSS", ref.level=0)$p.value
-mean(wss.cas1<0.01) ; mean(wss.cas2<0.01)
+pheno.pooled <- ifelse(x.filter@ped$pheno == 0, 0, 1)
+skat.pooled <- SKAT(x.filter, group=pheno.pooled)$p.value
+mean(skat.pooled<0.05)
+
+#Power of the burden test CAST comparing each group of cases to the controls
+#at a 5% significance threshold
+x.1 <- select.inds(x.filter, x.filter@ped$pheno != 2)
+x.2 <- select.inds(x.filter, x.filter@ped$pheno != 1)
+cast.cas1 <- burden.mlogit(x.1, burden="CAST", ref.level=0)$p.value
+cast.cas2 <- burden.mlogit(x.2, burden="CAST", ref.level=0)$p.value
+mean(cast.cas1<0.05) ; mean(cast.cas2<0.05)
 ```

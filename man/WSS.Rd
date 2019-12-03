@@ -14,16 +14,10 @@ WSS(x, genomic.region = x@snps$genomic.region)
 \value{
 A matrix containing the WSS genetic score with one row per individual and one column per \code{genomic.region}
 }
-\seealso{ \code{\link{CAST}} }
+\seealso{ \code{\link{CAST}}, \code{\link{burden.weighted.matrix}}, \code{\link{burden.mlogit}} }
 \examples{
 #Importation of data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
-#Add population
-x@ped[,c("pop", "superpop")] <- LCT.matrix.pop1000G[,c("population", "super.population")]
-
-#Select EUR superpopulation
-x <- select.inds(x, superpop=="EUR")
-x@ped$pop <- droplevels(x@ped$pop)
 
 # Group variants within known genes
 x <- set.genomic.region(x)

@@ -2,7 +2,7 @@
 \alias{set.genomic.region}
 \title{ Variants annotation based on gene positions }
 \description{
-Annotates variants based on positions of known genes
+Attributes genes to variants based on known genes positions
 }
 \usage{
 set.genomic.region(x, genes = genes.b37, flank.width = 0L)
@@ -24,7 +24,7 @@ If \code{flank.width} is null, only the variants having their position between t
 When two genes overlap, variants in the overlapping zone will be attributed to the second one (in the order given by the position of their starting point on the genome).
 
 If \code{flank.width} is a positive number, variants \code{flank.width} downstream or upstream a gene will be annotated annotated to this gene. You can use \code{flank.width = Inf}
-to have each variant included in the nearest gene.  
+to have each variant attributed to the nearest gene.  
 }
 \value{
 The same bed matrix as x with an additional column \code{x@snps$genomic.region} containing the annotation of each variant
@@ -35,10 +35,10 @@ The same bed matrix as x with an additional column \code{x@snps$genomic.region} 
 \examples{
 #Import 1000Genome data from region around LCT gene
 x <- as.bed.matrix(LCT.gen, LCT.fam, LCT.bim)
+
 #Group variants within known genes
 x <- set.genomic.region(x)
-table(x@snps$genomic.region)
+
 #Group variants within know genes +/- 500bp
 x <- set.genomic.region(x, flank.width=500)
-table(x@snps$genomic.region, useNA="ifany")
 }

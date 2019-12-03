@@ -11,7 +11,7 @@ Jaccard(x, maf.threshold = 0.01)
 }
 \arguments{
   \item{x}{A bed.matrix}
-  \item{maf.threshold}{The MAF used for the definition of a rare variant, set as 0.01 by default}
+  \item{maf.threshold}{The MAF used for the definition of a rare variant, set at 0.01 by default}
 }
 \details{
 The individuals carrying no rare variants will have a null Jaccard index with all the individuals including themselves.

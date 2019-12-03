@@ -9,25 +9,19 @@ burden.weighted.matrix(x, weights, genomic.region = x@snps$genomic.region)
 }
 \arguments{
   \item{x}{ A bed.matrix }
-  \item{weights}{ A vector containing the weights of each variant }
+  \item{weights}{ A vector containing the weight of each variant}
   \item{genomic.region}{ A vector containing the genomic region of each variant }
 }
 \value{
 A matrix containing the computed genetic score with one row per individual and one column per \code{genomic.region}.
 }
 \details{
-For variant \emph{i} and individual \emph{j}, the genetic score will be computed as weight of variant \emph{i} * number of A2 alleles for individual \emph{j}.
+For variant \emph{i} and individual \emph{j}, the genetic score will be computed as weight of variant \emph{i} * number of minor alleles for individual \emph{j}.
 }
-\seealso{ \code{\link{CAST}}, \code{\link{WSS}} }
+\seealso{ \code{\link{CAST}}, \code{\link{WSS}}, \code{\link{burden.mlogit}} }
 \examples{
 #Importation of data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
-#Add population
-x@ped[,c("pop", "superpop")] <- LCT.matrix.pop1000G[,c("population", "super.population")]
-
-#Select EUR superpopulation
-x <- select.inds(x, superpop=="EUR")
-x@ped$pop <- droplevels(x@ped$pop)
 
 # Group variants within known genes
 x <- set.genomic.region(x)
