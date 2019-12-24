@@ -28,7 +28,7 @@ SKAT(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, Pi,
 
   if \code{perm.max} is reached, the SKAT small sample procedure is used, and p-values are approximated using a chi-square distributions based on statistics' moments 1, 2 and 4 computed from the permutated values.     
 
-  If \code{debug}==TRUE, more informations about the estimated statistics moments are given.
+  If \code{debug}==TRUE, more informations about the estimated statistics moments are given.  
 }
 \value{
 A data frame containing for each genomic region: 
@@ -70,7 +70,9 @@ x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.sn
 
 #run SKAT using the 1000 genome EUR populations as "outcome"
 #The population is available in the object LCT.pop
-SKAT(x1, LCT.pop)
+#The maximum number of permutations used is 500, please increase
+#this number for a more accurate estimation of the p-values
+SKAT(x1, LCT.pop, perm.max = 500)
 
 #Simulation of covariates
 #with different probabilities in GBR/CEU/FIN and IBS/TSI
@@ -82,5 +84,5 @@ covar <- data.frame(sex=c(sample(0:1, sum(table(LCT.pop)[c("CEU", "GBR", "FIN")]
 Pi.matrix.LCT <- Pi.matrix(group=LCT.pop, data=covar, formula= ~ sex, ref.level="CEU")
 
 #SKAT taking into account the covariate
-SKAT(x1, group=LCT.pop, Pi=Pi.matrix.LCT)
+SKAT(x1, group=LCT.pop, Pi=Pi.matrix.LCT, perm.max = 500)
 }

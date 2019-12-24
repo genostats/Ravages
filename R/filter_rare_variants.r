@@ -1,5 +1,7 @@
 
 filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "any"), maf.threshold = 0.01, min.nb.snps, group) {
+  if(!is.factor(x@snps$genomic.region)) x@snps$genomic.region <- factor(x@snps$genomic.region)
+
   #Check if good filter
   filter <- match.arg(filter)
 
@@ -38,13 +40,11 @@ filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "
   }
 
   x <- select.snps(x, w & x@snps$maf > 0)
-  if(is.factor(x@snps$genomic.region)) {
-    if(!missing(min.nb.snps)) {
-      nb.snps <- table(x@snps$genomic.region)
-      keep <- names(nb.snps)[nb.snps >= min.nb.snps]
-      x <- select.snps(x, x@snps$genomic.region %in% keep)
-    }
-    x@snps$genomic.region <- droplevels(x@snps$genomic.region)
+  if(!missing(min.nb.snps)) {
+    nb.snps <- table(x@snps$genomic.region)
+    keep <- names(nb.snps)[nb.snps >= min.nb.snps]
+    x <- select.snps(x, x@snps$genomic.region %in% keep)
   }
+    x@snps$genomic.region <- droplevels(x@snps$genomic.region)
   x
 }

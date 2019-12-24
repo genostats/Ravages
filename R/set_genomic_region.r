@@ -37,15 +37,11 @@ set.genomic.region <- function(x, genes = genes.b37, flank.width = 0L) {
   }
 
   
-  R <- .Call("oz_label_genes", PACKAGE = "Ravages", genes$Chr, genes$Start, genes$End, x@snps$chr, x@snps$pos)
-  R <- ifelse(R == 0, NA, R)
-  levels(R) <- as.character(genes$Gene_Name)
-  class(R) <- "factor"
+  R <- .Call("label_multiple_genes", PACKAGE = "Ravages", genes$Chr, genes$Start, genes$End, x@snps$chr, x@snps$pos)
+  R.genename <- unlist(lapply(R, function(z) paste(levels(genes$Gene_Name)[unlist(z)], collapse=",")))  
+  R.genename[which(R.genename=="")] <- NA
 
-  # remettre les niveaux dans l'ordre de ceux de genes$Gene_Name 
-  R <- factor(R, levels(genes$Gene_Name))
-
-  x@snps$genomic.region <- droplevels(R) ## attention au droplevels !
+  x@snps$genomic.region <- R.genename
 
   x
 }

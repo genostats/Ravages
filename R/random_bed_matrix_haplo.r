@@ -1,63 +1,85 @@
+#Function for the simulations
+#Sample causal variants, compute haplotypes burden
+#and thresholds corresponding to the desired prevalence
+#p.causal=P(causal variant) ; p.protect=P(protective variant | causal variant)
 
-rbm.haplos.freqs <- function(haplos, freqs, size, replicates) {
-  bed <- .Call('rbm_haplos_freqs', PACKAGE = "Ravages", haplos, freqs, size, replicates)
+rbm.haplos.thresholds <- function(haplos, weights = -0.4*log10(colMeans(haplos)), maf.threshold = 0.01, nb.causal, p.protect = 0, h2, prev, normal.approx = TRUE, size, replicates, rep.by.causal) {
+  if(length(h2) != length(prev) | length(h2) != length(size) | length(prev) != length(size)) stop("h2 and prev should have same size as size")
+  if(length(maf.threshold)==1){
+    maf.threshold <- rep(maf.threshold, length(h2))
+  }else{
+    if(length(maf.threshold) != length(h2)) stop("maf.threshold should be of size 1 or of same size as h2 and prev")
+  }
+  if(length(nb.causal)==1){
+    nb.causal <- rep(nb.causal, length(h2))
+  }else{
+    if(length(nb.causal) != length(h2)) stop("nb.causal should be of size 1 or of same size as h2 and prev")
+  }
+  if(length(p.protect)==1){
+    p.protect <- rep(p.protect, length(h2))
+  }else{
+    if(length(p.protect) != length(h2)) stop("p.protect should be of size 1 or of same size as h2 and prev")
+  }
+  
+  cat(length(h2), " groups of individuals will be simulated \n")
+    
+  
+  x <- Ravages:::new.bed.matrix(nb_inds=sum(size), nb_snps=ncol(haplos)*replicates)
+ 
+  for(i in 1:length(seq(1,replicates, by=rep.by.causal))){
+    burdens <- mapply(get.causal.burden, weights=list(weights), haplos = list(haplos), maf.threshold, nb.causal, p.protect, h2, SIMPLIFY=FALSE)
+  
+    ##Computation of thresholds to respect 'prev' 
+    ##normal.approx = TRUE : ok if small h2
+    if(normal.approx) {
+      s <- qnorm(prev, lower.tail = FALSE)
+    } else {  
+      BRD <- sample(burdens, 1e6, TRUE) + sample(burdens, 1e6, TRUE) + rnorm(1e6, sd = sqrt(1-h2))
+      s <- quantile(BRD, 1 - prev)
+    }
 
-  nb_inds <- sum(size);
+    .Call('rbm_haplos_thresholds_filling', PACKAGE = 'Ravages', x@bed,  haplos, burdens, sd = sqrt(1-h2), thr1 = s, thr2 = rep(Inf, length(size)), size, repNumber = i-1, reps=rep.by.causal)
+  }
 
-  ids <- sprintf("A%0*d", log10(nb_inds) + 1, 1:nb_inds)
-
-  if( ncol(freqs) != length(size) )
-    stop("Dimensions mismatch")
-
-  if(is.null(colnames(freqs)))
-    lev <- (1:ncol(freqs)) - 1
-  else
-    lev <- colnames(freqs)
-
-  pheno <- factor( unlist(mapply(rep, lev, each = size, SIMPLIFY = FALSE)) , levels = lev )
-
-  ped <- data.frame(famid = ids,  id = ids, father = 0, mother = 0, sex = 0,
-            pheno = pheno, stringsAsFactors = FALSE)
-
-  snps <- data.frame(chr = NA, id = NA, dist = NA, pos = NA, A1 = NA, A2 = NA, 
-               genomic.region = factor( rep(sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = ncol(haplos)) ),
-               stringsAsFactors = FALSE)
+  x@ped$pheno <- rep.int( 1:length(size) - 1, size)
+  x@snps$genomic.region <- factor( rep( sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = ncol(haplos)) )
+  
  
   if( is.null(colnames(haplos)) )
-    snps$id <- paste( snps$genomic.region, sprintf("SNP%0*d", log10(ncol(haplos)) + 1, 1:ncol(haplos)), sep = "_")
+    x@snps$id <- paste( x@snps$genomic.region, x@snps$id, sep="_")
   else
-    snps$id <- paste( snps$genomic.region, colnames(haplos), sep = "_")
+    x@snps$id <- paste( x@snps$genomic.region, colnames(haplos), sep = "_")
 
-  x <- new("bed.matrix", bed = bed, snps = snps, ped = ped, p = NULL, mu = NULL,
-           sigma = NULL, standardize_p = FALSE, standardize_mu_sigma = FALSE )
-  if(getOption("gaston.auto.set.stats", TRUE))
-    x <- set.stats(x, verbose = FALSE)
+  x <- set.stats(x, verbose = FALSE)
   x
 }
 
-rbm.haplos.thresholds <- function(haplos, burdens, sd, thr1, size, replicates) {
-  thr2 <- rep(Inf, length(thr1))
-  bed <- .Call('rbm_haplos_thresholds', PACKAGE = "Ravages", haplos, burdens, sd, thr1, thr2, size, replicates)
 
-  nb_inds <- sum(size);
 
-  ids <- sprintf("A%0*d", log10(nb_inds) + 1, 1:nb_inds)
-  ped <- data.frame(famid = ids,  id = ids, father = 0, mother = 0, sex = 0,
-            pheno = rep( seq(0, length(size)-1), size ), stringsAsFactors = FALSE)
+get.causal.burden <- function(weights, haplos, maf.threshold, nb.causal, p.protect, h2){
+  weights[colMeans(haplos) == 0 | colMeans(haplos) > maf.threshold ] <- 0
+  w <- which(weights > 0) # parmi les SNPs potentiellement causaux
+  
+  if(nb.causal > length(w)) 
+    stop("There are not enough positively weighted variants to pick ", nb.causal, " ones")
 
-  snps <- data.frame(chr = NA, id = NA, dist = NA, pos = NA, A1 = NA, A2 = NA, 
-               genomic.region = factor( rep(sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = ncol(haplos)) ),
-               stringsAsFactors = FALSE)
- 
-  if( is.null(colnames(haplos)) )
-    snps$id <- paste( snps$genomic.region, sprintf("SNP%0*d", log10(ncol(haplos)) + 1, 1:ncol(haplos)), sep = "_")
-  else
-    snps$id <- paste( snps$genomic.region, colnames(haplos), sep = "_")
+  nb.pro <- round(nb.causal * p.protect)
+  nb.del <- nb.causal - nb.pro
+  
+  w.causal <- sample(w, nb.causal)
+  directions <- numeric(ncol(haplos))
+  directions[w.causal] <- c(rep(-1,nb.pro), rep(1,nb.del))
 
-  x <- new("bed.matrix", bed = bed, snps = snps, ped = ped, p = NULL, mu = NULL,
-           sigma = NULL, standardize_p = FALSE, standardize_mu_sigma = FALSE )
-  if(getOption("gaston.auto.set.stats", TRUE))
-    x <- set.stats(x, verbose = FALSE)
-  x
+  ##Computation of burden (genetic component of liability)
+  ##Based on the vector 'weights'
+  we <- directions * weights
+  burdens <- haplos %*% we
+  #Standardisation of burdens
+  burdens <- burdens - mean(burdens)
+
+  ##Respect h2: adjust burdens' variance of the two haplotypes 
+  tau <- as.numeric(2*var(burdens))
+  burdens <- burdens / sqrt(tau) * sqrt(h2)
+  #To generate the liability, a gaussian variable of standard deviation sqrt(1-h2) should be added to the burdens
+  burdens
 }
-

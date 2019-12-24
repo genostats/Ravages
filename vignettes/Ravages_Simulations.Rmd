@@ -92,9 +92,10 @@ table(x@snps$genomic.region)
 **Ravages** also offers the possibility to perform genetic simulations based on real data haplotypes to mimic linkage desequlibrium pattern observed on these data.  
 Two options are available to do so: genetic data are simulated using either haplotypes and their frequencies in different groups of individuals (function **rbm.haplos.freqs()**), or using haplotypes and a liability model on their burdens (function **rbm.haplos.thresholds()**).  
 For the first situation, **rbm.haplos.freqs()** requires a matrix of haplotypes (argument *haplos* with one row per haplotype and one column per variant), and a matrix with each haplotype frequency in each simulated group of individuals (argument *freqs* with one row per haplotype and one column per group of individuals). Observed haplotypes are then sampled in each group of individuals in respect to their frequencies in each one of them.  
-For the second situation, **rbm.haplos.thresholds()** requires a matrix of haplotypes (argument *haplos* as well), a matrix containing the burden of each haplotype (*burdens* with one row per haplotype), the standard deviation associated to non-genetic elements (*sd = sqrt(1-h2)*, *h2* being the phenotypic variance explained by the gene), and the threshold used to compute haplotypes probabilities in each group of individuals (*thr1*). This threshold is chosen from a liability distribution on adjusted burdens and each haplotype probability in each group of individuals is computed according to the fact that liability in this group is between *thr1* and +Inf. Pairs of haplotypes are then sampled for each individual according to these previous conditionnal probabilities. 
-The arguments *burdens*, *sd*, and *thr1* can be obtained using the function **get.rbm.thresholds()**. This function requires as the other ones the argument *haplos*, and a number of other arguments to draw the libaility model. *weights* is a vector whose length corresponds to the number of variants and is used to weight variant into burdens computation (by default, the same formula as in SKAT is used, which gives the higher weights to the rarest variants : $w=-0.4*|log_{10}(MAF)|$). *maf.threshold* corresponds to the maf threshold used to define a rare variants, i.e. all monomorphic variants and variants with a MAF upper than this threshold will have a weight of 0. In addition, the number of causal variants needs to be given to *nb.causal*, and the proportion of protective variants among causal variants needs to be given to *p.protect*. Haplotypes' burdens will be computed on these causal variants. Finally, *h2* corresponds to the phenotypic variant explained by the gene: haplotypes burdens will be adjusted on this value; and *prev* corresponds to the prevalence of each group of individuals: *thr1* will correspond to the quantile associated to 1-*prev*. This quantile is drawn from a standard normal distribution if *normal.approx*=TRUE (applicable for low *h2* value and pretty large *prev* values), otherwise, quantiles will be drawn from a distribution based on observed sampled burdens. If one wants to simulate a group of unselected controls, *prev* needs to be set at 1, regardless of the other arguments: haplotypes are sampled uniformly in the whole distribution.  
-*nb.causal*, *p.protect*, *h2* and *prev* should be vector of equal size as the number of groups. If they correspond to a single value, this value will be repeated.  
+For the second situation, **rbm.haplos.thresholds()** requires a matrix of haplotypes (argument *haplos* as well), and a number of other arguments to draw the libaility model. *weights* is a vector whose length corresponds to the number of variants and is used to weight variant into burdens computation (by default, the same formula as in SKAT is used, which gives the higher weights to the rarest variants : $w=-0.4*|log_{10}(MAF)|$). *maf.threshold* corresponds to the maf threshold used to define a rare variants, i.e. all monomorphic variants and variants with a MAF upper this threshold will have a weight of 0. In addition, the number of causal variants needs to be given to *nb.causal*, and the proportion of protective variants among causal variants needs to be given to *p.protect*. Causal variants will be sampled among variants with a positive weight, and haplotypes' burden will be computed on these variants.  
+*h2* corresponds to the phenotypic variance explained by the gene: haplotypes burdens will be adjusted on this value; and *prev* corresponds to the prevalence of each group of individuals and will be used to compute the liability threshold for each group of individuals (individuals in group $i$ will be between 1-$prev_{i}$ and +Inf). This quantile is drawn from a standard normal distribution if *normal.approx*=TRUE (applicable for low *h2* value and pretty large *prev* values), otherwise, quantiles will be drawn from a distribution based on 1e6 observed sampled burdens. If one wants to simulate a group of unselected controls, *prev* needs to be set at 1, regardless of the other arguments: haplotypes are sampled uniformly in the whole liability distribution. *nb.causal*, *p.protect*, *h2* and *prev* should be vector of equal size as the number of groups. If they are of size 1, their value will be repeated.  
+As for the previous functions, the number of simulations to preform should be given to *replicates*. As haplotypes' probabilies can take some time to run for a set of causal variants, it is possible to run several multiple replicates on this same set. Indeed, even if the same causal variants are taken, different haplotypes (with same probabilities) will be sampled in each individual for each replicate. To ensure a minimal variability, we yet recommend to resample the set of causal variants several times. For example, for 1000 replicates, we recommend to resample causal variants 20 times, and therefore the perform 50 replicates by set of causal variants. The number of replicates to perform by set of causal variants should be given to *rep.by.causal*.
+  
 As for the genetic simulations based on GRR, when using **rbm.haplos.freqs()** or **rbm.haplos.thresholds()**, the sizes of each group should be given to *size*, and the number of simulations to *replicates*. As before, the replicate number will be in the slot *@snps$genomic.region* and the group of individuals in *@ped$pheno*. If **rbm.haplos.freqs()** is used, phenotype values will correspond to the colnames of *freqs*.  
 
  
@@ -117,16 +118,13 @@ LCT.freqs <- sapply(unique(LCT.sample.EUR$population), function(z)
 #Simulation of genetic data for five groups of 50 individuals
 x <- rbm.haplos.freqs(haplos=LCT.gene.hap, freqs=LCT.freqs, size=rep(50,5), replicates=5)
 
-
-#Simulations based on the liability model
-#Parameters for simulations with the second group of cases
-#having half h2 and twice the prevalence compared to the first one, 30 causal variants
-x.param <- get.rbm.thresholds(haplos=LCT.gene.hap, maf.threshold = 0.01, nb.causal=30,
-                              p.protect=0, h2=c(0.01, 0.01, 0.02), prev=c(1, 0.01, 0.005))
-
-#Simulation of 100 controls, and two groups of 50 cases using these parameters
-x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, burdens=x.param$burdens, sd=x.param$sd,
-                           thr1=x.param$thr1, size=c(100, 50, 50), replicates=5)
+#Simulation of 100 controls, and two groups of 50 cases with 30 causal variants
+#and with the second group having half h2 and twice the prevalence
+#compared to the first one
+#5 replicates are performed and causal variants are sampled once
+x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, nb.causal = 30, h2=c(0.01,0.01,0.02),
+                           prev=c(1,0.01,0.005), size=c(100, 50, 50), replicates=5,
+                           rep.by.causal = 5)
 ```
 
 ##Power calculation
@@ -160,18 +158,20 @@ mean(wss.cas1<0.05) ; mean(wss.cas2<0.05) ; mean(wss.cas3<0.05)
 
 #Simulations based on haplotypes and the liability model
 #One group of controls and two groups of cases genetically heterogeneous 
-x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, burdens=x.param$burdens, sd=x.param$sd, 
-                           thr1=x.param$thr1, size=c(200, 100, 100), replicates=100)
+#Causal variants are sampled twice
+x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, nb.causal = 30, h2=c(0.01,0.01,0.02),
+                           prev=c(1,0.01,0.005), size=c(200, 100, 100), replicates=100,
+                           rep.by.causal = 50)
 #Filtering of rare variants: MAF<1% in the entire sample
 x.filter <- filter.rare.variants(x, maf.threshold = 0.01, filter="whole")
 
 #Power of SKAT using the multinomial regression: each group is
 #considered separately; significance level=5%
-skat <- SKAT(x.filter)$p.value
+skat <- SKAT(x.filter, perm.max = 500)$p.value
 mean(skat<0.05)
 #Considering all the cases as one group and compare them to the controls
 pheno.pooled <- ifelse(x.filter@ped$pheno == 0, 0, 1)
-skat.pooled <- SKAT(x.filter, group=pheno.pooled)$p.value
+skat.pooled <- SKAT(x.filter, group=pheno.pooled, perm.max = 500)$p.value
 mean(skat.pooled<0.05)
 
 #Power of the burden test CAST comparing each group of cases to the controls

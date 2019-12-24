@@ -30,7 +30,7 @@ IntegerVector label_genes(IntegerVector CHR, IntegerVector begin, IntegerVector 
   return R;
 }
 
-RcppExport SEXP oz_label_genes(SEXP CHRSEXP, SEXP beginSEXP, SEXP endSEXP, SEXP chrSEXP, SEXP posSEXP) {
+RcppExport SEXP label_genes(SEXP CHRSEXP, SEXP beginSEXP, SEXP endSEXP, SEXP chrSEXP, SEXP posSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;

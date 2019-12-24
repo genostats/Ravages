@@ -1,5 +1,9 @@
 burden.weighted.matrix <- function(x, weights, genomic.region = x@snps$genomic.region){
-  if(length(weights) != length(genomic.region)) stop("weights and genomic.region should have the same length")
+  if(length(weights)==1){
+    weights <- rep(weights, length(genomic.region))
+  }else{
+    if(length(weights) != length(genomic.region)) stop("weights and genomic.region should have the same length")
+  }
 
   weights.0 <- ifelse( x@snps$maf == (1 - x@p), 2*weights, 0)
   weights.1 <- weights

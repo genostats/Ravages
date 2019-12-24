@@ -21,13 +21,13 @@ If \code{x@snps$chr} is not a vector of integers, it should be a factor with sam
 We provide two data sets of autosomal humain genes, \code{genes.b37} and \code{genes.b38}.
 
 If \code{flank.width} is null, only the variants having their position between the \code{genes$Start} and the \code{genes$End} of a gene will be attributed to the corresponding gene.  
-When two genes overlap, variants in the overlapping zone will be attributed to the second one (in the order given by the position of their starting point on the genome).
+When two genes overlap, variants in the overlapping zone will be assigned to those two genes, separated by a comma.
 
 If \code{flank.width} is a positive number, variants \code{flank.width} downstream or upstream a gene will be annotated annotated to this gene. You can use \code{flank.width = Inf}
 to have each variant attributed to the nearest gene.  
 }
 \value{
-The same bed matrix as x with an additional column \code{x@snps$genomic.region} containing the annotation of each variant
+The same bed matrix as x with an additional column \code{x@snps$genomic.region} containing the annotation of each variant (character).
 }
 \seealso{
  \code{\link{genes.b37}}, \code{\link{genes.b38}}
