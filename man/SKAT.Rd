@@ -3,7 +3,7 @@
 \title{ Multi group SKAT test }
 \description{ Peforms SKAT on two or more groups of individuals }
 \usage{
-SKAT(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, Pi, 
+SKAT(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, 
      weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
      perm.target = 100, perm.max = 5e4, debug=FALSE)
 }
@@ -11,7 +11,6 @@ SKAT(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, Pi,
   \item{x}{ A bed.matrix }
   \item{group}{ A factor with the group of each individual }
   \item{genomic.region}{ A factor defining the genomic region of each variant }
-  \item{Pi}{Matrix of probabilities of belonging to each group of individuals }
   \item{weights}{ A vector with the weight of each variant. By default, the weight of each variant is inversely proportionnal to its MAF, as it was computed in the original SKAT method}
   \item{maf.threshold}{ The MAF above which variants are removed (default is to keep all variants)}
   \item{perm.target}{ The number of times to exceed the observed statistics. If not reached, \code{perm.max} permutations will be used}
@@ -19,8 +18,6 @@ SKAT(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, Pi,
   \item{debug}{ Whether to print details about the permutations (moments estimators, skewness, kurtosis, ...) in addition to the p-values, FALSE by default }
 }
 \details{
-  The matrix of probabilities needed for \code{Pi} can be computed using the function \code{Pi.matrix}.  
-
   P-values estimation is based on permutations and a sequential procedure: permutated statistics are computed and each one is compared to the observed statistics, the progamms stops when either \code{perm.target} or \code{perm.max} is reached.  
   P-values are then computed using a mixed procedure:   
 
@@ -73,16 +70,4 @@ x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.sn
 #The maximum number of permutations used is 500, please increase
 #this number for a more accurate estimation of the p-values
 SKAT(x1, LCT.pop, perm.max = 500)
-
-#Simulation of covariates
-#with different probabilities in GBR/CEU/FIN and IBS/TSI
-covar <- data.frame(sex=c(sample(0:1, sum(table(LCT.pop)[c("CEU", "GBR", "FIN")]),TRUE,c(0.2,0.8)), 
-                          sample(0:1, sum(table(LCT.pop)[c("TSI", "IBS")]),TRUE,c(0.8,0.2))), 
-                    u=runif(length(LCT.pop)))
-
-#Compute probabilities of each individual belonging to the different groups
-Pi.matrix.LCT <- Pi.matrix(group=LCT.pop, data=covar, formula= ~ sex, ref.level="CEU")
-
-#SKAT taking into account the covariate
-SKAT(x1, group=LCT.pop, Pi=Pi.matrix.LCT, perm.max = 500)
 }

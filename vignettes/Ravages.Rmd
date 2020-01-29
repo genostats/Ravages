@@ -94,7 +94,7 @@ It is also possible to specify the minimum number of variants needed in a genomi
 ##Rare variant association tests
 We have implemented two burden tests extensions (CAST and WSS) and an extension of the variance-component test SKAT to perform the association tests between a gene and more than two groups of individuals.  
 The general idea of burden tests is to compute a genetic score per individual and per genomic region and to test if it differs between the different groups of individuals. To extend these tests to more than two groups of individuals, a non-ordinal multinomial regression is used. The independant variable in this regression is the genetic effect of the gene represented by the genetic score. Covariates can be added in the model. In addition to the genetic scores CAST and WSS directly implemented in the package, the user can specify another genetic score for the regression.  
-The variance-component test SKAT looks at the dispersion of genetics effects of rare variants. A geometrical interpretation of the test was used for its extension to more than two groups of individuals. Integration of covariates is also possible in this model.
+The variance-component test SKAT looks at the dispersion of genetics effects of rare variants. A geometrical interpretation of the test was used for its extension to more than two groups of individuals. 
 
 ###Genetic score for burden tests
 We have implemented two functions to compute CAST and WSS scores respectively. These functions return a matrix with one row per individual and one column by genomic region. They are directly called in the function **burden.mlogit()** if these scores are used to perform the association tests. It is also possible to compute genetic scores in a gene based on a vector of weights for each variant using the function **burden.weighted.matrix()**.  
@@ -162,15 +162,11 @@ burden.mlogit(burden=WSS.score, group=x1@ped$pop, ref.level="CEU")
 We also extended the variance-component test SKAT using a geometric interpretation. Unlike the burden tests, the is no burden calculated in this test: the distribution of the genetic effects in the gene is compared to a null distribution. SKAT is based on a linear mixed model where the random effects correspond to the genetic effects.  
 Permutations are used to compute the p-values with the arguments *perm.target* and *perm.max*. *perm.target* corresponds to the number of times a permutated statistics should be greater than the observed statistics, while *perm.max* corresponds to the maximum number of permutations to perform. A sequential procedure is used for these permutations: the program stops when any of these two values is reached.  
 Two types of p-values estimations are then computed: if *perm.target* is reached, the p-value is computed as *perm.target* divided by the number of permutations performed to reach this value; if *perm.max* is reached before *perm.target* (that is, for pretty small p-values), the SKAT small sample procedure is used, and p-values are estimated using a chi-square distribution based on statistics moments obtained from the permutations.  
-In this function, covariates can be included using the argument *Pi*. This arguments should be a matrix containing the probabilities that each individual belongs to each group, with one row per individul and one column per group of individuals. It can be directly computed using the function **Pi.matrix()** which has the same arguments *group*, *data*, *formula* and *ref.level* than **burden.mlogit()**. This function uses a regression with the *group* as the dependant variable and the covariates as the independant variables, and returns the adjusted probabilities. *ref.level* won't have any impact on the probability of each individual, but is needed to perform the regression.  
 An example of this function and how to use it with SKAT is shown below. In this example, only 500 permutations are perfromed at maximum, but please use a more important value of perm.max to get more accurate estimations of p-values.
 
 ```{r}
-#Compute the Pi matrix with the covariate sex
-Pi.matrix.LCT <- Pi.matrix(group=x1@ped$pop, data=covar, formula= ~ sex, ref.level="CEU")
-
-#SKAT with the covariates
-SKAT(x1, group=x1@ped$pop, Pi=Pi.matrix.LCT, perm.max = 500)
+#SKAT
+SKAT(x1, group=x1@ped$pop, perm.max = 500)
 ```
 
 

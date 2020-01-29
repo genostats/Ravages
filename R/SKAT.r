@@ -1,5 +1,5 @@
 SKAT <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, 
-                 Pi, weights = (1-x@snps$maf)**24, maf.threshold = 0.5, 
+                 weights = (1-x@snps$maf)**24, maf.threshold = 0.5, 
                  perm.target = 100, perm.max = 5e4, debug = FALSE) {
 
   which.snps <- (x@snps$maf <= maf.threshold) & (x@snps$maf > 0)
@@ -7,10 +7,8 @@ SKAT <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region,
   group <- as.factor(group)
 
   # matrice des proba d'appartenir au group               
-  if(missing(Pi)) {
-    a <- table(group)/nrow(x)
-    Pi <- matrix( a, ncol = nlevels(group), nrow = nrow(x), byrow = TRUE)
-  }
+  a <- table(group)/nrow(x)
+  Pi <- matrix( a, ncol = nlevels(group), nrow = nrow(x), byrow = TRUE)
 
   B <- .Call('skat', PACKAGE = "Ravages", x@bed, which.snps, genomic.region, group, Pi, weights, perm.target, perm.max);
 
