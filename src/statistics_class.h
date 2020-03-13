@@ -261,8 +261,8 @@ class Stats {
   
       // exp(x) = (N-M)! n1 ! ... nk ! / N! avec M le nb d'individus avec variants rares 
       // N le nb total d'individus et les ni = la taille des groupes où on les répartis
-      double x = lgamma( (double) no_var.size() + 1.0 ) - lgamma( (double) ncol + 1.0 ) ;
-      for(int n : disp) x += lgamma( (double) n + 1.0 ) ;
+      double x = std::lgamma( (double) no_var.size() + 1.0 ) - lgamma( (double) ncol + 1.0 ) ;
+      for(int n : disp) x += std::lgamma( (double) n + 1.0 ) ;
       double p_eq(0), p_geq(0);
   
       // on va générer toutes les combinaisons pour les individus de some_var
@@ -282,7 +282,7 @@ class Stats {
         // on calcule la stat et la proba de cette stat
         compute_stats(); 
         double log_p = x;
-        for(double d : disp) log_p -= gamma( (double) d + 1.0 ) ;
+        for(double d : disp) log_p -= std::lgamma( (double) d + 1.0 ) ;
         if( stats[group - 1] == obs ) p_eq += exp(log_p);
         if( stats[group - 1] >= obs ) p_geq += exp(log_p);
         
