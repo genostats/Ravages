@@ -78,7 +78,8 @@ class Stats {
 
   // permutation aléatoire des groupes d'individus
   // met à jour le vecteur ind_group 
-  void permute_pheno() {
+  // !!! Virtuelle pour permettre de l'overrid pour faire du (parametric) bootstrap au lieu de faire des permutations !!! 
+  virtual void permute_pheno() {
     for(int i = ncol - 1; i > 0; i--) {
       int j = (int) std::floor(i*R::runif(0,1));
       int tmp = ind_group[i];
