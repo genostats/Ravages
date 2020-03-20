@@ -1,4 +1,4 @@
-SKAT.liu <- function(x, group=x@ped$pheno, genomic.region = x@snps$genomic.region, weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, ref.level, data = NULL, formula = NULL){
+SKAT.liu <- function(x, group=x@ped$pheno, genomic.region = x@snps$genomic.region, weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, ref.level, data = NULL, formula = NULL, useskew = TRUE){
   x@snps$weights <- weights
   x <- select.snps(x, maf <= maf.threshold & maf > 0)
   genomic.region <- as.factor(genomic.region)
@@ -31,17 +31,17 @@ SKAT.liu <- function(x, group=x@ped$pheno, genomic.region = x@snps$genomic.regio
   ymp = YY -  pi
   
   #P-value for all regions
-  res.allregions <- sapply(levels(genomic.region), function(reg) get.pvalue.genomic.region(x, region = reg, P1 = P1, ymp = ymp, n = n))
+  res.allregions <- t(sapply(levels(genomic.region), function(reg) get.pvalue.genomic.region(x, region = reg, P1 = P1, ymp = ymp, n = n, useskew = useskew)))
   return(res.allregions)
 } 
   
 
 #P-value by genomic region
-get.pvalue.genomic.region <- function(x, region, P1, ymp, n){
+get.pvalue.genomic.region <- function(x, region, P1, ymp, n, useskew = TRUE){
   ngpe <- length(n)
   x.genomic.region <- select.snps(x, genomic.region == region)
   #Matrix of weighted genotypes
-  G <- as.matrix(x.genomic.region) %*% diag(x.genomic.region@snps$weights)
+  G <- gaston::as.matrix(x.genomic.region) %*% diag(x.genomic.region@snps$weights)
   #Kernel matrix
   K <- G %*% t(G)
   K.L <- lapply(1:ngpe, function(gpe) (1/n[gpe])*K)
@@ -51,8 +51,11 @@ get.pvalue.genomic.region <- function(x, region, P1, ymp, n){
   #Stat de test
   Q <- as.vector(ymp) %*% K.bloc %*% as.vector(ymp)
   
+  #Moments
+  M <- moments(A = K.bloc, P = P1)
+  
   #P-valeur
-  pval <- p.valeur(A = K.bloc, P = P1, Q = Q)
+  pval <- p.valeur(Q = Q, moments = M, useskew = useskew)
   
   return(c(stat = Q, p.value = pval))
 }
