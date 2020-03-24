@@ -1,4 +1,4 @@
-moments <- function(A, P){
+moments1 <- function(A, P){
   A1 <- A %*% P
   # on pourrait utiliser t(G) %*% P %*% G  [ si A = GG' ]
   A2 <- A1 %*% A1
@@ -44,20 +44,8 @@ p.valeur <- function(Q, moments, useskew) {
   Q.norm <- (Q-moments$mu)/moments$sigma
   Q.norm1 <- Q.norm*sigmaX + muX
   
-  #Calcul de la p-valeur suivant si l et d sont positifs
-  #if(d>=0 & l>=0)  
+  #Calcul de la p-valeur 
   p.value <- pchisq(Q.norm1, df=l, ncp=d, lower.tail=FALSE)
-  #else p.value <- p.valeur.withoutskew(Q = Q, moments = moments) ##Solution de secours
   return(p.value)
 }
 
-###Methode basée que sur les 3 moments
-p.valeur.withoutskew.SKAT <- function(Q, moments){
-  #Degre de liberte
-  l <- ifelse(moments$kurtosis > 0, moments$kurtosis, 1e5)
-  #Valeur du Chi-Deux
-  chi2val <- l + sqrt(2 * l/moments$sigma) * (Q - moments$mu)
-  #P-valeur associee
-  p.value <- pchisq(chi2val, df=l, lower.tail=FALSE)
-  return(p.value) 
-}

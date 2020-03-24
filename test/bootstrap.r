@@ -1,4 +1,4 @@
-source("grandes_matrices.r")
+source("~/working_directory/Ravages/test/grandes_matrices.r")
 
 # ymp = y - pi^
 
@@ -50,7 +50,7 @@ bootstrap <- function(B, pi, X, K, n) {
 
 
 # test des fonctions cpp
-Rcpp::sourceCpp("bootstrap.cpp")
+Rcpp::sourceCpp("~/working_directory/Ravages/test/bootstrap.cpp")
 bootstrap_cpp <- function(B, pi, X, K) {
   W <- W.mat(pi[,-1,drop=FALSE])
   XX <- block.diag( rep(list(X), ncol(pi) - 1) )

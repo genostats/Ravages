@@ -1,9 +1,12 @@
-SKAT.liu <- function(x, group=x@ped$pheno, genomic.region = x@snps$genomic.region, weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, ref.level, data = NULL, formula = NULL, useskew = TRUE){
+SKAT.liu <- function(x, NullObject, genomic.region = x@snps$genomic.region, 
+                     weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
+                     useskew = TRUE){
   x@snps$weights <- weights
   x <- select.snps(x, maf <= maf.threshold & maf > 0)
   genomic.region <- as.factor(genomic.region)
-  if(!is.factor(group)) stop("group should be a factor")
-  if(ref.level != levels(group)[1]) stop("ref.level should be the first level of group")
+  
+  group <- NullObject$group
+  
   lev <- levels(group) 
   #Number of groups and individuals
   ngpe <- nlevels(group) ; nind <- length(group)
@@ -11,24 +14,18 @@ SKAT.liu <- function(x, group=x@ped$pheno, genomic.region = x@snps$genomic.regio
   n <- as.vector(table(group))
   
   #Matrix pi
-  if(!is.null(data)){
-    pi <- Ravages:::Pi.matrix(group, data=data, formula=formula, ref.level=ref.level)
-    if(!is.null(formula)) X <- cbind(1, data[, all.vars(formula)])
-    else X <- cbind(1, data)
-  }
-  if(is.null(data)){
-    pi <- matrix(rep(n/nind, each=nind), ncol=ngpe)
-    X <- matrix(1, ncol=1, nrow=nind)
-  }
+  Pi <- NullObject$Pi.data
+  #Matrix X
+  X <- NullObject$X
   
-  #Matrix of pi in all groups expect ref.level
-  P0 <- P.mat( matrix(pi[, -1], ncol=ngpe-1), X)
-  #Matrix of pi in all groups
-  P1 <- P.mat2(pi, X)
+  #Matrix of Pi in all groups expect first one (by default)
+  P0 <- P.mat( matrix(Pi[, -1], ncol=ngpe-1), X)
+  #Matrix of Pi in all groups
+  P1 <- P.mat2(Pi, X)
 
-  #Matrix of (YY - pi^) with YY indicatrice variable in each group 
+  #Matrix of (YY - Pi^) with YY indicatrice variable in each group 
   YY <- sapply(lev, function(l) as.numeric(group == l))
-  ymp = YY -  pi
+  ymp = YY -  Pi
   
   #P-value for all regions
   res.allregions <- t(sapply(levels(genomic.region), function(reg) get.pvalue.genomic.region(x, region = reg, P1 = P1, ymp = ymp, n = n, useskew = useskew)))
@@ -52,7 +49,8 @@ get.pvalue.genomic.region <- function(x, region, P1, ymp, n, useskew = TRUE){
   Q <- as.vector(ymp) %*% K.bloc %*% as.vector(ymp)
   
   #Moments
-  M <- moments(A = K.bloc, P = P1)
+  #M <- moments1(A = K.bloc, P = P1)
+  M <- .Call("moments", PACKAGE = "Ravages", K.bloc, P1)
   
   #P-valeur
   pval <- p.valeur(Q = Q, moments = M, useskew = useskew)

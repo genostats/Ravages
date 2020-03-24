@@ -1,5 +1,5 @@
 library(Ravages);
-source("bootstrap.r")
+source("~/working_directory/Ravages/test/bootstrap.r")
 options(width=150)
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
 x@ped[,c("pop", "superpop")] <- LCT.matrix.pop1000G[,c("population", "super.population")]

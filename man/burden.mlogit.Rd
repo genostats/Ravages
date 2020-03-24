@@ -67,15 +67,15 @@ x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.sn
 
 #run burden test WSS, using the 1000Genome population as "outcome"
 #The population is available in the object LCT.pop
-burden.mlogit(x1, LCT.pop, burden = "WSS", ref.level="CEU", get.OR.value=TRUE)
+burden.mlogit(x1, x1@ped$pop, burden = "WSS", ref.level="CEU", get.OR.value=TRUE)
 
 #Simulation of covariates
 #with different probabilities in GBR/CEU/FIN and IBS/TSI
-covar <- data.frame(sex=c(sample(0:1, sum(table(LCT.pop)[c("CEU", "GBR", "FIN")]),TRUE,c(0.2,0.8)), 
-                          sample(0:1, sum(table(LCT.pop)[c("TSI", "IBS")]), TRUE, c(0.8,0.2))), 
-                     u=runif(length(LCT.pop)))
+covar <- data.frame(sex=c(sample(0:1, sum(table(x1@ped$pop)[c("CEU", "GBR", "FIN")]),TRUE,c(0.2,0.8)), 
+                          sample(0:1, sum(table(x1@ped$pop)[c("TSI", "IBS")]), TRUE, c(0.8,0.2))), 
+                     u=runif(nrow(x1)))
               
 #with the covariate sex
-burden.mlogit(x1, LCT.pop, burden = "WSS", ref.level="CEU", get.OR.value=TRUE,
+burden.mlogit(x1, x1@ped$pop, burden = "WSS", ref.level="CEU", get.OR.value=TRUE,
               data=covar, formula = ~ sex)
 }   
