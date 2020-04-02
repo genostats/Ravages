@@ -1,24 +1,17 @@
-SKAT.bootstrap <- function(x, NullObject, genomic.region = x@snps$genomic.region, 
+SKAT.permutations <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomic.region, 
                  weights = (1-x@snps$maf)**24, maf.threshold = 0.5, 
                  perm.target = 100, perm.max = 5e4, debug = FALSE,
                  estimation.pvalue = "kurtosis") {
 
   which.snps <- (x@snps$maf <= maf.threshold) & (x@snps$maf > 0)
   genomic.region <- as.factor(genomic.region)
+  group <- as.factor(group)
 
-  group <- NullObject$group
-  Pi <- NullObject$Pi.data
-  X <- NullObject$X 
+  # matrice des proba d'appartenir au group               
+  a <- table(group)/nrow(x)
+  Pi <- matrix( a, ncol = nlevels(group), nrow = nrow(x), byrow = TRUE)
 
-  # matrice U = Id - WX (X'WX)^{-1} X'W pour le bootstrap
-  W <- W.mat(Pi[,-1,drop=FALSE])
-  XX <- block.diag( rep(list(X), ncol(Pi) - 1) )
-  WX <- W %*% XX
-  XWX <- t(XX) %*% WX
-  U <- -(WX %*% solve(XWX, t(XX)))
-  diag(U) <- diag(U)+1
-
-  B <- .Call('skat_bootstrap', PACKAGE = "Ravages", x@bed, which.snps, genomic.region, group, Pi, weights, U, perm.target, perm.max);
+  B <- .Call('skat', PACKAGE = "Ravages", x@bed, which.snps, genomic.region, group, Pi, weights, perm.target, perm.max);
 
   names(B)[5] <- "p.perm"
 
@@ -34,8 +27,8 @@ SKAT.bootstrap <- function(x, NullObject, genomic.region = x@snps$genomic.region
   B$stat.var  <- S2
   B$stat.skew <- m3/S2**1.5
   B$stat.kurt <- m4/S2**2
-  
-  B$p.chi2 <- as.vector(mapply(p.valeur, Q = B$stat, mu = B$M1, sigma = sqrt(B$stat.var), skewness = B$stat.skew, kurtosis = B$stat.kurt - 3, estimation.pvalue = estimation.pvalue))
+
+ B$p.chi2 <- as.vector(mapply(p.valeur, Q = B$stat, mu = B$M1, sigma = sqrt(B$stat.var), skewness = B$stat.skew, kurtosis = B$stat.kurt - 3, estimation.pvalue = estimation.pvalue))
 
   names(B)[6] <- "stat.mean"
   B$p.value <- ifelse(B$nb.perm < perm.max, B$p.perm, B$p.chi2) 
