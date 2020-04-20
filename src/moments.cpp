@@ -2,10 +2,9 @@
 using namespace Rcpp;
 
 //[[Rcpp::export]]
-List moments(NumericMatrix A, NumericMatrix P){
-  Eigen::Map<Eigen::MatrixXd> a( as< Eigen::Map<Eigen::MatrixXd> >(A) );
+NumericVector moments(const Eigen::MatrixXd & g, NumericMatrix P){
   Eigen::Map<Eigen::MatrixXd> p( as< Eigen::Map<Eigen::MatrixXd> >(P) );
-  Eigen::MatrixXd A1 = a*p;
+  Eigen::MatrixXd A1 = g.transpose()*p*g;
   Eigen::MatrixXd A2 = A1*A1;
   NumericVector c1(4);
   c1[0] = A1.trace();
@@ -35,18 +34,17 @@ List moments(NumericMatrix A, NumericMatrix P){
   double beta1 = sqrt(8) * s1;
   double beta2 = 12*s2;
   
-  List L = List::create(_["mu"] = c1[0], _["sigma"] = sigmaQ, _["skewness"] = beta1, _["kurtosis"] = beta2);
-  
-  return L;
+  NumericVector M = NumericVector::create(_["mu"] = c1[0], _["sigma"] = sigmaQ, _["skewness"] = beta1, _["kurtosis"] = beta2);
+  return M;
 }
 
-RcppExport SEXP moments(SEXP ASEXP, SEXP PSEXP) {
+RcppExport SEXP moments(SEXP aSEXP, SEXP PSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type A(ASEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type a(aSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type P(PSEXP);
-    rcpp_result_gen = Rcpp::wrap(moments(A, P));
+    rcpp_result_gen = Rcpp::wrap(moments(a, P));
     return rcpp_result_gen;
 END_RCPP
 }

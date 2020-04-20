@@ -7,7 +7,7 @@ importFrom("utils", "read.table", "write.table", "head", "tail")
 importFrom("Rcpp", "evalCpp") # just to avoid << function 'enterRNGScope' not provided by package 'Rcpp' >> error
 importFrom("RcppParallel", "setThreadOptions", "defaultNumThreads")
 importFrom("gaston", "rbind", "cbind", "select.snps", "select.inds", "set.stats", "is.autosome", "as.bed.matrix")
-
+importFrom("parallel", "mclapply")
 importFrom("mlogit", "mFormula", "mlogit", "mlogit.data")
 useDynLib(Ravages)
 
@@ -17,6 +17,6 @@ export(Jaccard)
 export(filter.rare.variants)
 export(burden.mlogit)
 export(genotypic.freq, random.bed.matrix, GRR.matrix)
-export(SKAT.NullObject, SKAT, SKAT.liu, SKAT.bootstrap)
+export(SKAT.NullObject, SKAT, SKAT.theoretical, SKAT.bootstrap, SKAT.permutations)
 export(bed.matrix.split.genomic.region)
 export(rbm.haplos.freqs, rbm.haplos.thresholds)

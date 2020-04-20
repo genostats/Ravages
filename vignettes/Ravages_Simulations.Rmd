@@ -165,14 +165,19 @@ x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, nb.causal = 30, h2=c(0.01,0.01,0
 #Filtering of rare variants: MAF<1% in the entire sample
 x.filter <- filter.rare.variants(x, maf.threshold = 0.01, filter="whole")
 
-#Power of SKAT using the multinomial regression: each group is
-#considered separately; significance level=5%
-skat <- SKAT(x.filter, perm.max = 500)$p.value
-mean(skat<0.05)
+#Power of SKAT with each group considered separately
+#significance level=5%
+#Null model
+skat.null.3gps <- SKAT.NullObject(factor(x.filter@ped$pheno))
+skat.3gps <- SKAT(x.filter, skat.null.3gps, 
+                  params.sampling = list(perm.target = 100, perm.max = 1000))
+mean(skat.3gps$p.value<0.05)
 #Considering all the cases as one group and compare them to the controls
-pheno.pooled <- ifelse(x.filter@ped$pheno == 0, 0, 1)
-skat.pooled <- SKAT(x.filter, group=pheno.pooled, perm.max = 500)$p.value
-mean(skat.pooled<0.05)
+x.filter@ped$pheno.pooled <- ifelse(x.filter@ped$pheno == 0, 0, 1)
+skat.null.2gps <- SKAT.NullObject(factor(x.filter@ped$pheno.pooled))
+skat.2gps <- SKAT(x.filter, skat.null.2gps, 
+                  params.sampling = list(perm.target = 100, perm.max = 1000))
+mean(skat.2gps$p.value<0.05)
 
 #Power of the burden test CAST comparing each group of cases to the controls
 #at a 5% significance threshold

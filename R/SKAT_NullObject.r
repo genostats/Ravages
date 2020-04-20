@@ -15,6 +15,7 @@ SKAT.NullObject <- function(group, data, formula){
     Pi.data <- Pi.matrix(group, data, formula, ref.level)
     X <- cbind(1, data[, all.vars(formula), drop=FALSE]) 
   }
-  
-  return(list(Pi.data = Pi.data, X = X, group = group))
+  #Compute matrix of var(y - ^pi)
+  P1 <- Ravages:::P.mat2(Pi.data, X)  
+  return(list(Pi.data = Pi.data, X = X, group = group, P1 = P1))
 }

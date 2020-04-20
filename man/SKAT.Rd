@@ -5,7 +5,8 @@
 \usage{
 SKAT(x, NullObject, genomic.region = x@snps$genomic.region, 
      weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
-     method = "size.based", params.bootstrap)
+     get.moments = "size.based", estimation.pvalue = "kurtosis",
+     params.sampling, cores = 10, debug = FALSE)
 }
 \arguments{
   \item{x}{ A bed.matrix }
@@ -13,15 +14,25 @@ SKAT(x, NullObject, genomic.region = x@snps$genomic.region,
   \item{genomic.region}{ A factor defining the genomic region of each variant }
   \item{weights}{ A vector with the weight of each variant. By default, the weight of each variant is inversely proportionnal to its MAF, as it was computed in the original SKAT method}
   \item{maf.threshold}{ The MAF above which variants are removed (default is to keep all variants)}
-  \item{method}{ Which method to use among "size.based", "bootstrap", "liu", "liu.kurtosis". By default "size.based" that will choose the method depending on sample size (see \code{details}) }
-  \item{params.bootstrap}{ A list containing the elements "perm.target", "perm.max", "debug" if \code{method = "boostrap"} }
+  \item{get.moments}{ How to estimate the moments to compute the p-values among "size.based", "bootstrap", "permutations", or "theoretical". By default "size.based" that will choose the method depending on sample size (see \code{details}) }
+  \item{estimation.pvalue}{ Whether to use the skewness ("skewness") or the kurtosis ("kurtosis") for the chi-square approximation }
+  \item{params.bootstrap}{ A list containing the elements "perm.target", "perm.max", "debug". Only needed if \code{get.moments = "boostrap"} or \code{get.moments = "permutations" } }
+  \item{cores}{ How many cores to use for moments computation, set at 10 by default }
+  \item{debug}{ Whether to return the mean, standard deviation, skewness and kurtosis of the statistics}
 }
 \details{
-  If \code{method} is not specified, bootstrap will be used if the sample size is lower than 2000, and the "liu" method otherwised.
+  The p-value is calculated using a chi-square approximation based on the statistics' moments. The user has to choose how to compute these moments (argument \code{get.moments}), and which moments to use for the chi-square approximation (argument \code{estimation.pvalue}):  
+  The moments can be computed either using a sampling procedure (\code{"permutations"} if there are no covariates, or \code{"bootstrap"} otherwise), or using theoretical moments computed as in Liu et al. 2008 (\code{"theoretical"}).
+  If \code{get.moments = "size.based"}, the sampling procedure will be used for sample sizes lower than 2000, and the theoretical calculations otherwise.  
+
+  To estimate the p-values, etiher the first three moments are used (\code{estimation.pvalue = "skewness"}), or the moments 1, 2 and 4 are used (\code{estimation.pvalue = "kurtosis"}). 
+
+  If \code{get.moments = "theoretical"} and \code{estimation.pvalue = "skewness"}, it corresponds to \code{method = "liu"} in the SKAT package.
+  If \code{get.moments = "theoretical"} and \code{estimation.pvalue = "kurtosis"}, it corresponds to \code{method = "liu.mod"} in the SKAT package.
   
-  For small samples, p-values estimation is based on bootstrap sampling and a sequential procedure: permutated statistics are computed and each one is compared to the observed statistics.
-  This method requires the arguments \code{perm.target}, \code{perm.max} and \code{debug} that should be given a list to \code{params.bootstrap}.
-  If \code{params.bootstrap} is not specified, perm.target will be set at 100, perm.max at 1e4, and debug at FALSE.
+  For small samples, p-values estimation is based on sampling and a sequential procedure: permutated statistics are computed and each one is compared to the observed statistics.
+  This method requires \code{perm.target} and \code{perm.max} that should be given as a list to \code{params.bootstrap}.
+  If \code{params.bootstrap} is not specified, perm.target will be set at 100, perm.max at 5e4.
   The boostrap progam stops when either \code{perm.target} or \code{perm.max} is reached.  
   P-values are then computed using a mixed procedure:   
 
@@ -29,30 +40,21 @@ SKAT(x, NullObject, genomic.region = x@snps$genomic.region,
 
   if \code{perm.max} is reached, the SKAT small sample procedure is used, and p-values are approximated using a chi-square distributions based on statistics' moments 1, 2 and 4 computed from the permutated values.     
 
-  If \code{debug}==TRUE, more informations about the estimated statistics moments are given.  
-
-  For large samples (>2000), the method from Liu et al. 2008 is used where p-values are estimated using a chi-square approximation from moment's calculation of the observed matrices used in the statistics. This is equivalent to "liu" in SKAT package.  
-  
-  If \code{method = "liu.kurtosis"}, the kurtosis is used instead of skewness in the chi-square approximation. This is equivalent to "liu.mod" in SKAT package. 
+  If \code{debug=TRUE}, more informations about the estimated statistics moments are given.  
 }
 \value{
-A data frame containing for each genomic region at least: 
+A data frame containing for each genomic region: 
   \item{stat}{ The observed statistics}
-  \item{p.value}{ The p-value of the test. If \code{method = "bootstrap"}, \code{p.perm} if \code{perm.target} is reached, \code{p.chi2} if \code{perm.max} is reached. }
+  \item{p.value}{ The p-value of the test}
 
-If \code{method = "bootstrap"}, additional fields are present:
+If \code{get.moments = "bootstrap"} or \code{get.moments = "permutations"}, additional fields are present:
   \item{p.perm}{ The p-value computed by permutations: number of times permutated is greater than observed statistics divided by the total number of permutations performed}
   \item{p.chi2}{ The p-value computed by the chi-square approximation using the SKAT small sample procedure}
 
-Futhermore, if \code{debug}==TRUE, other informations are given about the moments estimation:
+If \code{debug = TRUE}, the mean, standard deviation, skewness and kurtosis are also returned, as well as for the sampling procedure:
   \item{nb.gep}{ The number of times a permutated statistics is equal or greater than the observed statistics \code{stat}}
   \item{nb.eq}{ The number of times a permutated statistics is equal to the observed statistics \code{stat}}
   \item{nb.perms}{ The total number of simulations performed }
-  \item{stat.mean}{ The mean of the permutated statistics}
-  \item{M2, M3, M4}{ The statistics' moments 2, 3 and 4}
-  \item{stat.var}{ The variance of the permutated statistics}
-  \item{stat.skew}{ The skweness of the permutated statistics}
-  \item{stat.kurt}{ The kurtosis of the permutated statistics}
 }
 \seealso{ \code{\link{SKAT.NullObject}}, \code{\link{SKAT.liu}}, \code{\link{SKAT.bootstrap}}}
 \references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;

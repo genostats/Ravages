@@ -31,18 +31,18 @@ SKAT.bootstrap <- function(x, NullObject, genomic.region = x@snps$genomic.region
   S2 <- M2 - M1**2 # variance
   m3 <- M3 - 3*S2*M1 - M1**3 # 3e moment
   m4 <- M4 - 4*m3*M1 - 6*S2*M1**2 - M1**4 # 4e moment
-  B$stat.var  <- S2
-  B$stat.skew <- m3/S2**1.5
-  B$stat.kurt <- m4/S2**2
+  B$sigma  <- sqrt(S2)
+  B$skewness <- m3/S2**1.5
+  B$kurtosis <- m4/S2**2
   
-  B$p.chi2 <- as.vector(mapply(p.valeur, Q = B$stat, mu = B$M1, sigma = sqrt(B$stat.var), skewness = B$stat.skew, kurtosis = B$stat.kurt - 3, estimation.pvalue = estimation.pvalue))
+  B$p.chi2 <- as.vector(mapply(p.valeur.moments.liu, Q = B$stat, mu = B$M1, sigma = B$sigma, skewness = B$skewness, kurtosis = B$kurtosis - 3, estimation.pvalue = estimation.pvalue))
 
-  names(B)[6] <- "stat.mean"
+  names(B)[6] <- "mean"
   B$p.value <- ifelse(B$nb.perm < perm.max, B$p.perm, B$p.chi2) 
  
   B <- as.data.frame(B, row.names = levels(genomic.region))
   if(debug) 
-    B
+    B[,!(names(B) %in% c("M2", "M3", "M4"))]
   else
     B[ , c("stat", "p.perm", "p.chi2", "p.value") ]
 }

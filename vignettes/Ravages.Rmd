@@ -160,13 +160,21 @@ burden.mlogit(burden=WSS.score, group=x1@ped$pop, ref.level="CEU")
 
 ###SKAT
 We also extended the variance-component test SKAT using a geometric interpretation. Unlike the burden tests, the is no burden calculated in this test: the distribution of the genetic effects in the gene is compared to a null distribution. SKAT is based on a linear mixed model where the random effects correspond to the genetic effects.  
-Permutations are used to compute the p-values with the arguments *perm.target* and *perm.max*. *perm.target* corresponds to the number of times a permutated statistics should be greater than the observed statistics, while *perm.max* corresponds to the maximum number of permutations to perform. A sequential procedure is used for these permutations: the program stops when any of these two values is reached.  
-Two types of p-values estimations are then computed: if *perm.target* is reached, the p-value is computed as *perm.target* divided by the number of permutations performed to reach this value; if *perm.max* is reached before *perm.target* (that is, for pretty small p-values), the SKAT small sample procedure is used, and p-values are estimated using a chi-square distribution based on statistics moments obtained from the permutations.  
-An example of this function and how to use it with SKAT is shown below. In this example, only 500 permutations are perfromed at maximum, but please use a more important value of perm.max to get more accurate estimations of p-values.
+To compute the p-values, a chi-square approximation is used based on the statistics' moments. The moments can either be estimated using a sampling procedure,or be analytically computed using the method from Liu et al. 2008.  
+If the sample size is lower than 2000, we recommand to use the sampling procedure. If no covariates are present, a simple permutation procedure can be used (*get.moments = "permutations"*), otherwise, a boostrap procedure is used (*get.moments = "bootstrap"*). For those two situations, a sequential is used to compute the p-values: permutated statistics are computed and each one is compared to the observed statistics. The sampling procedure stops when either *perm.target* (the number of times a permutated statistics should be greater than the observed statistics) or *perm.max* is reached (the maximum number of permutations to perform). P-values are then computed in two different ways: if *perm.target* is reached, the p-value is computed as *perm.target* divided by the number of permutations performed to reach this value; if *perm.max* is reached before *perm.target* (that is, for pretty small p-values), p-values are computed using the chi-square approximation based on moments estimated from the permutated statistics. *perm.target* and *perm.max* should be given as a list to the argument *params.sampling* of SKAT.  
+If the sample size is bigger than 2000, the analytical calculation from Liu et al. can be used to compute the theoretical moments.  
+It is possible to clearly ask for a specific method to compute the moments using *get.moments = "permutations"*, *"bootstrap"* or *"theoretical"*. If *get.moments = "size.based"*, the method will be choosed based on the sample size. For each one of these methods, the chi-square approximation can be based on the first thre moments (*estimation.pvalue = "skewness"*), or on moments 1, 2 and 4 to have a more precise estimation (*estimation.pvalue = "kurtosis"*). If *get.moments = "theoretical"* and *estimation.pvalue = "skewness"*, it is equivalent to the "liu" method in the SKAT package, and if *estimation.pvalue = "kurtosis"*, it corresponds to the "liu.mod" methid in the SKAT package. If *debug = TRUE*, the statistics' moments will be returned in addition to the p-values.   
+If the theoretical method from Liu et al. are used, it is possible to parallelise the calculations using the argument *cores* set at 10, by default.
+An example of the SKAT function by specifying the "permutations" or "theoretical" method is shown. In this example, only 1000 permutations are perfromed at maximum for the permutations procedure, but please use a more important value of perm.max to get more accurate estimations of p-values.
 
 ```{r}
-#SKAT
-SKAT(x1, group=x1@ped$pop, perm.max = 500)
+#Null model
+x1.null <- SKAT.NullObject(x1@ped$pop)
+#Permutations
+SKAT(x1, x1.null, get.moments = "permutations", debug = TRUE,
+     params.sampling = list(perm.target = 100, perm.max = 1000))
+#Theoretical 
+SKAT(x1, x1.null, get.moments = "theoretical", debug = TRUE)
 ```
 
 

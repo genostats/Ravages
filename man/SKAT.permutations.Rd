@@ -1,12 +1,12 @@
-\name{SKAT.bootstrap}
-\alias{SKAT.bootstrap}
+\name{SKAT.permutations}
+\alias{SKAT.permutations}
 \title{ Multi group SKAT test using bootstrap sampling }
 \description{ Peforms SKAT on two or more groups of individuals using bootstrap sampling}
 \usage{
-  SKAT.bootstrap(x, NullObject, genomic.region = x@snps$genomic.region,
-                 weights = (1-x@snps$maf)**24, maf.threshold = 0.5,
-                 perm.target = 100, perm.max = 5e4, debug = FALSE,
-                 estimation.pvalue = "kurtosis")
+SKAT.permutations(x, NullObject, genomic.region = x@snps$genomic.region,
+                  weights = (1-x@snps$maf)**24, maf.threshold = 0.5,
+                  perm.target = 100, perm.max = 5e4, debug = FALSE,
+                  estimation.pvalue = "kurtosis")
 }
 \arguments{
   \item{x}{ A bed.matrix }
@@ -20,7 +20,7 @@
   \item{estimation.pvalue}{ Whether to use the skewness ("skewness") or the kurtosis ("kurtosis") for the chi-square approximation }
 }
 \details{
-  P-values estimation is based on bootstrap sampling and a sequential procedure: permutated statistics are computed and each one is compared to the observed statistics.
+  P-values estimation is based on permutations sampling and a sequential procedure: permutated statistics are computed and each one is compared to the observed statistics.
   The boostrap progam stops when either \code{perm.target} or \code{perm.max} is reached.
   P-values are then computed using a mixed procedure:
 
@@ -30,7 +30,7 @@
 
   If \code{debug=TRUE}, more informations about the estimated statistics moments are given.  
   
-  This function is used by \code{SKAT} when the sample size is smaller than 2000 and covariates are present.
+  This function is used by \code{SKAT} when the sample size is smaller than 2000 and no covariates are present.
 }
 \value{
 A data frame containing for each genomic:
