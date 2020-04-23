@@ -3,7 +3,12 @@
 #and thresholds corresponding to the desired prevalence
 #p.causal=P(causal variant) ; p.protect=P(protective variant | causal variant)
 
-rbm.haplos.thresholds <- function(haplos, weights = -0.4*log10(colMeans(haplos)), maf.threshold = 0.01, nb.causal, p.protect = 0, h2, prev, normal.approx = TRUE, size, replicates, rep.by.causal) {
+rbm.haplos.thresholds <- function(haplos, weights = -0.4*log10(colMeans(haplos)), maf.threshold = 0.01, 
+             nb.causal, p.protect = 0, h2, prev, normal.approx = TRUE, size, replicates, rep.by.causal) {
+
+  if( (replicates %% rep.by.causal) != 0 ) 
+    stop("replicates should be a multiple of rep.by.causal")
+
   if(length(h2) != length(prev) | length(h2) != length(size) | length(prev) != length(size)) stop("h2 and prev should have same size as size")
   if(length(maf.threshold)==1){
     maf.threshold <- rep(maf.threshold, length(h2))
