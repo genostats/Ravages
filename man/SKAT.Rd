@@ -14,9 +14,9 @@ SKAT(x, NullObject, genomic.region = x@snps$genomic.region,
   \item{genomic.region}{ A factor defining the genomic region of each variant }
   \item{weights}{ A vector with the weight of each variant. By default, the weight of each variant is inversely proportionnal to its MAF, as it was computed in the original SKAT method}
   \item{maf.threshold}{ The MAF above which variants are removed (default is to keep all variants)}
-  \item{get.moments}{ How to estimate the moments to compute the p-values among "size.based", "bootstrap", "permutations", or "theoretical". By default "size.based" that will choose the method depending on sample size (see \code{details}) }
+  \item{get.moments}{ How to estimate the moments to compute the p-values among "size.based", "bootstrap", "permutations", or "theoretical" for categorial phenotypes (2 or more groups of individuals). By default "size.based" that will choose the method depending on sample size (see \code{details}) }
   \item{estimation.pvalue}{ Whether to use the skewness ("skewness") or the kurtosis ("kurtosis") for the chi-square approximation }
-  \item{params.bootstrap}{ A list containing the elements "perm.target", "perm.max", "debug". Only needed if \code{get.moments = "boostrap"} or \code{get.moments = "permutations" } }
+  \item{params.sampling}{ A list containing the elements "perm.target", "perm.max", "debug". Only needed if \code{get.moments = "boostrap"} or \code{get.moments = "permutations" } }
   \item{cores}{ How many cores to use for moments computation, set at 10 by default }
   \item{debug}{ Whether to return the mean, standard deviation, skewness and kurtosis of the statistics}
 }
@@ -41,6 +41,8 @@ SKAT(x, NullObject, genomic.region = x@snps$genomic.region,
   if \code{perm.max} is reached, the SKAT small sample procedure is used, and p-values are approximated using a chi-square distributions based on statistics' moments 1, 2 and 4 computed from the permutated values.     
 
   If \code{debug=TRUE}, more informations about the estimated statistics moments are given.  
+
+  If \code{SKAT.NullObject.continuous} has been used to generate \code{NullObject}, the method from Liu et al. will be used to compute the p-value for the continuous phenotype, but \code{estimation.pvalue} can be set at "skewness" or "kurtosis".  
 }
 \value{
 A data frame containing for each genomic region: 
@@ -56,7 +58,7 @@ If \code{debug = TRUE}, the mean, standard deviation, skewness and kurtosis are 
   \item{nb.eq}{ The number of times a permutated statistics is equal to the observed statistics \code{stat}}
   \item{nb.perms}{ The total number of simulations performed }
 }
-\seealso{ \code{\link{SKAT.NullObject}}, \code{\link{SKAT.liu}}, \code{\link{SKAT.bootstrap}}}
+\seealso{ \code{\link{SKAT.NullObject}}, \code{\link{SKAT.theoretical}}, \code{\link{SKAT.bootstrap}}, \code{\link{SKAT.permutations}}}
 \references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;
              Lee et al. 2012, \emph{Optimal Unified Approach for Rare-Variant Association Testing with Application to Small-Sample Case-Control Whole-Exome Sequencing Studies}, American Journal of Human Genetics, doi:10.1016/j.ajhg.2012.06.007;
              Liu et al. 2008, \emph{A new chi-square approximation to the distribution of non-negative definite quadratic forms in non-central normal variables}, Computational Statistics & Data Analysis, doi:10.1016/j.csda.2008.11.025
@@ -80,9 +82,28 @@ x <- set.genomic.region(x)
 #keeping only genomic regions with at least 10 SNPs
 x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
 
+#Simulation of a covariate + Sex as a covariate
+sex <- x1@snps$sex
+u <- runif(nrow(x1))
+covar <- cbind(sex, u)
+
 #run SKAT using the 1000 genome EUR populations as "outcome"
-#The population is available in the object LCT.pop
 #The maximum number of permutations used is 500, please increase
 #this number for a more accurate estimation of the p-values
-SKAT(x1, x1@ped$pop, perm.max = 500)
+#Fit Null model
+x1.H0 <- SKAT.NullObject(x1@ped$pop)
+#Parameters for the sampling procedure 
+params.sampling = list(perm.target = 100, perm.max = 500)
+
+#Run SKAT using the method based on sample size, here permutations
+SKAT(x1, x1.H0, params.sampling = params.sampling)
+#Run SKAT with the covariates: use boostrap as n<2000
+SKAT(x1, x1.H0, params.sampling = params.sampling, get.moments = "bootstrap")
+#Run SKAT using theoretical moments (discourage here as n<2000) and 1 core
+SKAT(x1, x1.H0, get.moments = "theoretical", cores = 1)
+
+#Run SKAT with a random continuous phenotype
+#Null Model
+x1.H0.c <- SKAT.NullObject.continuous(rnorm(nrow(x1)))
+SKAT(x1, x1.H0.c)
 }

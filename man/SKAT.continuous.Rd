@@ -1,28 +1,25 @@
-\name{SKAT.theoretical}
-\alias{SKAT.theoretical}
+\name{SKAT.continuous}
+\alias{SKAT.continuous}
 \title{ Multi group SKAT test using Liu et al. approximation }
-\description{ Peforms SKAT on two or more groups of individuals using Liu et al. approximation }
+\description{ Peforms SKAT on a continuous phenotype using Liu et al. approximation }
 \usage{
-SKAT.theoretical(x, NullObject, genomic.region = x@snps$genomic.region,
-                 weights = (1 - x@snps$maf)**24, maf.threshold = 0.5,
-                 estimation.pvalue = "kurtosis", cores = 10, debug = FALSE )
+SKAT.continuous(x, NullObject, genomic.region = x@snps$genomic.region,
+                weights = (1 - x@snps$maf)**24, maf.threshold = 0.5,
+                estimation.pvalue = "kurtosis", debug = FALSE )
 }
 \arguments{
   \item{x}{ A bed.matrix }
-  \item{NullObject}{ A list returned from \code{SKAT.NullObject} }
+  \item{NullObject}{ A list returned from \code{SKAT.NullObject.continuous} }
   \item{genomic.region}{ A factor defining the genomic region of each variant }
   \item{weights}{ A vector with the weight of each variant. By default, the weight of each variant is inversely proportionnal to its MAF, as it was computed in the original SKAT method}
   \item{maf.threshold}{ The MAF above which variants are removed (default is to keep all variants)}
   \item{estimation.pvalue}{ Whether to use the skewness ("skewness") or the kurtosis ("kurtosis") for the chi-square approximation }
-  \item{cores}{ How many cores to use for moments computation, set at 10 by default }
   \item{debug}{ Whether to return the mean, standard deviation, skewness and kurtosis of the statistics. Set at FALSE by default }
 }
 \details{
-  The method from Liu et al. 2008 is used where p-values are estimated using a chi-square approximation from moment's statistics
+  The method from Liu et al. 2008 is used where p-values are estimated using a chi-square approximation from moment's
 
-  If \code{estimation.pvalue = "kurtosis"}, the kurtosis is used instead of skewness in the chi-square approximation. This is equivalent to "liu.mod" in SKAT package.  
- 
-  This function is used by \code{SKAT} when the sample size is larger than 2000.
+  If \code{estimation.pvalue = "kurtosis"}, the kurtosis is used instead of skewness in the chi-square approximation. This is equivalent to "liu.mod" in SKAT package.   
 }
 \value{
 A data frame containing for each genomic region:
@@ -31,7 +28,7 @@ A data frame containing for each genomic region:
 
 If \code{debug = TRUE}, the mean, standard deviation, skewness and kurtosis used to compute the p-value are returned
 }
-\seealso{ \code{\link{SKAT.NullObject}}, \code{\link{SKAT.theoretical}}, \code{\link{SKAT.bootstrap}}, \code{SKAT}}
+\seealso{ \code{\link{SKAT.NullObject}}, \code{SKAT}}
 \references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;
              Liu et al. 2008, \emph{A new chi-square approximation to the distribution of non-negative definite quadratic forms in non-central normal variables}, Computational Statistics & Data Analysis, doi:10.1016/j.csda.2008.11.025
 }
@@ -53,12 +50,11 @@ x <- set.genomic.region(x)
 #keeping only genomic regions with at least 10 SNPs
 x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
 
-#run SKAT using the 1000 genome EUR populations as "outcome"
-#using one core
+#run SKAT using a random continuous phenotype
 #Fit Null model
-x1.H0 <- SKAT.NullObject(x1@ped$pop)
+x1.H0 <- SKAT.NullObject.continuous(rnorm(nrow(x1)))
 
-SKAT.theoretical(x1, x1.H0, cores = 1)
+SKAT.continuous(x1, x1.H0)
 }
 
 
