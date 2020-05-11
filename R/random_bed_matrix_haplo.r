@@ -29,7 +29,7 @@ rbm.haplos.thresholds <- function(haplos, weights = -0.4*log10(colMeans(haplos))
   cat(length(h2), " groups of individuals will be simulated \n")
     
   
-  x <- Ravages:::new.bed.matrix(nb_inds=sum(size), nb_snps=ncol(haplos)*replicates)
+  x <- new.bed.matrix(nb_inds=sum(size), nb_snps=ncol(haplos)*replicates)
  
   for(i in 1:length(seq(1,replicates, by=rep.by.causal))){
     burdens <- mapply(get.causal.burden, weights=list(weights), haplos = list(haplos), maf.threshold, nb.causal, p.protect, h2, SIMPLIFY=FALSE)

@@ -3,6 +3,13 @@ burden.mlogit <- function(x, group = x@ped$pheno,
                           burden, maf.threshold = 0.01, 
                           ref.level, formula, data, get.OR.value=FALSE, alpha=0.05){
 
+  if(!missing(x)){ 
+    if(length(genomic.region)==0){
+      warning("No 'genomic region' given, all variants will be analysed in the same testing unit")
+      genomic.region <- rep("UniqRegion", ncol(x))
+    }
+  }
+  
   if(!is.factor(group)) group <- as.factor(group)
 
   if(is.numeric(ref.level)) ref.level <- as.character(ref.level)

@@ -53,5 +53,28 @@ If \code{debug=TRUE}, other informations are given about the moments estimation:
              Lee et al. 2012, \emph{Optimal Unified Approach for Rare-Variant Association Testing with Application to Small-Sample Case-Control Whole-Exome Sequencing Studies}, American Journal of Human Genetics, doi:10.1016/j.ajhg.2012.06.007;
 }
 \examples{
+#Importation of data in a bed matrix
+x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
+#Add population
+x@ped[,c("pop", "superpop")] <- LCT.matrix.pop1000G[,c("population", "super.population")]
+
+#Select EUR superpopulation
+x <- select.inds(x, superpop=="EUR")
+x@ped$pop <- droplevels(x@ped$pop)
+
+#Group variants within known genes
+x <- set.genomic.region(x)
+
+#Filter of rare variants: only non-monomorphic variants with
+#a MAF lower than 2.5%
+#keeping only genomic regions with at least 10 SNPs
+x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
+
+#run SKAT using the 1000 genome EUR populations as "outcome"
+#The maximum number of permutations used is 500, please increase
+#this number for a more accurate estimation of the p-values
+#Fit Null model
+x1.H0 <- SKAT.NullObject(x1@ped$pop)
+SKAT.permutations(x1, x1.H0, perm.max=500)
 }
 

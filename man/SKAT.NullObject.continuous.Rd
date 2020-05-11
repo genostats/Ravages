@@ -1,12 +1,12 @@
-\name{SKAT.NullObject}
-\alias{SKAT.NullObject}
+\name{SKAT.NullObject.continuous}
+\alias{SKAT.NullObject.continuous}
 \title{ Null Model for multi group SKAT test }
 \description{ Get the parameters under the null model to peforms SKAT}
 \usage{
-  SKAT.NullObject(group, data, formula)
+  SKAT.NullObject.continuous(pheno, data, formula)
 }
 \arguments{
-  \item{group}{ A factor containing the group of each individual }
+  \item{pheno}{ A numeric vector containing the phenotype value for each individual }
   \item{data}{ Optional, a matrix containing the covariates with one column per covariate and one row per individual }
   \item{formula}{ Optional, an R formula corresponding to the regression model indicating which covariates from \code{data} to include in the model if only some of them are to be included}
 }
@@ -17,11 +17,10 @@
 }
 \value{
   A list containing:
-  \item{Pi.data}{ A matrix n.individuals x n.groups containing the probabilities that each individual belong to each group }
+  \item{ymp}{ A matrix n.individuals x 1 containing the (y - pi_hat) values, i.e. the residuals from the regression of the phenotype on the potential covariates }
   \item{X}{ A matrix containing 1 in the first column for the intercept, and covariates from \code{data} and \code{formula}}
-  \item{group}{ A factor containing the group of each individual as given}
-  \item{get.moments}{ How to compute moments based on sample size for p-value calculations (only used if \code{get.moments = "size.based"} for a categorial phenotype in \code{SKAT}. }
-  \item{P1}{ The vairance-covariance matrix of (Y - Pi_hat)}
+  \item{pheno}{ The phenotype of each individual as given}
+  \item{P1}{ The variance matrix of \code{ymp} }
 }
-\seealso{ \code{\link{SKAT}}, \code{\link{SKAT.theoretical}}, \code{\link{SKAT.bootstrap}}, \code{\link{SKAT.permutations}} }
+\seealso{ \code{\link{SKAT}}, \code{\link{SKAT.continuous}} }
 

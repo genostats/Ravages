@@ -9,7 +9,7 @@ p.valeur.moments.liu <- function(Q, mu, sigma, skewness, kurtosis, estimation.pv
     s2 <- kurtosis / 12
     if(s1^2 > s2){
       params <- Liu.sitA(s1, s2)
-      if(params["l"] < 0){ #situation B
+      if(params["l"] < 0 | params["d"] < 0){ #situation B
         params <- Liu.sitB(s1, s2, estimation.pvalue = estimation.pvalue)
        }      
     }else{
