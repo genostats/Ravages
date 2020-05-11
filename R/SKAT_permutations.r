@@ -10,7 +10,7 @@ SKAT.permutations <- function(x, NullObject, genomic.region = x@snps$genomic.reg
   Pi <- NullObject$Pi.data
   X <- NullObject$X 
   
-  B <- .Call('skat', PACKAGE = "Ravages", x@bed, which.snps, genomic.region, group, Pi, weights, perm.target, perm.max);
+  B <- .Call('skat', PACKAGE = "Ravages", x@bed, which.snps, genomic.region, group, x@p, Pi, weights, perm.target, perm.max);
 
   names(B)[5] <- "p.perm"
 

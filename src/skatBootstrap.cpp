@@ -12,6 +12,7 @@ using namespace RcppParallel;
 
 class SKATbootstrap : public Stats {
   public:
+  NumericVector p;      //  le vecteur de fréquences allélique (freq A2) [pour l'imputation données manquantes dans WLP]
   NumericMatrix Pi;      // matrice des probabilités d'appartenir à chaque groupe
   NumericMatrix Y_Pi;    // Y_Pi = Y - Pi 
   NumericMatrix U;       // La matrice U pour le bootstrap paramétrique...
@@ -36,9 +37,10 @@ class SKATbootstrap : public Stats {
   // Pi = matrice donnant la proba a priori de chaque individu d'appartenir à chaque groupe	
   //      dimensions ncol (= nb individus)  x  nb_ind_groups 
   // W = vecteur des poids des SNPs
-  SKATbootstrap(const XPtr<matrix4> pA, LogicalVector which_snps, IntegerVector SNPgroup, IntegerVector ind_group, NumericMatrix Pi_, 
-       NumericVector W_, NumericMatrix U_)
-  : Stats(pA, which_snps, SNPgroup, ind_group), Pi(Pi_), Y_Pi(ncol, nb_ind_groups), U(U_), M1(nb_snp_groups), M2(nb_snp_groups), M3(nb_snp_groups), 
+  SKATbootstrap(const XPtr<matrix4> pA, LogicalVector which_snps, IntegerVector SNPgroup, IntegerVector ind_group, 
+                NumericVector p_, NumericMatrix Pi_, NumericVector W_, NumericMatrix U_)
+  : Stats(pA, which_snps, SNPgroup, ind_group), p(p_), Pi(Pi_), Y_Pi(ncol, nb_ind_groups), U(U_), 
+    M1(nb_snp_groups), M2(nb_snp_groups), M3(nb_snp_groups), 
     M4(nb_snp_groups), full_W(as<std::vector<double>>(W_)), nb_ind_in_group(nb_ind_groups), iterates(0) { 
     if(Pi.nrow() != ncol || Pi.ncol() != nb_ind_groups)
       stop("Pi dimensions mismatch");
@@ -109,7 +111,7 @@ class SKATbootstrap : public Stats {
     }
 
     // Produit (Y - Pi) * G * W [ dimensions nb_snps x nb_ind_groups : elle est transposée ]
-    NumericMatrix Z = WLP(&data[0], nb_snps, ncol, true_ncol, W, Y_Pi);
+    NumericMatrix Z = WLP(&data[0], &p[0], nb_snps, ncol, true_ncol, W, Y_Pi);
    
     // Vecteur de stats
     for(int i = 0; i < nb_snp_groups; i++) stats[i] = 0;
@@ -142,10 +144,10 @@ class SKATbootstrap : public Stats {
 };
 
 //[[Rcpp::export]]
-List skat_bootstrap(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector region, IntegerVector group, NumericMatrix Pi,
-                    NumericVector weights, NumericMatrix U, int A_target, int B_max) {
+List skat_bootstrap(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector region, IntegerVector group, 
+                    NumericVector p, NumericMatrix Pi, NumericVector weights, NumericMatrix U, int A_target, int B_max) {
 
-  SKATbootstrap B(p_A, which_snps, region, group, Pi, weights, U);
+  SKATbootstrap B(p_A, which_snps, region, group, p, Pi, weights, U);
   if(B_max > 0) {
     List L = B.permute_stats(A_target, B_max);
     L["M1"] = B.M1;
@@ -161,7 +163,7 @@ List skat_bootstrap(XPtr<matrix4> p_A, LogicalVector which_snps, IntegerVector r
   }
 }
 
-RcppExport SEXP skat_bootstrap(SEXP p_ASEXP, SEXP which_snpsSEXP, SEXP regionSEXP, SEXP groupSEXP, SEXP PiSEXP, SEXP weightsSEXP, SEXP USEXP, SEXP A_targetSEXP, SEXP B_maxSEXP) {
+RcppExport SEXP skat_bootstrap(SEXP p_ASEXP, SEXP which_snpsSEXP, SEXP regionSEXP, SEXP groupSEXP, SEXP pSEXP, SEXP PiSEXP, SEXP weightsSEXP, SEXP USEXP, SEXP A_targetSEXP, SEXP B_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -169,12 +171,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< LogicalVector >::type which_snps(which_snpsSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type region(regionSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type group(groupSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type p(pSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type U(USEXP);
     Rcpp::traits::input_parameter< int >::type A_target(A_targetSEXP);
     Rcpp::traits::input_parameter< int >::type B_max(B_maxSEXP);
-    rcpp_result_gen = Rcpp::wrap(skat_bootstrap(p_A, which_snps, region, group, Pi, weights, U, A_target, B_max));
+    rcpp_result_gen = Rcpp::wrap(skat_bootstrap(p_A, which_snps, region, group, p, Pi, weights, U, A_target, B_max));
     return rcpp_result_gen;
 END_RCPP
 }

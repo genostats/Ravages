@@ -10,7 +10,7 @@ SKAT.previous <- function(x, group = x@ped$pheno, genomic.region = x@snps$genomi
   a <- table(group)/nrow(x)
   Pi <- matrix( a, ncol = nlevels(group), nrow = nrow(x), byrow = TRUE)
 
-  B <- .Call('skat', PACKAGE = "Ravages", x@bed, which.snps, genomic.region, group, Pi, weights, perm.target, perm.max);
+  B <- .Call('skat', PACKAGE = "Ravages", x@bed, which.snps, genomic.region, group, x@p, Pi, weights, perm.target, perm.max);
 
   names(B)[5] <- "p.perm"
 

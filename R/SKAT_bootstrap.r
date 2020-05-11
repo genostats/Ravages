@@ -18,7 +18,7 @@ SKAT.bootstrap <- function(x, NullObject, genomic.region = x@snps$genomic.region
   U <- -(WX %*% solve(XWX, t(XX)))
   diag(U) <- diag(U)+1
 
-  B <- .Call('skat_bootstrap', PACKAGE = "Ravages", x@bed, which.snps, genomic.region, group, Pi, weights, U, perm.target, perm.max);
+  B <- .Call('skat_bootstrap', PACKAGE = "Ravages", x@bed, which.snps, genomic.region, group, x@p, Pi, weights, U, perm.target, perm.max);
 
   names(B)[5] <- "p.perm"
 
