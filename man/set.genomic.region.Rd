@@ -12,11 +12,13 @@ set.genomic.region(x, genes = genes.b37, flank.width = 0L)
   \item{genes}{
     A dataframe containing the fields : \code{Chr} (the chromosome of the gene),
     \code{Start} (the start position of the gene), \code{End} (the end position of the gene), and
-    \code{Gene_Name} (the name of the gene),
+    \code{Gene_Name} (the name of the gene - a factor),
   }
   \item{flank.width}{ An integer: width of the flanking regions in base pairs downstream and upstream the genes. }
 }
 \details{ 
+Warnings: \code{genes$Gene_Name} should be a factor containing the names of the genes, ordered in the genome order. 
+
 If \code{x@snps$chr} is not a vector of integers, it should be a factor with same levels as \code{genes$Chr}.
 We provide two data sets of autosomal humain genes, \code{genes.b37} and \code{genes.b38}.
 

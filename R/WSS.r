@@ -1,4 +1,7 @@
 WSS <- function(x, genomic.region = x@snps$genomic.region) {
+  if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
+  genomic.region <- droplevels(genomic.region)
+
   # MAF calculée comme dans le papier princeps
   Q <- (2*x@snps$N2+x@snps$N1 + 1) / ( 2*(x@snps$N0+x@snps$N1+x@snps$N2) +2 )
   W <- sqrt((nrow(x)-x@snps$NAs) * Q * (1-Q))

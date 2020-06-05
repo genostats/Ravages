@@ -3,8 +3,10 @@ SKAT.bootstrap <- function(x, NullObject, genomic.region = x@snps$genomic.region
                  perm.target = 100, perm.max = 5e4, debug = FALSE,
                  estimation.pvalue = "kurtosis") {
 
+  if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
+  genomic.region <- droplevels(genomic.region)
+
   which.snps <- (x@snps$maf <= maf.threshold) & (x@snps$maf > 0)
-  genomic.region <- as.factor(genomic.region)
 
   group <- NullObject$group
   Pi <- NullObject$Pi.data

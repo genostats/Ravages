@@ -42,7 +42,7 @@ set.genomic.region <- function(x, genes = genes.b37, flank.width = 0L) {
   R.genename[which(R.genename=="")] <- NA
 
   x@snps$genomic.region <- R.genename
-
+  x@snps$genomic.region <- factor(x@snps$genomic.region, levels = unique(x@snps$genomic.region))
   x
 }
 

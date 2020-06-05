@@ -3,10 +3,10 @@ get.parameters.pvalue.theoretical <- function(x, RR, P1, ymp, n, estimation.pval
   ngpe <- length(n)
 
   x.genomic.region <- select.snps(x, genomic.region == RR)
-  geno.mostfreq <- ifelse(x.genomic.region@snps$maf == x.genomic.region@p, 0, 2)
+  #geno.mostfreq <- ifelse(x.genomic.region@snps$maf == x.genomic.region@p, 0, 2)
   GG <- gaston::as.matrix(x.genomic.region)
-  #Replace NA by most frequent genotype
-  sapply(1:ncol(GG), function(z){ GG[is.na(GG[,z]), z] <- geno.mostfreq[z] ; return(GG[,z])})
+  #Replace NA by mean genotype
+  GG <- apply(GG, 2, function(z){ z[which(is.na(z))] <- mean(z, na.rm = TRUE) ; return(z) })
   G <- GG %*% diag(x.genomic.region@snps$weights)
   G.L <- lapply(1:ngpe, function(gpe) sqrt(1/n[gpe]) * G)
   G.bloc <- .Call("block_diag", PACKAGE = "Ravages", G.L)

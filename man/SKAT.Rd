@@ -100,7 +100,9 @@ SKAT(x1, x1.H0, params.sampling = params.sampling)
 #Run SKAT with the covariates: use boostrap as n<2000
 SKAT(x1, x1.H0, params.sampling = params.sampling, get.moments = "bootstrap")
 #Run SKAT using theoretical moments (discourage here as n<2000) and 1 core
+\dontrun{
 SKAT(x1, x1.H0, get.moments = "theoretical", cores = 1)
+}
 
 #Run SKAT with a random continuous phenotype
 #Null Model

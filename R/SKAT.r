@@ -2,6 +2,9 @@ SKAT <- function(x, NullObject, genomic.region = x@snps$genomic.region,
                  weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
                  get.moments = "size.based", estimation.pvalue = "kurtosis", 
                  params.sampling, cores = 10, debug = FALSE){
+
+  if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
+  genomic.region <- droplevels(genomic.region)
                  
   #If no genomic region: all variants in same unit
   if(length(genomic.region)==0){

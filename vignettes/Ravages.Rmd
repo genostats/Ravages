@@ -145,7 +145,7 @@ burden.mlogit(x=x1, group=x1@ped$pop, burden="WSS", ref.level="CEU", alpha=0.05,
               get.OR.value=TRUE)
 
 #Simulation of a covariate + Sex as a covariate
-sex <- x1@snps$sex
+sex <- x1@ped$sex
 u <- runif(nrow(x1))
 covar <- cbind(sex, u)
 
@@ -155,6 +155,17 @@ burden.mlogit(x=x1, group=x1@ped$pop, burden="WSS", ref.level="CEU",
 
 #WSS using directly the score matrix computed previously
 burden.mlogit(burden=WSS.score, group=x1@ped$pop, ref.level="CEU")
+```
+
+Finally, using Ravages, it is also possible to perform burden tests with a continuous phenotype with the function **burden_continuous()** as showed below:
+```{r}
+#Random continuous phenotype
+set.seed(1) ; pheno1 <- rnorm(nrow(x1))
+#Test CAST 
+burden.continuous(x1, pheno = pheno1, burden = "CAST")
+#Test WSS with covariates
+burden.continuous(x1, pheno = pheno1, burden = "WSS",
+                  data = covar, formula = ~ sex)
 ```
 
 ###SKAT
@@ -176,6 +187,15 @@ SKAT(x1, x1.null, get.moments = "theoretical", debug = TRUE,
      cores = 1)
 ```
 
+It is also possible to perform the SKAT test on a continuous phenotype by using the function **SKAT.NullObject.continuous()** before the **SKAT()** function:
+```{r}
+#Random continuous phenotype
+set.seed(1) ; pheno1 <- rnorm(nrow(x1))
+#Null Model
+x1.H0.c <- SKAT.NullObject.continuous(pheno1)
+#Run SKAT
+SKAT(x1, x1.H0.c)
+```
 
 ##Data management
 Data in plink format or in vcf format can be loaded in R using the functions **read.bed.matrix()** and **read.vcf()** respectively from the package gaston.  

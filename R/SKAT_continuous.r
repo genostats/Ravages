@@ -1,9 +1,12 @@
 SKAT.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.region, 
                      weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
                      estimation.pvalue = "kurtosis", debug = FALSE){
+
+  if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
+  genomic.region <- droplevels(genomic.region)
+
   x@snps$weights <- weights
   x <- select.snps(x, maf <= maf.threshold & maf > 0)
-  x@snps$genomic.region <- as.factor(genomic.region)
   
   pheno <- matrix(NullObject$pheno, ncol = 1)
   
@@ -28,7 +31,10 @@ SKAT.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.regio
 #P-value by genomic region
 get.parameters.pvalue.continuous <- function(x, region, P1, ymp, estimation.pvalue){
   x.genomic.region <- select.snps(x, genomic.region == region)
-  G <- gaston::as.matrix(x.genomic.region) %*% diag(x.genomic.region@snps$weights)
+  GG <- gaston::as.matrix(x.genomic.region)
+  #missing genotypes replaced by mean genotype
+  GG <- apply(GG, 2, function(z) {z[which(is.na(z))] <- mean(z, na.rm = TRUE) ; return(z)})
+  G <- GG %*% diag(x.genomic.region@snps$weights)
   
   #Stat de test
   Q <- as.vector(ymp) %*% (G %*% t(G)) %*% as.vector(ymp)
