@@ -38,7 +38,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"oz_sum_fst1_max_perm",              (DL_FUNC) &oz_sum_fst1_max_perm,               6},
     {"rbm_haplos_freqs",                  (DL_FUNC) &rbm_haplos_freqs,                   4},
     {"rbm_haplos_thresholds_filling",     (DL_FUNC) &rbm_haplos_thresholds_filling,      9},
-    {"skat",                              (DL_FUNC) &skat,                               8},
     {"skat",                              (DL_FUNC) &skat,                               9},
     {"skat_bootstrap",                    (DL_FUNC) &skat_bootstrap,                    10},
     {NULL, NULL, 0}
