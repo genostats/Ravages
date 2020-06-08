@@ -6,7 +6,7 @@ SKAT.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.regio
   genomic.region <- droplevels(genomic.region)
 
   x@snps$weights <- weights
-  x <- select.snps(x, maf <= maf.threshold & maf > 0)
+  x <- select.snps(x, x@snps$maf <= maf.threshold & x@snps$maf > 0)
   
   pheno <- matrix(NullObject$pheno, ncol = 1)
   
@@ -30,7 +30,7 @@ SKAT.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.regio
 
 #P-value by genomic region
 get.parameters.pvalue.continuous <- function(x, region, P1, ymp, estimation.pvalue){
-  x.genomic.region <- select.snps(x, genomic.region == region)
+  x.genomic.region <- select.snps(x, x@snps$genomic.region == region)
   GG <- gaston::as.matrix(x.genomic.region)
   #missing genotypes replaced by mean genotype
   GG <- apply(GG, 2, function(z) {z[which(is.na(z))] <- mean(z, na.rm = TRUE) ; return(z)})

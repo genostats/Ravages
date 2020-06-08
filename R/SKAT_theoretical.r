@@ -6,7 +6,7 @@ SKAT.theoretical <- function(x, NullObject, genomic.region = x@snps$genomic.regi
   genomic.region <- droplevels(genomic.region)
 
   x@snps$weights <- weights
-  x <- select.snps(x, maf <= maf.threshold & maf > 0)
+  x <- select.snps(x, x@snps$maf <= maf.threshold & x@snps$maf > 0)
   
   group <- NullObject$group
   

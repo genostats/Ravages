@@ -2,7 +2,7 @@
 get.parameters.pvalue.theoretical <- function(x, RR, P1, ymp, n, estimation.pvalue){
   ngpe <- length(n)
 
-  x.genomic.region <- select.snps(x, genomic.region == RR)
+  x.genomic.region <- select.snps(x, x@snps$genomic.region == RR)
   #geno.mostfreq <- ifelse(x.genomic.region@snps$maf == x.genomic.region@p, 0, 2)
   GG <- gaston::as.matrix(x.genomic.region)
   #Replace NA by mean genotype
