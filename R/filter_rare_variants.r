@@ -18,7 +18,7 @@ filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "
   if(filter == "controls") {
     if(missing(ref.level)) stop("Need to specify the controls group")
     which.controls <- group == ref.level
-    st <- .Call('gg_geno_stats_snps', PACKAGE = "gaston", x@bed, rep(TRUE, ncol(x)), which.controls)$snps
+    st <- .Call('gg_geno_stats_snps', PACKAGE = "Ravages", x@bed, rep(TRUE, ncol(x)), which.controls)$snps
     p <- (st$N0.f + 0.5*st$N1.f)/(st$N0.f + st$N1.f + st$N2.f)
     maf <- pmin(p, 1-p)
     w <- (maf < maf.threshold)
@@ -28,7 +28,7 @@ filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "
     w <- rep(FALSE, ncol(x))
     for(i in unique(group)) {
       which.c <- (group == i)
-      st <- .Call('gg_geno_stats_snps', PACKAGE = "gaston", x@bed, rep(TRUE, ncol(x)), which.c)$snps
+      st <- .Call('gg_geno_stats_snps', PACKAGE = "Ravages", x@bed, rep(TRUE, ncol(x)), which.c)$snps
       p <- (st$N0.f + 0.5*st$N1.f)/(st$N0.f + st$N1.f + st$N2.f)
       maf <- pmin(p, 1-p)
       w <- w | (maf < maf.threshold)
