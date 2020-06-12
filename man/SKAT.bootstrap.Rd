@@ -53,6 +53,7 @@ If \code{debug=TRUE}, other informations are given about the moments estimation:
              Lee et al. 2012, \emph{Optimal Unified Approach for Rare-Variant Association Testing with Application to Small-Sample Case-Control Whole-Exome Sequencing Studies}, American Journal of Human Genetics, doi:10.1016/j.ajhg.2012.06.007;
 }
 \examples{
+\donttest{
 #Importation of data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
 #Add population
@@ -66,9 +67,9 @@ x@ped$pop <- droplevels(x@ped$pop)
 x <- set.genomic.region(x)
 
 #Filter of rare variants: only non-monomorphic variants with
-#a MAF lower than 2.5%
+#a MAF lower than 1%
 #keeping only genomic regions with at least 10 SNPs
-x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
+x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.01, min.nb.snps = 10)
 
 #Simulation of a covariate + Sex as a covariate
 sex <- x1@snps$sex
@@ -76,11 +77,13 @@ u <- runif(nrow(x1))
 covar <- cbind(sex, u)
 
 #run SKAT using the 1000 genome EUR populations as "outcome"
-#The maximum number of permutations used is 500, please increase
-#this number for a more accurate estimation of the p-values
+#The maximum number of permutations used is 100,
+#and the target number is 10, please increase
+#both values for a more accurate estimation of the p-values
 #Fit Null model with covariates
 x1.H0 <- SKAT.NullObject(x1@ped$pop, data = covar)
 
-SKAT.bootstrap(x1, x1.H0, perm.max = 500)
+SKAT.bootstrap(x1, x1.H0, perm.target = 10, perm.max = 100)
+}
 }
 

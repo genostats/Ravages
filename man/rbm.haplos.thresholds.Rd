@@ -41,14 +41,19 @@
   The phenotype will be stored in \code{@ped$pheno}, and the simulation number is \code{@snps$genomic.region}.
 }
 \examples{
+\donttest{
   #Load LCT dataset for haplotype matrix
   data(LCT.haplotypes)
+  #LCT gene in the EUR population
+  LCT.gene.hap <- LCT.hap[which(LCT.sample$super.population=="EUR"), 
+                          which(LCT.snps$pos>=136545410 & LCT.snps$pos<=136594750)]
 
   #Simulation of 100 controls, and two groups of 50 cases with 30 causal variants
   #and with the second group having half h2 and twice the prevalence
   #compared to the first one
   #5 replicates are performed and causal variants are sampled once
-  x <- rbm.haplos.thresholds(haplos=LCT.hap, maf.threshold = 0.01, nb.causal=30,
+  x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, maf.threshold = 0.01, nb.causal=30,
                              p.protect=0, h2=c(0.01, 0.01, 0.02), prev=c(1, 0.01, 0.005),
                              size=c(100, 50, 50), replicates = 5, rep.by.causal = 5)
+}
 }

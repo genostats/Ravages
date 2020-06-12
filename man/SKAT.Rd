@@ -65,6 +65,7 @@ If \code{debug = TRUE}, the mean, standard deviation, skewness and kurtosis are 
 }
 
 \examples{
+\donttest{
 #Importation of data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
 #Add population
@@ -99,8 +100,9 @@ params.sampling = list(perm.target = 100, perm.max = 500)
 SKAT(x1, x1.H0, params.sampling = params.sampling)
 #Run SKAT with the covariates: use boostrap as n<2000
 SKAT(x1, x1.H0, params.sampling = params.sampling, get.moments = "bootstrap")
-#Run SKAT using theoretical moments (discourage here as n<2000) and 1 core
+
 \dontrun{
+#Run SKAT using theoretical moments (discourage here as n<2000) and 1 core
 SKAT(x1, x1.H0, get.moments = "theoretical", cores = 1)
 }
 
@@ -108,4 +110,5 @@ SKAT(x1, x1.H0, get.moments = "theoretical", cores = 1)
 #Null Model
 x1.H0.c <- SKAT.NullObject.continuous(rnorm(nrow(x1)))
 SKAT(x1, x1.H0.c)
+}
 }

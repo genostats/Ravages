@@ -69,6 +69,7 @@ x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.sn
 #The population is available in the object LCT.pop
 burden.mlogit(x1, x1@ped$pop, burden = "WSS", ref.level="CEU", get.OR.value=TRUE)
 
+\donttest{
 #Simulation of a covariate + Sex as a covariate
 sex <- x1@ped$sex
 u <- runif(nrow(x1))
@@ -77,4 +78,5 @@ covar <- cbind(sex, u)
 #with the covariate sex
 burden.mlogit(x1, x1@ped$pop, burden = "WSS", ref.level="CEU", get.OR.value=TRUE,
               data=covar, formula = ~ sex)
+}
 }   

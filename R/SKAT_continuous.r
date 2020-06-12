@@ -17,7 +17,7 @@ SKAT.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.regio
   ymp = NullObject$ymp
   
   #P-value for all regions
-  res.allregions <- do.call(rbind, lapply(levels(x@snps$genomic.region), function(reg) get.parameters.pvalue.continuous(x, region = reg, P1 = P1, ymp = ymp, estimation.pvalue = estimation.pvalue)))
+  res.allregions <- do.call(rbind, lapply(levels(genomic.region), function(reg) get.parameters.pvalue.continuous(x, region = reg, P1 = P1, ymp = ymp, estimation.pvalue = estimation.pvalue)))
   res.final <- as.data.frame(res.allregions)
   colnames(res.final) <- colnames(res.allregions)
   rownames(res.final) <- levels(genomic.region)

@@ -36,7 +36,7 @@ If \code{debug = TRUE}, the mean, standard deviation, skewness and kurtosis used
              Liu et al. 2008, \emph{A new chi-square approximation to the distribution of non-negative definite quadratic forms in non-central normal variables}, Computational Statistics & Data Analysis, doi:10.1016/j.csda.2008.11.025
 }
 \examples{
-\dontrun{
+\donttest{
 #Importation of data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
 #Add population

@@ -11,6 +11,8 @@ SKAT.permutations <- function(x, NullObject, genomic.region = x@snps$genomic.reg
   group <- NullObject$group
   Pi <- NullObject$Pi.data
   X <- NullObject$X 
+
+  if(ncol(X) > 1) stop("Covariates are present, use the bootstrap procedure.")
   
   B <- .Call('skat', PACKAGE = "Ravages", x@bed, which.snps, genomic.region, group, x@p, Pi, weights, perm.target, perm.max);
 
