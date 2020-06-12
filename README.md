@@ -13,5 +13,5 @@ devtools::install_github("genostats/Ravages")
 
 ## Usage
 Please look at the <a href="doc/Ravages_vignette.pdf">vignette on RVAT</a> for an example of how to perform both burden and SKAT rare variant association tests.
-Please look at the <a href="doc/Ravages_Simulations_vignette.pdf">vignette on simulations tests</a> for an example of how to perform genetic simulations with rare variants and how to compute power of RVAT using these simulations.
+Please look at the <a href="doc/Ravages_Simulations_vignette.pdf">vignette on simulations</a> for an example of how to perform genetic simulations with rare variants and how to compute power of RVAT using these simulations.
 Please look at the <a href="doc/Ravages.pdf">Ravages user manual</a> for details about individual functions from Ravages. 
