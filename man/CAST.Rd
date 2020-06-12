@@ -14,8 +14,7 @@ CAST(x, genomic.region = x@snps$genomic.region, maf.threshold = 0.01)
 A matrix containing the CAST genetic score with one row per individual and one column per \code{genomic.region}
 }
 \seealso{ \code{\link{WSS}}, \code{\link{burden.weighted.matrix}}, \code{\link{burden.mlogit}} }
-\references{ Bocher O, et al. \emph{Rare variant associationtesting for multicategory phenotype.} Genet.Epidemiol. 2019;43:646–656.
-             Morgenthaler S and Thilly WG. \emph{A strategy to discover genes that carry multi-allelic or mono-allelic risk for common diseases: a cohort allelic sums test (CAST).} Mutat Res. 2007}
+\references{ Morgenthaler S and Thilly WG. \emph{A strategy to discover genes that carry multi-allelic or mono-allelic risk for common diseases: a cohort allelic sums test (CAST).} Mutat Res. 2007}
 \examples{
 #Importation of data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)

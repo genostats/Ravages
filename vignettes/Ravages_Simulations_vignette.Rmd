@@ -21,13 +21,13 @@ In this vignette, we illustrate how to perform genetic simulations and how to us
 To learn more about all options of the functions, the reader is advised to look at the manual pages.  
 We develpped two main simulations procedures, one based on allelic frequencies and genetic relative risks (GRR), and the other one based on haplotypes and a liability model. All the functions can be used to simulate more than two groups of individuals.
 
-##Simulations based on allelic frequencies and GRR
-###Calculation of frequencies in each group of individuals
+## Simulations based on allelic frequencies and GRR
+### Calculation of frequencies in each group of individuals
 The first step to simulate genetic data is to compute genotypic frequencies in each group of individuals based on frequencies in the general population and on genetic relative risk (GRR) values. GRR correspond to the increased risk of a disease for a given genotype compared to a reference genotype, here the homozygous genotype for the reference allele. More precisely, the GRR associated to the heterozygous genotype in the group $c$ can be calculated as follow: $$GRR_{Aa} = \frac{P(Y=c | Aa)}{P(Y=c | AA)}$$ With Y the phenotype (1 for the controls, and c going from 2 to C in the cases), $A$ the reference allele, and $a$ the alternate allele. The frequency of each genotype in each group of cases $c$ can be calculated using Bayes theorem:
-$$P(Aa | Y=c) = \frac{P(Y=c | Aa)*P(Aa)}{\sum_{Geno=AA, Aa, aa} P(Y=c | Geno)*P(Geno)} = \frac{GRR_{Aa}*P(Aa)}{P(AA)+GRR_{Aa}*P(Aa)+GRR_{aa}*P(aa)}$$
+$$P(Aa | Y=c) = \frac{P(Y=c | Aa) P(Aa)}{\sum_{Geno=AA, Aa, aa} P(Y=c | Geno) P(Geno)} = \frac{GRR_{Aa} \times P(Aa)}{P(AA)+GRR_{Aa} \times P(Aa)+GRR_{aa} \times P(aa)}$$
 P(AA), P(Aa) and P(aa) corresponding to the genotypic probabilities in the general population.
 The three genotypic frequencies can then be calculated in the controls group using the rule of total probability:
-$$P(Geno | Y=1)=P(Geno) - \sum{_{c=2}^{c=C} P(Geno | Y=c)*P(Y=c)}$$
+$$P(Geno | Y=1)=P(Geno) - \sum{_{c=2}^{c=C} P(Geno | Y=c) P(Y=c)}$$
 The function **genotypic.freq()** performs these calculations to obtain the three genotypic frequencies in the different groups of individuals. To do so, the user needs to give *P(Y=c)*, the prevalence of each group of cases (argument *prev*), and the GRR values. GRR values need to be in a matrix form with one row per cases group and one column per variant. If there is no supposed link between the GRR associated to the heterozygous genotype and the GRR associated to the homozygous alternative genotype (general model of the disease, $genetic.model="general"$), the user needs to specify two GRR matrices: one for $GRR_{Aa}$ (argument *GRR.het*) and one for $GRR_{aa}$ (argument *GRR.homo.alt*). If *genetic.model="recessive"*, *"multiplicative"* or *"dominant"*, only one GRR matrix is needed. **genotypic.freq()** will return a list with three matrices, one for each genotype containing the genotypic frequencies, with one row per group of individuals and one column per variant.  
 To help the user with the construction of the GRR matrix for **genotypic.freq()**, we implemented the function **GRR.matrix()**.  
 To use this function, the user needs to specify how the GRR should be calculated (argument *GRR*):  
@@ -66,7 +66,7 @@ It is also possible to calculate the MAF in each group of individuals as follow:
 geno.freq.groups$freq.homo.alt[,1:5] + 0.5*geno.freq.groups$freq.het[,1:5]
 ```
 
-###Simulation of genotypes
+### Simulation of genotypes
 In addition to compute the genotypic frequencies in each group of individuals, it is possible to directly simulate genotypes for a group of controls and more than two groups of cases. This can be done using the function **random.bed.matrix()** which relies on the function **genotypic.freq()** explained previously.
 The arguments *genes.maf*, *select.gene*, *prev* and *genetic.model* are the same as in **genotypic.freq()**.  
 In **random.bed.matrix()**, the proportion of causal variants and protective variants (among causal variants) simulated in the genomic region should be specified to *p.causal* and *p.protect* respectively. The argument *GRR.matrix.del* should contain a matrix with GRR values as if all the variants were deleterious. If *genetic.model="general"*, two GRR matrices need to be given as a list to the argument *GRR.matrix.del* (one for the heterozygous genotype and the other for the homozygous alternative genotype).  
@@ -88,7 +88,7 @@ table(x@snps$genomic.region)
 ```
 
 
-##Simulations based on haplotypes
+## Simulations based on haplotypes
 **Ravages** also offers the possibility to perform genetic simulations based on real data haplotypes to mimic linkage desequlibrium pattern observed on these data.  
 Two options are available to do so: genetic data are simulated using either haplotypes and their frequencies in different groups of individuals (function **rbm.haplos.freqs()**), or using haplotypes and a liability model on their burdens (function **rbm.haplos.thresholds()**).  
 For the first situation, **rbm.haplos.freqs()** requires a matrix of haplotypes (argument *haplos* with one row per haplotype and one column per variant), and a matrix with each haplotype frequency in each simulated group of individuals (argument *freqs* with one row per haplotype and one column per group of individuals). Observed haplotypes are then sampled in each group of individuals in respect to their frequencies in each one of them.  
@@ -127,7 +127,7 @@ x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, nb.causal = 30, h2=c(0.01,0.01,0
                            rep.by.causal = 5)
 ```
 
-##Power calculation
+## Power calculation
 Power calculations are not directly implemented into **Ravages**, but the functions *burden.mlogit()* and *SKAT()* can be used to perform burden tests and SKAT. To have more informations about these two functions, please refer to the main vignette of the package. After the simulation of a bedmatrix using one of the two previously explained methods, statistical power can be computed as follows:
 
 ```{r}

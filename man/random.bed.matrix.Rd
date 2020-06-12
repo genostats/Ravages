@@ -11,7 +11,7 @@ random.bed.matrix(genes.maf = Kryukov, size, prev, replicates,
                   GRR.matrix.del, GRR.matrix.pro, 
                   p.causal = 0.5, p.protect = 0, same.variant = FALSE, 
                   genetic.model=c("general", "multiplicative", 
-                  "dominant", "recessive"), select.gene)
+                                  "dominant", "recessive"), select.gene)
 }
 \arguments{
   \item{genes.maf}{ A dataframe containing at least the MAF in the general population (column maf) for variants with their associated gene (column gene), by default the file \code{Kryukov} is used}

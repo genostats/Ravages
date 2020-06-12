@@ -7,8 +7,7 @@
   Performs a linear regression on a genetic score
 }
 \usage{
-burden.continuous(x, pheno = x@ped$pheno,
-                 genomic.region = x@snps$genomic.region,
+burden.continuous(x, pheno = x@ped$pheno, genomic.region = x@snps$genomic.region,
                  burden, maf.threshold = 0.01, formula, data)
 }
 \arguments{

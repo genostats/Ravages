@@ -15,8 +15,7 @@ WSS(x, genomic.region = x@snps$genomic.region)
 A matrix containing the WSS genetic score with one row per individual and one column per \code{genomic.region}
 }
 \seealso{ \code{\link{CAST}}, \code{\link{burden.weighted.matrix}}, \code{\link{burden.mlogit}} }
-\references{ Bocher O, et al. \emph{Rare variant associationtesting for multicategory phenotype.} Genet.Epidemiol. 2019;43:646–656.
-             Madsen E and Browning S. \emph{A Groupwise Association Test for Rare Mutations Using a Weighted Sum Statistic.} PLoS Genet. 2009 }
+\references{ Madsen E and Browning S. \emph{A Groupwise Association Test for Rare Mutations Using a Weighted Sum Statistic.} PLoS Genet. 2009 }
 \examples{
 #Importation of data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)

@@ -9,8 +9,7 @@
 \usage{
 genotypic.freq(genes.maf = Kryukov, GRR.het, GRR.homo.alt, prev, 
                genetic.model = c("general", "multiplicative", 
-                                 "dominant", "recessive"), 
-               select.gene)
+                                 "dominant", "recessive"), select.gene)
 }
 \arguments{
   \item{genes.maf}{ A file containing the MAF in the general population (column maf) for variants with their associated gene (column gene), by default the file \code{Kryukov} is used}
