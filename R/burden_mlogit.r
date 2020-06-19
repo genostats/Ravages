@@ -67,7 +67,7 @@ burden.mlogit <- function(x, group = x@ped$pheno,
   }
 
   rownames(data.reg) <- NULL # is this useful ??
-  data.reg <- mlogit.data(data.reg, varying=NULL, shape="wide", choice="ind.pheno", alt.levels=levels(group))
+  data.reg <- dfidx(data.reg, varying=NULL, shape="wide", choice="ind.pheno")
  
   R <- sapply( names(score), 
                function(reg) 
@@ -91,14 +91,14 @@ burden.mlogit <- function(x, group = x@ped$pheno,
 run.mlogit <- function(pheno, score, region, ref.level, alt.levels, formula, data, alpha, get.OR.value){
   # Formula for the current region
   if(is.null(formula)) { 
-    my.formula <- mFormula(as.formula(paste("ind.pheno ~ 0 |", region)))
+    my.formula <- Formula(as.formula(paste("ind.pheno ~ 0 |", region)))
   } else {
     z <- as.character(formula)
     if(z[1] != "~" | length(z) != 2) 
       stop("'formula' should be a formula of the form \"~ var1 + var2\"")
     z <- z[2]
-    my.formula <- mFormula( as.formula( paste("ind.pheno ~ 0 |", region, " + ", z) ) )
-    my.formula.H0 <- mFormula( as.formula( paste("ind.pheno ~ 0 | ", z ) ) )
+    my.formula <- Formula( as.formula( paste("ind.pheno ~ 0 |", region, " + ", z) ) )
+    my.formula.H0 <- Formula( as.formula( paste("ind.pheno ~ 0 | ", z ) ) )
   }
 
  
@@ -131,9 +131,9 @@ run.mlogit <- function(pheno, score, region, ref.level, alt.levels, formula, dat
 
   if(get.OR.value) 
     results <- c(pval, is.err, 
-        as.numeric(exp(OR.values[paste(alt.levels, region, sep=":"),1])), 
-        as.numeric(exp(OR.values[paste(alt.levels, region, sep=":"),1]-quantile.alpha*OR.values[paste(alt.levels, region, sep=":"),2])), 
-        as.numeric(exp(OR.values[paste(alt.levels, region, sep=":"),1]+quantile.alpha*OR.values[paste(alt.levels, region, sep=":"),2]))
+                 as.numeric(exp(OR.values[paste(region, alt.levels, sep=":"),1])), 
+                 as.numeric(exp(OR.values[paste(region, alt.levels, sep=":"),1]-quantile.alpha*OR.values[paste(region, alt.levels, sep=":"),2])), 
+                 as.numeric(exp(OR.values[paste(region, alt.levels, sep=":"),1]+quantile.alpha*OR.values[paste(region, alt.levels, sep=":"),2]))
       )
    else
     results <- c(pval, is.err)
