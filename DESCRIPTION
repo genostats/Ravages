@@ -9,7 +9,7 @@ Maintainer: Ozvan Bocher <bocherozvan@gmail.com>
 Description: Rare variant association tests (burden tests and SKAT) and genetic simulations.
 License: GPL-3
 LinkingTo: Rcpp, RcppParallel, RcppEigen, gaston, BH
-Depends: R (>= 3.5.0), Rcpp, RcppParallel, methods, gaston, mlogit
+Depends: R (>= 3.5.0), Rcpp, RcppParallel, methods, gaston, mlogit (>= 1.1-0)
 NeedsCompilation: yes
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

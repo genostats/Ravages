@@ -18,12 +18,12 @@ Pi.matrix <- function(group, data, formula, ref.level){
     
     data.reg <- cbind(ind.pheno = group, data.reg)
     rownames(data.reg) <- NULL
-    data.reg <- mlogit.data(data.reg, varying = NULL, shape = "wide",  choice = "ind.pheno", alt.levels = levels(group))
+    data.reg <- dfidx(data.reg, varying = NULL, shape = "wide",  choice = "ind.pheno")
       
     z <- as.character(formula)
     if (z[1] != "~" | length(z) != 2)  stop("'formula' should be a formula of the form \"~ var1 + var2\"")
     z <- z[2]
-    my.formula <- mFormula(as.formula(paste("ind.pheno ~ 0 | ", z)))
+    my.formula <- Formula(as.formula(paste("ind.pheno ~ 0 | ", z)))
     fit <- tryCatch(mlogit(my.formula, data = data.reg, reflevel = ref.level), error = identity, warning = identity)
     
     if (is(fit, "error")) {
