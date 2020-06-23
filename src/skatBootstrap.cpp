@@ -12,7 +12,7 @@ using namespace RcppParallel;
 
 class SKATbootstrap : public Stats {
   public:
-  NumericVector p;      //  le vecteur de fréquences allélique (freq A2) [pour l'imputation données manquantes dans WLP]
+  NumericVector full_p;      //  le vecteur de fréquences allélique (freq A2) [pour l'imputation données manquantes dans WLP]
   NumericMatrix Pi;      // matrice des probabilités d'appartenir à chaque groupe
   NumericMatrix Y_Pi;    // Y_Pi = Y - Pi 
   NumericMatrix U;       // La matrice U pour le bootstrap paramétrique...
@@ -20,6 +20,7 @@ class SKATbootstrap : public Stats {
   NumericVector M2;
   NumericVector M3;
   NumericVector M4;
+  std::vector<double> p;
   std::vector<double> full_W; // poids des SNPs (full data)
   std::vector<double> W; // poids des SNPs (données courantes)
   std::vector<int> nb_ind_in_group; // nb individu dans chaque groupe
@@ -39,7 +40,7 @@ class SKATbootstrap : public Stats {
   // W = vecteur des poids des SNPs
   SKATbootstrap(const XPtr<matrix4> pA, LogicalVector which_snps, IntegerVector SNPgroup, IntegerVector ind_group, 
                 NumericVector p_, NumericMatrix Pi_, NumericVector W_, NumericMatrix U_)
-  : Stats(pA, which_snps, SNPgroup, ind_group), p(p_), Pi(Pi_), Y_Pi(ncol, nb_ind_groups), U(U_), 
+  : Stats(pA, which_snps, SNPgroup, ind_group), full_p(p_), Pi(Pi_), Y_Pi(ncol, nb_ind_groups), U(U_), 
     M1(nb_snp_groups), M2(nb_snp_groups), M3(nb_snp_groups), 
     M4(nb_snp_groups), full_W(as<std::vector<double>>(W_)), nb_ind_in_group(nb_ind_groups), iterates(0) { 
     if(Pi.nrow() != ncol || Pi.ncol() != nb_ind_groups)
@@ -64,16 +65,19 @@ class SKATbootstrap : public Stats {
   }
 
 
- // mise à jour du vecteur de poids
+ // mise à jour du vecteur de poids et du vecteur p de fréquences alléliques
  void extra_update_snps() {
+    p.resize(nb_snps);
     W.resize(nb_snps);
     size_t k = 0;
     for(size_t i = 0; i < full_nb_snps; i++) {
       if(which_snps[i]) {
+        p[k] = full_p[i];
         W[k++] = full_W[i];
       }
     }
   }
+
 
   // On redéfinit permute_pheno pour faire du bootstrap paramétrique
   void permute_pheno() {

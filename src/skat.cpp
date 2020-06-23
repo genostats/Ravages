@@ -12,13 +12,14 @@ using namespace RcppParallel;
 
 class SKAT : public Stats {
   public:
-  NumericVector p;      //  le vecteur de fréquences allélique (freq A2) [pour l'imputation données manquantes dans WLP]
+  NumericVector full_p;      //  le vecteur de fréquences allélique (freq A2) [pour l'imputation données manquantes dans WLP]
   NumericMatrix Pi;      // matrice des probabilités d'appartenir à chaque groupe
   NumericMatrix Y_Pi;    // Y_Pi = Y - Pi
   NumericVector M1;      // les quatre premiers moments (non centrés), pour chaque SNPgroup
   NumericVector M2;
   NumericVector M3;
   NumericVector M4;
+  std::vector<double> p;
   std::vector<double> full_W; // poids des SNPs (full data)
   std::vector<double> W; // poids des SNPs (données courantes)
   std::vector<int> nb_ind_in_group; // nb individu dans chaque groupe
@@ -38,8 +39,9 @@ class SKAT : public Stats {
   // W = vecteur des poids des SNPs
   SKAT(const XPtr<matrix4> pA, LogicalVector which_snps, IntegerVector SNPgroup, IntegerVector ind_group, 
        NumericVector p_, NumericMatrix Pi_, NumericVector W_)
-  : Stats(pA, which_snps, SNPgroup, ind_group), p(p_), Pi(Pi_), Y_Pi(ncol, nb_ind_groups), M1(nb_snp_groups), M2(nb_snp_groups), M3(nb_snp_groups), 
-    M4(nb_snp_groups), full_W(as<std::vector<double>>(W_)), nb_ind_in_group(nb_ind_groups), iterates(0) { 
+  : Stats(pA, which_snps, SNPgroup, ind_group), full_p(p_), Pi(Pi_), Y_Pi(ncol, nb_ind_groups), 
+    M1(nb_snp_groups), M2(nb_snp_groups), M3(nb_snp_groups), M4(nb_snp_groups), 
+    full_W(as<std::vector<double>>(W_)), nb_ind_in_group(nb_ind_groups), iterates(0) { 
     if(Pi.nrow() != ncol || Pi.ncol() != nb_ind_groups)
       stop("Pi dimensions mismatch");
     // pour compter combien d'individus dans chaque groupe
@@ -49,12 +51,14 @@ class SKAT : public Stats {
   }
 
 
- // mise à jour du vecteur de poids
+ // mise à jour du vecteur de poids et du vecteur p de fréquences alléliques
  void extra_update_snps() {
+    p.resize(nb_snps);
     W.resize(nb_snps);
     size_t k = 0;
     for(size_t i = 0; i < full_nb_snps; i++) {
       if(which_snps[i]) {
+        p[k] = full_p[i];
         W[k++] = full_W[i];
       }
     }
@@ -78,25 +82,9 @@ class SKAT : public Stats {
       }
     }
 
-/*
-    NumericMatrix PPP = Y_Pi(Range(0,5), _);
-    Rcout << PPP ;
-    Rcout << "..." << "\n";
-    PPP = Y_Pi( Range( Y_Pi.nrow() - 6, Y_Pi.nrow() - 1), _);
-    Rcout << PPP ;
-*/
-
     // Produit (Y - Pi) * G * W [ dimensions nb_snps x nb_ind_groups : elle est transposée ]
     NumericMatrix Z = WLP(&data[0], &p[0], nb_snps, ncol, true_ncol, W, Y_Pi);
     
-/*
-    NumericMatrix PPP = Z(Range(0,5), _);
-    Rcout << PPP ;
-    Rcout << "..." << "\n";
-    PPP = Z( Range( Z.nrow() - 6, Z.nrow() - 1), _);
-    Rcout << PPP ;
-*/
-
     // Vecteur de stats
     for(int i = 0; i < nb_snp_groups; i++) stats[i] = 0;
 
@@ -107,7 +95,7 @@ class SKAT : public Stats {
     }
 
     // Mise à jour moments;
-    if(iterates > 0) {
+    if(iterates > 0) { // iterates == 0 correspond à la stat observée
       for(int i = 0; i < nb_snp_groups; i++) {
         if(nb_snp_in_group[i] == 0) 
           continue;
