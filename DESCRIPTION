@@ -10,6 +10,7 @@ Description: Rare variant association tests (burden tests and SKAT) and genetic 
 License: GPL-3
 LinkingTo: Rcpp, RcppParallel, RcppEigen, gaston, BH
 Depends: R (>= 3.5.0), Rcpp, RcppParallel, methods, gaston, mlogit (>= 1.1-0)
+Imports: Formula, dfidx
 NeedsCompilation: yes
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

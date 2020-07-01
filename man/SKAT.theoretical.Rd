@@ -32,7 +32,8 @@ A data frame containing for each genomic region:
 If \code{debug = TRUE}, the mean, standard deviation, skewness and kurtosis used to compute the p-value are returned
 }
 \seealso{ \code{\link{SKAT.NullObject}}, \code{\link{SKAT.theoretical}}, \code{\link{SKAT.bootstrap}}, \code{SKAT}}
-\references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;
+\references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;  
+
              Liu et al. 2008, \emph{A new chi-square approximation to the distribution of non-negative definite quadratic forms in non-central normal variables}, Computational Statistics & Data Analysis, doi:10.1016/j.csda.2008.11.025
 }
 \examples{
@@ -54,8 +55,7 @@ x <- set.genomic.region(x)
 #keeping only genomic regions with at least 10 SNPs
 x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
 
-#run SKAT using the 1000 genome EUR populations as "outcome"
-#using one core
+#run SKAT using the 1000 genome EUR populations as "outcome" using one core
 #Fit Null model
 x1.H0 <- SKAT.NullObject(x1@ped$pop)
 

@@ -49,7 +49,8 @@ If \code{debug=TRUE}, other informations are given about the moments estimation:
   \item{kurtosis}{ The kurtosis of the permutated statistics}
 }
 \seealso{ \code{\link{SKAT}}, \code{\link{SKAT.NullObject}} }
-\references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;
+\references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;  
+
              Lee et al. 2012, \emph{Optimal Unified Approach for Rare-Variant Association Testing with Application to Small-Sample Case-Control Whole-Exome Sequencing Studies}, American Journal of Human Genetics, doi:10.1016/j.ajhg.2012.06.007;
 }
 \examples{

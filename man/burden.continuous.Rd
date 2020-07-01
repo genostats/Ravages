@@ -56,7 +56,8 @@ x1@ped$pheno <- rnorm(nrow(x1))
 burden.continuous(x1, burden = "WSS")
 
 #Simulation of a covariate + Sex as a covariate
-sex <- x1@ped$sex ; u <- runif(nrow(x1))
+sex <- x1@ped$sex
+set.seed(1) ; u <- runif(nrow(x1))
 covar <- cbind(sex, u)
 
 #with the covariate sex

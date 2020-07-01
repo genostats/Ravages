@@ -184,6 +184,10 @@ x1.null <- SKAT.NullObject(x1@ped$pop)
 #Permutations
 SKAT(x1, x1.null, get.moments = "permutations", debug = TRUE,
      params.sampling = list(perm.target = 100, perm.max =5e4))
+#Bootstrap: include covariates
+x1.null.covar <- SKAT.NullObject(x1@ped$pop, data = covar)
+SKAT(x1, x1.null.covar, get.moments = "bootstrap", debug = TRUE,
+     params.sampling = list(perm.target = 100, perm.max =5e4))
 #Theoretical on 1 core
 SKAT(x1, x1.null, get.moments = "theoretical", debug = TRUE, cores = 1)
 ```

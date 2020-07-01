@@ -70,7 +70,7 @@ burden.mlogit(x1, x1@ped$pop, burden = "WSS", ref.level="CEU", get.OR.value=TRUE
 \donttest{
 #Simulation of a covariate + Sex as a covariate
 sex <- x1@ped$sex
-u <- runif(nrow(x1))
+set.seed(1) ; u <- runif(nrow(x1))
 covar <- cbind(sex, u)
               
 #with the covariate sex

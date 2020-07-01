@@ -29,7 +29,8 @@ Pi.matrix <- function(group, data, formula, ref.level){
     if (is(fit, "error")) {
       pi.matrix <- matrix(NA, ncol=nlevels(group), nrow=nrow(data), byrow=TRUE, dimnames=list(rownames(data), levels(group)))
     }else{
-      pi.matrix <- matrix(fit$model$probabilities, ncol=nlevels(group), nrow=nrow(data), byrow=TRUE, dimnames=list(rownames(data), levels(group)))
+      pi.matrix <- matrix(fit$model$probabilities, ncol=nlevels(group), nrow=nrow(data), byrow=TRUE, dimnames=list(rownames(data), fit$model$idx$id2[1:nlevels(group)]))
+      pi.matrix <- pi.matrix[,levels(group)]
     }
     
     return(pi.matrix)

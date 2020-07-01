@@ -7,7 +7,8 @@
   Computes a GRR matrix based on a simulation model
 }
 \usage{
-GRR.matrix(genes.maf = Kryukov, n.case.groups = 2, GRR = c("SKAT", "constant", "variable"), 
+GRR.matrix(genes.maf = Kryukov, n.case.groups = 2, 
+           GRR = c("SKAT", "constant", "variable"), 
            GRR.value, GRR.function, GRR.multiplicative.factor = 2, select.gene)
 }
 \arguments{

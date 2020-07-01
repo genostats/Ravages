@@ -59,8 +59,10 @@ If \code{debug = TRUE}, the mean, standard deviation, skewness and kurtosis are 
   \item{nb.perms}{ The total number of simulations performed }
 }
 \seealso{ \code{\link{SKAT.NullObject}}, \code{\link{SKAT.theoretical}}, \code{\link{SKAT.bootstrap}}, \code{\link{SKAT.permutations}}}
-\references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;
-             Lee et al. 2012, \emph{Optimal Unified Approach for Rare-Variant Association Testing with Application to Small-Sample Case-Control Whole-Exome Sequencing Studies}, American Journal of Human Genetics, doi:10.1016/j.ajhg.2012.06.007;
+\references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;  
+
+             Lee et al. 2012, \emph{Optimal Unified Approach for Rare-Variant Association Testing with Application to Small-Sample Case-Control Whole-Exome Sequencing Studies}, American Journal of Human Genetics, doi:10.1016/j.ajhg.2012.06.007;  
+
              Liu et al. 2008, \emph{A new chi-square approximation to the distribution of non-negative definite quadratic forms in non-central normal variables}, Computational Statistics & Data Analysis, doi:10.1016/j.csda.2008.11.025
 }
 
@@ -84,8 +86,8 @@ x <- set.genomic.region(x)
 x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
 
 #Simulation of a covariate + Sex as a covariate
-sex <- x1@snps$sex
-u <- runif(nrow(x1))
+sex <- x1@ped$sex
+set.seed(1) ; u <- runif(nrow(x1))
 covar <- cbind(sex, u)
 
 #run SKAT using the 1000 genome EUR populations as "outcome"
@@ -98,8 +100,10 @@ params.sampling = list(perm.target = 100, perm.max = 500)
 
 #Run SKAT using the method based on sample size, here permutations
 SKAT(x1, x1.H0, params.sampling = params.sampling)
+
 #Run SKAT with the covariates: use boostrap as n<2000
-SKAT(x1, x1.H0, params.sampling = params.sampling, get.moments = "bootstrap")
+x1.H0.covar <- SKAT.NullObject(x1@ped$pop, data = covar, formula = ~ sex)
+SKAT(x1, x1.H0.covar, params.sampling = params.sampling, get.moments = "bootstrap")
 
 \dontrun{
 #Run SKAT using theoretical moments (discourage here as n<2000) and 1 core
