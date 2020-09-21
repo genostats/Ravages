@@ -1,4 +1,5 @@
 WSS <- function(x, genomic.region = x@snps$genomic.region) {
+
   if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
   genomic.region <- droplevels(genomic.region)
 
