@@ -1,8 +1,5 @@
 burden.continuous <- function(x, pheno = x@ped$pheno, genomic.region = x@snps$genomic.region, burden, maf.threshold = 0.01, formula, data){
  
-  if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
-  genomic.region <- droplevels(genomic.region)
-
   if(!is.numeric(pheno)) stop("'pheno' should be a numeric vector")
 
   if(is.numeric(burden)) {
@@ -14,14 +11,17 @@ burden.continuous <- function(x, pheno = x@ped$pheno, genomic.region = x@snps$ge
       }
     }
     score <- burden
-  } else if(burden == "CAST"){
-    if(missing(x)) stop("a bed.matrix 'x' is needed to compute CAST score")
-    score <- CAST(x, genomic.region, maf.threshold)
-  } else if(burden == "WSS"){
-    if(missing(x)) stop("a bed.matrix 'x' is needed to compute WSS score")
-    score <- WSS(x, genomic.region)
-  } else {
-    stop("'burden' should be \"CAST\", \"WSS\", or a matrix of pre-computed burdens");
+  } else { 
+    if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
+    genomic.region <- droplevels(genomic.region)
+    if(missing(x)) stop("a bed.matrix 'x' is needed to compute the score")
+    if(burden == "CAST"){
+      score <- CAST(x, genomic.region, maf.threshold)
+    } else if(burden == "WSS"){
+      score <- WSS(x, genomic.region)
+    } else {
+      stop("'burden' should be \"CAST\", \"WSS\", or a matrix of pre-computed burdens");
+    }
   }
   score <- as.data.frame(score)
   # to ensure syntactically correct formulas
