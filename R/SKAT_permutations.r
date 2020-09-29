@@ -35,6 +35,8 @@ SKAT.permutations <- function(x, NullObject, genomic.region = x@snps$genomic.reg
 
   names(B)[6] <- "mean"
   B$p.value <- ifelse(B$nb.perm < perm.max, B$p.perm, B$p.chi2) 
+  #If p.chi2 is NA, return NA in p.value
+  B$p.value <- ifelse(is.na(B$p.chi), NA, B$p.value)
  
   B <- as.data.frame(B, row.names = levels(genomic.region))
   if(debug) 
