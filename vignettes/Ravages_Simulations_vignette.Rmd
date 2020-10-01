@@ -128,7 +128,7 @@ x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, nb.causal = 30, h2=c(0.01,0.01,0
 ```
 
 ## Power calculation
-Power calculations are not directly implemented into **Ravages**, but the functions *burden.mlogit()* and *SKAT()* can be used to perform burden tests and SKAT. To have more informations about these two functions, please refer to the main vignette of the package. After the simulation of a bedmatrix using one of the two previously explained methods, statistical power can be computed as follows:
+Power calculations are not directly implemented into **Ravages**, but the functions *burden()* and *SKAT()* can be used to perform burden tests and SKAT. To have more informations about these two functions, please refer to the main vignette of the package. After the simulation of a bedmatrix using one of the two previously explained methods, statistical power can be computed as follows:
 
 ```{r}
 #Simulations using GRR values
@@ -149,10 +149,20 @@ x.GRR.filter <- filter.rare.variants(x.GRR, maf.threshold=0.01, filter="whole")
 x.GRR.1 <- select.inds(x.GRR.filter, x.GRR.filter@ped$pheno %in% c(0,1))
 x.GRR.2 <- select.inds(x.GRR.filter, x.GRR.filter@ped$pheno %in% c(0,2))
 x.GRR.3 <- select.inds(x.GRR.filter, x.GRR.filter@ped$pheno %in% c(0,3))
-wss.cas1 <- burden.mlogit(x.GRR.1, burden="WSS", ref.level=0)
-wss.cas2 <- burden.mlogit(x.GRR.2, burden="WSS", ref.level=0)
-wss.cas3 <- burden.mlogit(x.GRR.3, burden="WSS", ref.level=0)
-mean(wss.cas1<0.05) ; mean(wss.cas2<0.05) ; mean(wss.cas3<0.05)
+#Construction of null models
+H0.cas1 <- NullObject.parameters(x.GRR.1@ped$pheno, ref.level = 0, 
+                                 RVAT = "burden", pheno.type = "categorial")
+H0.cas2 <- NullObject.parameters(x.GRR.2@ped$pheno, ref.level = 0, 
+                                 RVAT = "burden", pheno.type = "categorial")
+H0.cas3 <- NullObject.parameters(x.GRR.3@ped$pheno, ref.level = 0, 
+                                 RVAT = "burden", pheno.type = "categorial")
+#Run WSS
+wss.cas1 <- burden(x.GRR.1, H0.cas1, burden="WSS", cores = 1)
+wss.cas2 <- burden(x.GRR.2, H0.cas2, burden="WSS", cores = 1)
+wss.cas3 <- burden(x.GRR.3, H0.cas3, burden="WSS", cores = 1)
+mean(wss.cas1$p.value<0.05)
+mean(wss.cas2$p.value<0.05)
+mean(wss.cas3$p.value<0.05)
 
 
 
@@ -168,13 +178,15 @@ x.filter <- filter.rare.variants(x, maf.threshold = 0.01, filter="whole")
 #Power of SKAT with each group considered separately
 #significance level=5%
 #Null model
-skat.null.3gps <- SKAT.NullObject(factor(x.filter@ped$pheno))
+skat.null.3gps <- NullObject.parameters(x.filter@ped$pheno, 
+                                        RVAT = "SKAT", pheno.type = "categorial")
 skat.3gps <- SKAT(x.filter, skat.null.3gps, 
                   params.sampling = list(perm.target = 100, perm.max = 5e4))
 mean(skat.3gps$p.value<0.05)
 #Considering all the cases as one group and compare them to the controls
-x.filter@ped$pheno.pooled <- ifelse(x.filter@ped$pheno == 0, 0, 1)
-skat.null.2gps <- SKAT.NullObject(factor(x.filter@ped$pheno.pooled))
+x.filter@ped$pheno.pooled <- factor(ifelse(x.filter@ped$pheno == 0, 0, 1))
+skat.null.2gps <- NullObject.parameters(x.filter@ped$pheno.pooled, 
+                                        RVAT = "SKAT", pheno.type = "categorial")
 skat.2gps <- SKAT(x.filter, skat.null.2gps, 
                   params.sampling = list(perm.target = 100, perm.max = 5e4))
 mean(skat.2gps$p.value<0.05)
@@ -183,7 +195,13 @@ mean(skat.2gps$p.value<0.05)
 #at a 5% significance threshold
 x.1 <- select.inds(x.filter, x.filter@ped$pheno != 2)
 x.2 <- select.inds(x.filter, x.filter@ped$pheno != 1)
-cast.cas1 <- burden.mlogit(x.1, burden="CAST", ref.level=0)$p.value
-cast.cas2 <- burden.mlogit(x.2, burden="CAST", ref.level=0)$p.value
-mean(cast.cas1<0.05) ; mean(cast.cas2<0.05)
+#Null model
+H0.cas1 <- NullObject.parameters(x.1@ped$pheno, ref.level = 0, 
+                                 RVAT = "burden", pheno.type = "categorial")
+H0.cas2 <- NullObject.parameters(x.2@ped$pheno, ref.level = 0, 
+                                 RVAT = "burden", pheno.type = "categorial")
+#Run WSS
+cast.cas1 <- burden(x.1, H0.cas1, burden="CAST", cores = 1)
+cast.cas2 <- burden(x.2, H0.cas2, burden="CAST", cores = 1)
+mean(cast.cas1$p.value<0.05) ; mean(cast.cas2$p.value<0.05)
 ```

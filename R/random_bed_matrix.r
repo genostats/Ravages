@@ -116,7 +116,7 @@ random.bed.matrix <- function(genes.maf = Kryukov, size, prev, replicates,
     if(any(MAFS$freq.homo.ref[1,]>1 | MAFS$freq.het[1,]<0 | MAFS$freq.homo.alt[1,]<0)) stop("Impossible genetic model, please change your parametrization")
     .Call("oz_random_filling_bed_matrix_noHW", PACKAGE = "Ravages", x@bed, MAFS$freq.homo.ref, MAFS$freq.het, size, (b-1)*GRR.pars$n.variants)
   }
-  x@ped$pheno <- rep.int( 1:length(size) - 1, size)
+  x@ped$pheno <- factor(rep.int( 1:length(size) - 1, size))
   x@snps$genomic.region <- factor( rep( sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = GRR.pars$n.variants) )
   x@snps$id <- paste( x@snps$genomic.region, x@snps$id, sep="_")
   x <- set.stats(x, verbose = FALSE)

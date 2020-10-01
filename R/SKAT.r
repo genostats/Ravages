@@ -5,13 +5,10 @@ SKAT <- function(x, NullObject, genomic.region = x@snps$genomic.region,
 
   if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
   genomic.region <- droplevels(genomic.region)
-                 
-  #If no genomic region: all variants in same unit
-  if(length(genomic.region)==0){
-    warning("No 'genomic region' given, all variants will be analysed in the same testing unit")
-    genomic.region <- factor(rep("UniqRegion", ncol(x)))
-  }
-  if(length(grep(names(NullObject), pattern = "pheno"))==0){
+
+  #Test if phenotype is continuous or categorial
+  if(NullObject$pheno.type == "categorial"){
+    cat("Categorial phenotype \n")
     if(get.moments == "size.based"){
       get.moments <- NullObject$get.moments
     }else{
@@ -46,12 +43,12 @@ SKAT <- function(x, NullObject, genomic.region = x@snps$genomic.region,
                               weights = weights, maf.threshold = maf.threshold,
                               estimation.pvalue = estimation.pvalue, cores = cores, debug = debug)
     }
-  }else{
-    cat("continuous phenotype \n")
+  }
+  if(NullObject$pheno.type == "continuous"){
+    cat("Continuous phenotype \n")
     res <- SKAT.continuous(x, NullObject, genomic.region = genomic.region,
                            weights = weights, maf.threshold = maf.threshold,
                            estimation.pvalue = estimation.pvalue, debug = debug)
   }
-
   return(results = res)
 }

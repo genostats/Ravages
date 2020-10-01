@@ -1,4 +1,8 @@
 burden.weighted.matrix <- function(x, weights, genomic.region = x@snps$genomic.region){
+
+  if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
+  genomic.region <- droplevels(genomic.region)
+
   if(length(weights)==1){
     weights <- rep(weights, length(genomic.region))
   }else{

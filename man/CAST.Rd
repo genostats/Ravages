@@ -3,12 +3,12 @@
 \title{ Cohort Allelic Sum Test}
 \description{ Calculates the CAST genetic score }
 \usage{
-CAST(x, genomic.region = x@snps$genomic.region, maf.threshold = 0.01)
+CAST(x, genomic.region = x@snps$genomic.region, maf.threshold = 0.5)
 }
 \arguments{
   \item{x}{ A bed.matrix }
   \item{genomic.region}{ A factor defining the genomic region of each variant }
-  \item{maf.threshold}{ The MAF used for the definition of a rare variant, set at 0.01 by default}
+  \item{maf.threshold}{ The MAF used for the definition of a rare variant, set at 0.5 by default, i.e. all variants are kept}
 }
 \value{
 A matrix containing the CAST genetic score with one row per individual and one column per \code{genomic.region}

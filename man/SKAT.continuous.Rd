@@ -9,7 +9,7 @@ SKAT.continuous(x, NullObject, genomic.region = x@snps$genomic.region,
 }
 \arguments{
   \item{x}{ A bed.matrix }
-  \item{NullObject}{ A list returned from \code{SKAT.NullObject.continuous} }
+  \item{NullObject}{ A list returned from \code{NullObject.parameters} }
   \item{genomic.region}{ A factor defining the genomic region of each variant }
   \item{weights}{ A vector with the weight of each variant. By default, the weight of each variant is inversely proportionnal to its MAF, as it was computed in the original SKAT method}
   \item{maf.threshold}{ The MAF above which variants are removed (default is to keep all variants)}
@@ -28,7 +28,7 @@ A data frame containing for each genomic region:
 
 If \code{debug = TRUE}, the mean, standard deviation, skewness and kurtosis used to compute the p-value are returned
 }
-\seealso{ \code{\link{SKAT.NullObject}}, \code{SKAT}}
+\seealso{ \code{\link{NullObject.parameters}}, \code{\link{SKAT.NullObject.continuous}}, \code{SKAT}}
 \references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;  
 
              Liu et al. 2008, \emph{A new chi-square approximation to the distribution of non-negative definite quadratic forms in non-central normal variables}, Computational Statistics & Data Analysis, doi:10.1016/j.csda.2008.11.025
@@ -54,7 +54,7 @@ x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.sn
 
 #run SKAT using a random continuous phenotype
 #Fit Null model
-x1.H0 <- SKAT.NullObject.continuous(rnorm(nrow(x1)))
+x1.H0 <- NullObject.parameters(rnorm(nrow(x1)), RVAT = "SKAT", pheno.type = "continuous")
 
 SKAT.continuous(x1, x1.H0)
 }

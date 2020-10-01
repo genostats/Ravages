@@ -3,7 +3,7 @@
 \title{ Null Model for multi group SKAT test }
 \description{ Get the parameters under the null model to peforms SKAT}
 \usage{
-  SKAT.NullObject(group, data, formula)
+  SKAT.NullObject(group, data = NULL, formula)
 }
 \arguments{
   \item{group}{ A factor containing the group of each individual }
@@ -23,5 +23,5 @@
   \item{get.moments}{ How to compute moments based on sample size for p-value calculations (only used if \code{get.moments = "size.based"} for a categorial phenotype in \code{SKAT}. }
   \item{P1}{ The vairance-covariance matrix of (Y - Pi_hat)}
 }
-\seealso{ \code{\link{SKAT}}, \code{\link{SKAT.theoretical}}, \code{\link{SKAT.bootstrap}}, \code{\link{SKAT.permutations}} }
+\seealso{ \code{\link{NullObject.parameters}}, \code{\link{SKAT}}, \code{\link{SKAT.theoretical}}, \code{\link{SKAT.bootstrap}}, \code{\link{SKAT.permutations}} }
 

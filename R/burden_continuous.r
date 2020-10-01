@@ -1,7 +1,4 @@
-burden.continuous <- function(x, pheno = x@ped$pheno, genomic.region = x@snps$genomic.region, burden, maf.threshold = 0.01, formula, data){
- 
-  if(!is.numeric(pheno)) stop("'pheno' should be a numeric vector")
-
+burden.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.region, burden, maf.threshold = 0.5){
   if(is.numeric(burden)) {
     if(!is.matrix(burden)){
       stop("Score is not a matrix")
@@ -28,31 +25,10 @@ burden.continuous <- function(x, pheno = x@ped$pheno, genomic.region = x@snps$ge
   old.names <- colnames(score)
   names(score) <- make.names(names(score))
 
-  if(missing(data)) 
-    data <- NULL
-  if(missing(formula)){
-    formula <- NULL
-  }
-
-  if(!is.null(data)) {
-    if(is.null(colnames(data))) colnames(data) <- sprintf("C%0*d", log10(ncol(data))+1, 1:ncol(data))
-    if(nrow(data) != length(pheno)){
-      stop("'data' has wrong dimensions")
-    }
-  }
-
   # preparation data / formula
-  if(is.null(data)) {
-    data.reg <- cbind(ind.pheno = pheno, score)
-  } else {
-    data.reg <- as.data.frame(data)
-    if(is.null(formula))  
-      formula <- as.formula( paste("~", paste(colnames(data), collapse = "+")))
-    data.reg <- cbind(ind.pheno = pheno, score, data.reg)
-  }
+  data.reg <- cbind(NullObject$data, score) ; rownames(data.reg) <- NULL
 
-
-  R <- sapply( names(score), function(reg) run.burden.continuous(pheno = pheno, score = score, region = reg, formula = formula, data = data.reg))
+  R <- sapply( names(score), function(reg) run.burden.continuous(pheno = NullObject$pheno, score = score, region = reg, covar.toinclude = NullObject$covar.toinclude, data = data.reg))
 
   R <- as.data.frame( t(R) );
 
@@ -64,16 +40,12 @@ burden.continuous <- function(x, pheno = x@ped$pheno, genomic.region = x@snps$ge
 }
 
 
-run.burden.continuous <- function(pheno, score, region, formula, data){
+run.burden.continuous <- function(pheno, score, region, covar.toinclude, data){
   # Formula for the current region
-  if(is.null(formula)) { 
+  if(is.null(covar.toinclude)) { 
     my.formula <- as.formula(paste("ind.pheno ~ ", region))
   } else {
-    z <- as.character(formula)
-    if(z[1] != "~" | length(z) != 2) 
-      stop("'formula' should be a formula of the form \"~ var1 + var2\"")
-    z <- z[2]
-    my.formula <- as.formula( paste("ind.pheno ~ ", region, " + ", z) ) 
+    my.formula <- as.formula( paste("ind.pheno ~ ", region, " + ", covar.toinclude )) 
   }
 
  

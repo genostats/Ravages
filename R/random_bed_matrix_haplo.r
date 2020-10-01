@@ -46,7 +46,7 @@ rbm.haplos.thresholds <- function(haplos, weights = -0.4*log10(colMeans(haplos))
     .Call('rbm_haplos_thresholds_filling', PACKAGE = 'Ravages', x@bed,  haplos, burdens, sd = sqrt(1-h2), thr1 = s, thr2 = rep(Inf, length(size)), size, repNumber = i-1, reps=rep.by.causal)
   }
 
-  x@ped$pheno <- rep.int( 1:length(size) - 1, size)
+  x@ped$pheno <- factor(rep.int( 1:length(size) - 1, size))
   x@snps$genomic.region <- factor( rep( sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = ncol(haplos)) )
   
  

@@ -10,7 +10,7 @@ SKAT.permutations(x, NullObject, genomic.region = x@snps$genomic.region,
 }
 \arguments{
   \item{x}{ A bed.matrix }
-  \item{NullObject}{ A list returned from \code{SKAT.NullObject} }
+  \item{NullObject}{ A list returned from \code{NullObject.parameters} }
   \item{genomic.region}{ A factor defining the genomic region of each variant }
   \item{weights}{ A vector with the weight of each variant. By default, the weight of each variant is inversely proportionnal to its MAF, as it was computed in the original SKAT method}
   \item{maf.threshold}{ The MAF above which variants are removed (default is to keep all variants)}
@@ -48,7 +48,7 @@ If \code{debug=TRUE}, other informations are given about the moments estimation:
   \item{skewness}{ The skweness of the permutated statistics}
   \item{kurtosis}{ The kurtosis of the permutated statistics}
 }
-\seealso{ \code{\link{SKAT}}, \code{\link{SKAT.NullObject}} }
+\seealso{ \code{\link{NullObject.parameters}}, \code{\link{SKAT.NullObject}}, \code{\link{SKAT}} }
 \references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;  
 
              Lee et al. 2012, \emph{Optimal Unified Approach for Rare-Variant Association Testing with Application to Small-Sample Case-Control Whole-Exome Sequencing Studies}, American Journal of Human Genetics, doi:10.1016/j.ajhg.2012.06.007;
@@ -77,7 +77,7 @@ x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.01, min.nb.snp
 #and the target number is 10, please increase
 #both values for a more accurate estimation of the p-values
 #Fit Null model
-x1.H0 <- SKAT.NullObject(x1@ped$pop)
+x1.H0 <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial")
 SKAT.permutations(x1, x1.H0, perm.target = 10, perm.max=100)
 }
 }

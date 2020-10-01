@@ -1,7 +1,7 @@
 \name{SKAT}
 \alias{SKAT}
-\title{ Multi group SKAT test }
-\description{ Peforms SKAT on two or more groups of individuals }
+\title{ SKAT test }
+\description{ Peforms SKAT on categorial or binary phenotypes }
 \usage{
 SKAT(x, NullObject, genomic.region = x@snps$genomic.region, 
      weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
@@ -10,7 +10,7 @@ SKAT(x, NullObject, genomic.region = x@snps$genomic.region,
 }
 \arguments{
   \item{x}{ A bed.matrix }
-  \item{NullObject}{ A list returned from \code{SKAT.NullObject} }
+  \item{NullObject}{ A list returned from \code{NullObject.parameters} }
   \item{genomic.region}{ A factor defining the genomic region of each variant }
   \item{weights}{ A vector with the weight of each variant. By default, the weight of each variant is inversely proportionnal to its MAF, as it was computed in the original SKAT method}
   \item{maf.threshold}{ The MAF above which variants are removed (default is to keep all variants)}
@@ -58,7 +58,7 @@ If \code{debug = TRUE}, the mean, standard deviation, skewness and kurtosis are 
   \item{nb.eq}{ The number of times a permutated statistics is equal to the observed statistics \code{stat}}
   \item{nb.perms}{ The total number of simulations performed }
 }
-\seealso{ \code{\link{SKAT.NullObject}}, \code{\link{SKAT.theoretical}}, \code{\link{SKAT.bootstrap}}, \code{\link{SKAT.permutations}}}
+\seealso{ \code{\link{NullObject.parameters}}, \code{\link{SKAT.NullObject.continuous}}, \code{\link{SKAT.NullObject}}, \code{\link{SKAT.theoretical}}, \code{\link{SKAT.bootstrap}}, \code{\link{SKAT.permutations}}}
 \references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;  
 
              Lee et al. 2012, \emph{Optimal Unified Approach for Rare-Variant Association Testing with Application to Small-Sample Case-Control Whole-Exome Sequencing Studies}, American Journal of Human Genetics, doi:10.1016/j.ajhg.2012.06.007;  
@@ -94,7 +94,7 @@ covar <- cbind(sex, u)
 #The maximum number of permutations used is 500, please increase
 #this number for a more accurate estimation of the p-values
 #Fit Null model
-x1.H0 <- SKAT.NullObject(x1@ped$pop)
+x1.H0 <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial")
 #Parameters for the sampling procedure 
 params.sampling = list(perm.target = 100, perm.max = 500)
 
@@ -102,7 +102,8 @@ params.sampling = list(perm.target = 100, perm.max = 500)
 SKAT(x1, x1.H0, params.sampling = params.sampling)
 
 #Run SKAT with the covariates: use boostrap as n<2000
-x1.H0.covar <- SKAT.NullObject(x1@ped$pop, data = covar, formula = ~ sex)
+x1.H0.covar <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial",
+                                     data = covar, formula = ~ sex)
 SKAT(x1, x1.H0.covar, params.sampling = params.sampling, get.moments = "bootstrap")
 
 \dontrun{
@@ -112,7 +113,7 @@ SKAT(x1, x1.H0, get.moments = "theoretical", cores = 1)
 
 #Run SKAT with a random continuous phenotype
 #Null Model
-x1.H0.c <- SKAT.NullObject.continuous(rnorm(nrow(x1)))
+x1.H0.c <- NullObject.parameters(rnorm(nrow(x1)), RVAT = "SKAT", pheno.type = "continuous")
 SKAT(x1, x1.H0.c)
 }
 }

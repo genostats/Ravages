@@ -3,7 +3,7 @@
 \title{ Null Model for multi group SKAT test }
 \description{ Get the parameters under the null model to peforms SKAT}
 \usage{
-  SKAT.NullObject.continuous(pheno, data, formula)
+  SKAT.NullObject.continuous(pheno, data = NULL, formula)
 }
 \arguments{
   \item{pheno}{ A numeric vector containing the phenotype value for each individual }
@@ -22,5 +22,5 @@
   \item{pheno}{ The phenotype of each individual as given}
   \item{P1}{ The variance matrix of \code{ymp} }
 }
-\seealso{ \code{\link{SKAT}}, \code{\link{SKAT.continuous}} }
+\seealso{\code{\link{NullObject.parameters}}, \code{\link{SKAT}}, \code{\link{SKAT.continuous}} }
 

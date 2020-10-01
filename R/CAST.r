@@ -1,4 +1,4 @@
-CAST <- function(x, genomic.region = x@snps$genomic.region, maf.threshold = 0.01) {
+CAST <- function(x, genomic.region = x@snps$genomic.region, maf.threshold = 0.5) {
 
   if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
   genomic.region <- droplevels(genomic.region)
