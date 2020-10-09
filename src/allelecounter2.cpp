@@ -40,7 +40,7 @@ using namespace RcppParallel;
         uint8_t x = data[i][j];
         for(int ss = 0; ss < 4 && (4*j + ss) < ncol; ss++) {
           R[ 2*(i*nlevels + group[4*j+ss]-1) ] += gg[x&3];
-          R[ 2*(i*nlevels + group[4*j+ss]-1) + 1] += gg[2-x&3];
+          R[ 2*(i*nlevels + group[4*j+ss]-1) + 1] += gg[2-(x&3)];
           x >>= 2;
         }
       }
