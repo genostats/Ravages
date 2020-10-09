@@ -28,7 +28,7 @@ A data frame containing for each genomic region:
 
 If \code{debug = TRUE}, the mean, standard deviation, skewness and kurtosis used to compute the p-value are returned
 }
-\seealso{ \code{\link{NullObject.parameters}}, \code{\link{SKAT.NullObject.continuous}}, \code{SKAT}}
+\seealso{ \code{\link{NullObject.parameters}}, \code{\link{SKAT.NullObject.continuous}}, \code{\link{SKAT}}}
 \references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;  
 
              Liu et al. 2008, \emph{A new chi-square approximation to the distribution of non-negative definite quadratic forms in non-central normal variables}, Computational Statistics & Data Analysis, doi:10.1016/j.csda.2008.11.025

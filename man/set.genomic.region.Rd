@@ -19,8 +19,9 @@ set.genomic.region(x, genes = genes.b37, flank.width = 0L)
 \details{ 
 Warnings: \code{genes$Gene_Name} should be a factor containing the names of the genes, ordered in the genome order. 
 
+We provide two data sets of autosomal humain genes, \code{genes.b37} and \code{genes.b38}.  
+
 If \code{x@snps$chr} is not a vector of integers, it should be a factor with same levels as \code{genes$Chr}.
-We provide two data sets of autosomal humain genes, \code{genes.b37} and \code{genes.b38}.
 
 If \code{flank.width} is null, only the variants having their position between the \code{genes$Start} and the \code{genes$End} of a gene will be attributed to the corresponding gene.  
 When two genes overlap, variants in the overlapping zone will be assigned to those two genes, separated by a comma.

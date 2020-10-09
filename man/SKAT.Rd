@@ -17,12 +17,14 @@ SKAT(x, NullObject, genomic.region = x@snps$genomic.region,
   \item{get.moments}{ How to estimate the moments to compute the p-values among "size.based", "bootstrap", "permutations", or "theoretical" for categorial phenotypes (2 or more groups of individuals). By default "size.based" that will choose the method depending on sample size (see \code{details}) }
   \item{estimation.pvalue}{ Whether to use the skewness ("skewness") or the kurtosis ("kurtosis") for the chi-square approximation }
   \item{params.sampling}{ A list containing the elements "perm.target", "perm.max", "debug". Only needed if \code{get.moments = "boostrap"} or \code{get.moments = "permutations" } }
-  \item{cores}{ How many cores to use for moments computation, set at 10 by default }
+  \item{cores}{ How many cores to use for moments computation, set at 10 by default. Only needed if \code{get.moments = "theoretical"} }
   \item{debug}{ Whether to return the mean, standard deviation, skewness and kurtosis of the statistics}
 }
 \details{
-  The p-value is calculated using a chi-square approximation based on the statistics' moments. The user has to choose how to compute these moments (argument \code{get.moments}), and which moments to use for the chi-square approximation (argument \code{estimation.pvalue}):  
-  The moments can be computed either using a sampling procedure (\code{"permutations"} if there are no covariates, or \code{"bootstrap"} otherwise), or using theoretical moments computed as in Liu et al. 2008 (\code{"theoretical"}).
+  For categorial phenotypes, the p-value is calculated using a chi-square approximation based on the statistics' moments. The user has to choose how to compute these moments (argument \code{get.moments}), and which moments to use for the chi-square approximation (argument \code{estimation.pvalue}).  
+
+  The moments can be computed either using a sampling procedure (\code{"permutations"} if there are no covariates, or \code{"bootstrap"} otherwise), or using theoretical moments computed as in Liu et al. 2008 (\code{"theoretical"}).  
+
   If \code{get.moments = "size.based"}, the sampling procedure will be used for sample sizes lower than 2000, and the theoretical calculations otherwise.  
 
   To estimate the p-values, etiher the first three moments are used (\code{estimation.pvalue = "skewness"}), or the moments 1, 2 and 4 are used (\code{estimation.pvalue = "kurtosis"}). 
@@ -40,9 +42,9 @@ SKAT(x, NullObject, genomic.region = x@snps$genomic.region,
 
   if \code{perm.max} is reached, the SKAT small sample procedure is used, and p-values are approximated using a chi-square distributions based on statistics' moments 1, 2 and 4 computed from the permutated values.     
 
-  If \code{debug=TRUE}, more informations about the estimated statistics moments are given.  
+  If \code{NullObject$pheno.type = "continuous"}, the method from Liu et al. will be used to compute the p-value for the continuous phenotype, but \code{estimation.pvalue} can be set at "skewness" or "kurtosis".  
 
-  If \code{SKAT.NullObject.continuous} has been used to generate \code{NullObject}, the method from Liu et al. will be used to compute the p-value for the continuous phenotype, but \code{estimation.pvalue} can be set at "skewness" or "kurtosis".  
+  If \code{debug=TRUE}, more informations about the estimated statistics moments are given.  
 }
 \value{
 A data frame containing for each genomic region: 

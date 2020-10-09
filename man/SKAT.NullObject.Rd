@@ -1,7 +1,7 @@
 \name{SKAT.NullObject}
 \alias{SKAT.NullObject}
 \title{ Null Model for multi group SKAT test }
-\description{ Get the parameters under the null model to peforms SKAT}
+\description{ Get the parameters under the null model to peform SKAT on a categorial phenotype}
 \usage{
   SKAT.NullObject(group, data = NULL, formula)
 }

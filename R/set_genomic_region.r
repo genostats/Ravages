@@ -1,4 +1,6 @@
 set.genomic.region <- function(x, genes = genes.b37, flank.width = 0L) {
+  if(!is.factor(genes$Gene_Name)) stop("genes$Gene_Name should be a factor with levels ordered in the genome order")
+
   # ce test est OK pour les facteurs aussi
   if(typeof(x@snps$chr) != "integer") 
     stop("x@snps$chr should be either a vector of integers, or a factor with same levels as genes$Chr")

@@ -4,7 +4,7 @@ author: "Herve Perdry and Ozvan Bocher"
 date: "`r Sys.Date()`"
 output: pdf_document
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Ravages_Association}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -39,10 +39,6 @@ x@ped$pop <- droplevels(x@ped$pop)
 x <- set.genomic.region(x, flank.width=500)
 table(x@snps$genomic.region, useNA = "ifany")
 
-# Group variants within known genes using their exact positions
-x <- set.genomic.region(x, flank.width=0)
-table(x@snps$genomic.region, useNA = "ifany")
-
 # Filter variants with maf in the entire sample lower than 1%
 # And keep only genomic region with at least 10 SNPs
 x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.01, min.nb.snps = 10)
@@ -62,12 +58,12 @@ SKAT(x1, x1.H0.SKAT, params.sampling=list(perm.target = 100, perm.max = 5e4))
 ```
 
 ## Defining genomic regions
-For rare variant association tests, the unit of analysis is not a single variant but a genomic region, typically a gene. The first step of the analysis is therefore to group variants into genomic regions. This can be done using the function **set.genomic.region()** and known gene positions. It works on a bed.matrix (see Gaston) and simply adds a column "genomic.region" to the slot x@snps containing the gene assigned to each variant as a factor. Gene positions should be given to *genes* as a dataframe containing the following columns: *Chr*, *Start*, *End*, *Gene_Name*. The dataframe should absolutely be ordered in the genome order, as well as the levels of *genes$Gene_Name*. By default, any variant being outside the gene positions won't be annotated. Gene positions can be extended to annotate more variants using the argument *flank.width* corresponding to the number of base pairs upstream and downstream the gene. If *flank.width=Inf*, each variant will be assigned to the nearest gene. If two genes overlap, variants in the overlapping zone will be attributed to both genes, separated by a comma.  
+For rare variant association tests, the unit of analysis is not a single variant but a genomic region, typically a gene. The first step of the analysis is therefore to group variants into genomic regions. This can be done using the function **set.genomic.region()** and known gene positions. It works on a bed.matrix (see Gaston) and simply adds a column "genomic.region" to the slot x@snps containing the genomic region (a factor) assigned to each variant. Gene positions should be given to *genes* as a dataframe containing the following columns: *Chr*, *Start*, *End*, *Gene_Name*. The dataframe should absolutely be ordered in the genome order, as well as the levels of *genes$Gene_Name*. By default, any variant being outside the gene positions won't be annotated. Gene positions can be extended to annotate more variants using the argument *flank.width* corresponding to the number of base pairs upstream and downstream the gene. If *flank.width=Inf*, each variant will be assigned to the nearest gene. If two genes overlap, variants in the overlapping zone will be attributed to both genes, separated by a comma.  
 The files **genes.b37** and **genes.b38** available in Ravages which contain gene positions from ENSEMBL versions hg19 and hg38 can be used for *genes* to define gene positions. 
 
 ## Multiple genomic regions for a variant
-If variants are annotated to multiple genes, they can be split in a new bed matrix using the function **bed.matrix.split.genomic.region()**. This function takes a bed matrix as argument (*x*) and duplicates variants being assigned to multiple genes separated by *split.pattern*. If *changeID=TRUE*, the id from the bedmatrix will be changed to the format chr:pos:A1:A2:genomic.region to distinguish the duplicated variants.  
-An example is shown below with an example bedmatrix and an example genes dataframe:
+If variants are annotated to multiple genomic regions, they can be split in a new bed matrix using the function **bed.matrix.split.genomic.region()**. This function takes a bed matrix as argument (*x*) and duplicates variants being assigned to multiple genes separated by *split.pattern*. If *changeID=TRUE*, the id from the bedmatrix will be changed to the format chr:pos:A1:A2:genomic.region to distinguish the duplicated variants.  
+An example is shown below:
 ```{r}
 #Example bed matrix with 4 variants
 x.ex <- as.bed.matrix(x=matrix(0, ncol=4, nrow=10),
@@ -77,13 +73,15 @@ x.ex <- as.bed.matrix(x=matrix(0, ncol=4, nrow=10),
 
 #Example genes dataframe
 genes.ex <- data.frame(Chr=c(1,1,3,4), Start=c(10,110,190,220), End=c(170,180,250,260),
-                       Gene_Name=letters[1:4])
+                       Gene_Name=factor(letters[1:4]))
 
 #Attribute genomic regions
 x.ex <- set.genomic.region(x.ex, genes = genes.ex)
+x.ex@snps$genomic.region
 
 #Split genomic regions
 x.ex.split <- bed.matrix.split.genomic.region(x.ex, split.pattern = ",")
+x.ex.split@snps$genomic.region
 ``` 
 
 
@@ -94,13 +92,15 @@ To perform rare variant analysis, it is also important to define what is a rare 
 * If *filter="controls"*, all the variants with a MAF lower than the threshold in the controls group will be kept. In this situation, the controls group needs to be specified to the argument *ref.level*.
 * If *filter="any"*, all the variants with a MAF lower than the threshold in any of the groups will be kept.  
 
-It is also possible to specify the minimum number of variants needed in a genomic region to keep it using the parameter *min.nb.snps*.
+It is also possible to specify the minimum number of variants needed in a genomic region to keep it using the parameter *min.nb.snps*.  
+
+For the filter *any* and *controls*, the group of each individual should be given as a factor to *group*.
 
 
 ## Rare variant association tests
 We have implemented two burden tests extensions (CAST and WSS) and an extension of the variance-component test SKAT to perform the association tests between a gene and more than two groups of individuals.  
 The general idea of burden tests is to compute a genetic score per individual and per genomic region and to test if it differs between the different groups of individuals. To extend these tests to more than two groups of individuals, a non-ordinal multinomial regression is used. The independant variable in this regression is the genetic effect of the gene represented by the genetic score. Covariates can be added in the model. In addition to the genetic scores CAST and WSS directly implemented in the package, the user can specify another genetic score for the regression.  
-The variance-component test SKAT looks at the dispersion of genetics effects of rare variants. A geometrical interpretation of the test was used for its extension to more than two groups of individuals. 
+The variance-component test SKAT looks at the dispersion of genetics effects of rare variants. A geometrical interpretation of the test was used for its extension to more than two groups of individuals. Covariates can also be included in this model.
 
 ### Genetic score for burden tests
 We have implemented two functions to compute CAST and WSS scores respectively. These functions return a matrix with one row per individual and one column by genomic region. They are directly called in the function **burden()** if these scores are used to perform the association tests. It is also possible to compute genetic scores in a genomic region based on a vector of weights for each variant using the function **burden.weighted.matrix()**.  
@@ -150,8 +150,8 @@ An example of the p-value and OR calculation with its 95% confidence interval us
 x1.H0 <- NullObject.parameters(x1@ped$pop, ref.level = "CEU", 
                                RVAT = "burden", pheno.type = "categorial")
 # WSS 
-burden.mlogit(x = x1, NullObject = x1.H0, burden ="WSS", 
-              alpha=0.05, get.OR.value=TRUE)
+burden(x = x1, NullObject = x1.H0, burden ="WSS", 
+      alpha=0.05, get.OR.value=TRUE, cores = 1)
 
 #Sex + a simulated variable as covariates
 sex <- x1@ped$sex
@@ -163,10 +163,8 @@ x1.H0.covar <- NullObject.parameters(x1@ped$pop, ref.level = "CEU",
                                      data = covar, formula = ~ sex)
 
 #Regression with the covariate "sex" without OR values
-burden.mlogit(x = x1, NullObject = x1.H0.covar, burden = "WSS")
-
-#WSS using directly the score matrix computed previously
-burden.mlogit(NullObject = x1.H0.covar, burden=WSS.score)
+#Using the score matrix WSS computed previously
+burden(NullObject = x1.H0.covar, burden=WSS.score, cores = 1)
 ```
 
 Finally, using Ravages, it is also possible to perform burden tests with a continuous phenotype by specifying *pheno.type = "continuous"*, and by giving a numeric vector to *pheno* as showed below:
@@ -174,20 +172,15 @@ Finally, using Ravages, it is also possible to perform burden tests with a conti
 #Random continuous phenotype
 set.seed(1) ; pheno1 <- rnorm(nrow(x1))
 #Null model
-x1.H0.continuous <- NullObject.parameters(pheno1, RVAT = "burden", pheno.type = "continuous")
+x1.H0.continuous <- NullObject.parameters(pheno1, RVAT = "burden", 
+                                          pheno.type = "continuous")
 #Test CAST 
 burden(x1, NullObject = x1.H0.continuous, burden = "CAST")
-#Test WSS with covariates
-#Null model
-x1.H0.continuous.covar <- NullObject.parameters(pheno1, RVAT = "burden", 
-                                                pheno.type = "continuous",
-                                                data = covar, formula = ~ sex)
-burden(x1, NullObject = x1.H0.continuous.covar, burden = "WSS")
 ```
 
 ### SKAT
 We also extended the variance-component test SKAT using a geometric interpretation. Unlike the burden tests, the is no burden calculated in this test: the distribution of the genetic effects in the genomic region is compared to a null distribution. SKAT is based on a linear mixed model where the random effects correspond to the genetic effects.  
-Before running the SKAT association test, the function **NullObject.parameters()** first need to be called as for the burden tests, by specifying *RVAT = "SKAT"*. The group of each individual should be given as a factor to *pheno* if a categorail phenotype is studied, and as a numeric vector is a continuous phenotype is studied. As before, potential covariates should be included as a data.frame to *data*. If only some of them are to be include, they should be given as a R formula to *formula*. This function will compute parameters to use the **SKAT()** function, and should be given to this function using the argument *NullObject*.  
+Before running the SKAT association test, the function **NullObject.parameters()** first needs to be called as for the burden tests, by specifying *RVAT = "SKAT"*. The group of each individual should be given as a factor to *pheno* if a categorial phenotype is studied, and as a numeric vector is a continuous phenotype is studied. As before, potential covariates should be included as a matrix to *data*. If only some of them are to be included, they should be given as a R formula to *formula*. This function will compute parameters to use the **SKAT()** function, and should be given to this function using the argument *NullObject*.  
 To compute the p-values, a chi-square approximation is used based on the statistics' moments. The moments can either be estimated using a sampling procedure, or be analytically computed using the method from Liu et al. 2008. The chi-square approximation can be based on the first three moments (*estimation.pvalue = "skewness"*), or on moments 1, 2 and 4 to have a more precise estimation of the tail distribution (*estimation.pvalue = "kurtosis"*). If *get.moments = "theoretical"* and *estimation.pvalue = "skewness"*, it is equivalent to the "liu" method in the SKAT package, and if *estimation.pvalue = "kurtosis"*, it corresponds to the "liu.mod" method in the SKAT package. If *debug = TRUE*, the statistics' moments will be returned in addition to the p-values.    
 If the sample size is lower than 2000, we recommand to use the sampling procedure. If no covariates are present, a simple permutation procedure can be used (*get.moments = "permutations"*), otherwise, a boostrap sampling should be used (*get.moments = "bootstrap"*). For those two situations, a sequential procedure is used to compute the p-values: permutated statistics are computed and each one is compared to the observed statistics. The sampling procedure stops when either *perm.target* (the number of times a permutated statistics should be greater than the observed statistics) or *perm.max* (the maximum number of permutations to perform) is reached. P-values are then computed in two different ways: if *perm.target* is reached, the p-value is computed as *perm.target* divided by the number of permutations performed to reach this value; if *perm.max* is reached before *perm.target* (that is, for pretty small p-values), p-values are computed using the chi-square approximation based on moments estimated from the permutated statistics. *perm.target* and *perm.max* should be given as a list to the argument *params.sampling* of SKAT.  
 If the sample size is bigger than 2000, the analytical calculation from Liu et al. can be used to compute the theoretical moments. In this situation, it is possible to parallelise the calculations using the argument *cores*, set at 10 by default.  
@@ -197,13 +190,8 @@ An example of the SKAT function by specifying the "permutations" or "theoretical
 ```{r}
 #Null model
 x1.null <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial")
-#Permutations
+#Permutations because no covariates
 SKAT(x1, x1.null, get.moments = "permutations", debug = TRUE,
-     params.sampling = list(perm.target = 100, perm.max =5e4))
-#Bootstrap: include covariates
-x1.null.covar <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", 
-                                       pheno.type = "categorial", data = covar)
-SKAT(x1, x1.null.covar, get.moments = "bootstrap", debug = TRUE,
      params.sampling = list(perm.target = 100, perm.max =5e4))
 #Theoretical on 1 core
 SKAT(x1, x1.null, get.moments = "theoretical", debug = TRUE, cores = 1)
@@ -213,8 +201,9 @@ It is also possible to perform the SKAT test on a continuous phenotype by using 
 ```{r}
 #Random continuous phenotype
 set.seed(1) ; pheno1 <- rnorm(nrow(x1))
-#Null Model
-x1.H0.c <- NullObject.parameters(pheno1, RVAT = "SKAT", pheno.type = "continuous")
+#Null Model with covariates
+x1.H0.c <- NullObject.parameters(pheno1, RVAT = "SKAT", pheno.type = "continuous",
+                                 data = covar)
 #Run SKAT
 SKAT(x1, x1.H0.c)
 ```

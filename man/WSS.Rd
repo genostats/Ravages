@@ -9,7 +9,7 @@ WSS(x, genomic.region = x@snps$genomic.region)
 }
 \arguments{
   \item{x}{ A bed.matrix }
-  \item{genomic.region}{ A vector containing the genomic region of each variant }
+  \item{genomic.region}{ A factor containing the genomic region of each variant }
 }
 \value{
 A matrix containing the WSS genetic score with one row per individual and one column per \code{genomic.region}

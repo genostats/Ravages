@@ -14,14 +14,16 @@ filter.rare.variants(x, ref.level, filter=c("whole", "controls", "any"),
   \item{x}{ A bed.matrix }
   \item{ref.level}{ The level corresponding to the controls group, only needed if \code{filter=="controls"} }
   \item{filter}{ On which group the filter will be applied }
-  \item{maf.threshold}{ The MAF threshold used to define a rare variant}
+  \item{maf.threshold}{ The MAF threshold used to define a rare variant, set at 0.01 by default}
   \item{min.nb.snps}{ The minimum number of snps needed to keep a genomic region}
-  \item{group}{ A vector or factor indicating the group of each individual, if missing, \code{x@ped$pheno} is taken}
+  \item{group}{ A factor indicating the group of each individual, only needed if \code{filter = "controls"} or \code{filter = "any"}. If missing, \code{x@ped$pheno} is taken}
 }
 \value{
   A bed.matrix with filtered variants
 }
 \details{
+  To use this function, a factor 'genomic.region' should be present in the slot \code{x@snps}.  
+
   If \code{filter="whole"}, only the variants having a MAF lower than the threshold in the entire sample are kept.
 
   If \code{filter="controls"}, only the variants having a MAF lower than the threshold in the controls group are kept.
@@ -31,10 +33,10 @@ filter.rare.variants(x, ref.level, filter=c("whole", "controls", "any"),
 \examples{
 #Import 1000Genome data from region around LCT gene
 x <- as.bed.matrix(LCT.gen, LCT.fam, LCT.bim)
-table(x@snps$genomic.region, useNA="ifany")
 
 #Group variants within known genes
 x <- set.genomic.region(x)
+table(x@snps$genomic.region, useNA="ifany")
                              
 #Filter of rare variants: only non-monomorphic variants with 
 #a MAF lower than 2.5%

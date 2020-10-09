@@ -10,7 +10,7 @@ burden.weighted.matrix(x, weights, genomic.region = x@snps$genomic.region)
 \arguments{
   \item{x}{ A bed.matrix }
   \item{weights}{ A vector containing the weight of each variant}
-  \item{genomic.region}{ A vector containing the genomic region of each variant }
+  \item{genomic.region}{ A factorcontaining the genomic region of each variant }
 }
 \value{
 A matrix containing the computed genetic score with one row per individual and one column per \code{genomic.region}.

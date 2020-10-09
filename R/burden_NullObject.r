@@ -7,6 +7,7 @@ burden.NullObject <- function(group, ref.level, data, formula){
         covar.toinclude <- NULL
         data <- data.frame(ind.pheno = group) ; rownames(data) <- NULL
   }else{
+    if(!is.matrix(data)) stop("'data' should be a matrix")
     if(is.null(colnames(data))) colnames(data) <- sprintf("C%0*d", log10(ncol(data))+1, 1:ncol(data))
     if (nrow(data) != length(group)) {stop("'data' has wrong dimensions")}
     if (is.null(formula)){
@@ -37,6 +38,7 @@ burden.NullObject.continuous <- function(pheno, data, formula){
         covar.toinclude <- NULL
         data <- data.frame(ind.pheno = pheno) ; rownames(data) <- NULL
   }else{
+    if(!is.matrix(data)) stop("'data' should be a matrix")
     if(is.null(colnames(data))) colnames(data) <- sprintf("C%0*d", log10(ncol(data))+1, 1:ncol(data))
     if (nrow(data) != length(pheno)) {stop("'data' has wrong dimensions")}
     if (is.null(formula)){

@@ -1,7 +1,7 @@
 \name{burden.NullObject}
 \alias{burden.NullObject}
-\title{ Null Model burden tests on multinomial phenotypes}
-\description{ Get the parameters under the null model to peforms burden tests on continuous phenotypes}
+\title{ Null Model for burden tests on multinomial phenotypes}
+\description{ Get the parameters under the null model to peforms burden tests on categorial phenotypes}
 \usage{
   burden.NullObject(group, ref.level, data, formula)
 }

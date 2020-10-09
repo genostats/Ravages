@@ -2,9 +2,9 @@ Package: Ravages
 Type: Package
 Title: Rare Variant Analysis and Genetic Simulations
 Version: 0.1
-Date: 2020-06-08
+Date: 2020-10-07
 Encoding: UTF-8
-Author: Hervé Perdry and Ozvan Bocher
+Author: Ozvan Bocher and Hervé Perdry
 Maintainer: Ozvan Bocher <bocherozvan@gmail.com>
 Description: Rare variant association tests (burden tests and SKAT) and genetic simulations.
 License: GPL-3

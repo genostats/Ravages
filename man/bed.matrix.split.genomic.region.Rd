@@ -18,7 +18,8 @@ bed.matrix.split.genomic.region(x, changeID=TRUE, genomic.region=NULL,
 A bed matrix with variants assigned to multiple genomic regions being duplicated and the corresponding genomic regions separated and transformed into factors.
 }
 \details{
-  If \code{changeID=TRUE}, variants will have new IDs being CHR:POS:A1:A2:genomic.region.
+  If \code{changeID=TRUE}, variants will have new IDs being CHR:POS:A1:A2:genomic.region.  
+
   The genomic region(s) associated to each varaint should be in \code{x@snps$genomic.region} or given as a vector to \code{genomic.region}. If both are present, \code{genomic.region} is used.
 }
 \examples{
@@ -29,7 +30,7 @@ A bed matrix with variants assigned to multiple genomic regions being duplicated
 
 #Example genes dataframe
   genes.ex <- data.frame(Chr=c(1,1,3,4), Start=c(10,110,190,220), End=c(170,180,250,260), 
-                         Gene_Name=letters[1:4])
+                         Gene_Name=factor(letters[1:4]))
 
 #Attribute genomic regions
   x.ex <- set.genomic.region(x.ex, genes = genes.ex)

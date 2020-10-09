@@ -14,8 +14,8 @@
   \item{x}{ A bed matrix, only needed if \code{burden="CAST"} or \code{burden="WSS"}}
   \item{NullObject}{ A list returned from \code{NullObject.parameters} }
   \item{genomic.region}{ A factor containg the genomic region of each SNP, \code{x@snps$genomic.region} by default, only needed if \code{burden}="CAST" or \code{burden}="WSS"}
-  \item{burden}{"CAST" or "WSS" to directly compute the CAST or the WSS genetic score; or a matrix with one row per individual and one column per \code{genomic.region} if another genetic score is wanted.}
-  \item{maf.threshold}{ The MAF threshold to use for the definition of a rare variant in the CAST score}
+  \item{burden}{"CAST" or "WSS" to directly compute the CAST or the WSS genetic score, or a matrix with one row per individual and one column per \code{genomic.region} if another genetic score is wanted.}
+  \item{maf.threshold}{ The MAF threshold to use for the definition of a rare variant in the CAST score. Set at 0.5 by default}
 }
 \details{
   This function will return results from the regression of the continuous phenotype on the genetic score for each genomic region.

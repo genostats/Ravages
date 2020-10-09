@@ -15,8 +15,8 @@ burden.mlogit(x, NullObject, genomic.region = x@snps$genomic.region, burden,
   \item{NullObject}{ A list returned from \code{NullObject.parameters} }
   \item{genomic.region}{ A factor containg the genomic region of each SNP, \code{x@snps$genomic.region} by default, only needed if \code{burden}="CAST" or \code{burden}="WSS"}
   \item{burden}{"CAST" or "WSS" to directly compute the CAST or the WSS genetic score; or a matrix with one row per individual and one column per \code{genomic.region} if another genetic score is wanted.}
-  \item{maf.threshold}{ The MAF threshold to use for the definition of a rare variant in the CAST score}
-  \item{get.OR.value}{ TRUE/FALSE: whether to return the OR values associated to the regression}
+  \item{maf.threshold}{ The MAF threshold to use for the definition of a rare variant in the CAST score. Set at 0.5 by default}
+  \item{get.OR.value}{ TRUE/FALSE: whether to return OR values}
   \item{alpha}{ The alpha threshold to use for the OR confidence interval}
   \item{cores}{ How many cores to use for moments computation, set at 10 by default }
 }
@@ -42,7 +42,7 @@ burden.mlogit(x, NullObject, genomic.region = x@snps$genomic.region, burden,
   \item{l.upper}{ The upper bound of the confidence interval of each OR}
 }
 \seealso{ \code{\link{NullObject.parameters}}, \code{\link{burden.NullObject}},  \code{\link{CAST}}, \code{\link{WSS}}, \code{\link{burden.weighted.matrix}} }
-\references{ Bocher O, et al. \emph{Rare variant associationtesting for multicategory phenotype.} Genet.Epidemiol. 2019;43:646–656.}
+\references{ Bocher O, et al. DOI: 10.1002/gepi.22210. \emph{Rare variant associationtesting for multicategory phenotype.} Genet.Epidemiol. 2019;43:646–656.}
 \examples{
 #Importation of data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)

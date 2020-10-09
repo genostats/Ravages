@@ -1,17 +1,19 @@
 
 filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "any"), maf.threshold = 0.01, min.nb.snps, group) {
-  if(!is.factor(x@snps$genomic.region)) x@snps$genomic.region <- factor(x@snps$genomic.region)
+  if(!is.factor(x@snps$genomic.region)) stop("'x@snps$genomic.region' should be a factor")
+  x@snps$genomic.region <- droplevels(x@snps$genomic.region)
 
   #Check if good filter
   filter <- match.arg(filter)
 
-  #if filter on another factor than x@ped$pheno
-  if(!missing(group)){
-    #Check dim of group
-    if(length(group) != nrow(x@ped)) stop("group has wrong length")
-    if(!is.factor(group)) group <- factor(group)
-  }else{
-    group <- factor(x@ped$pheno)
+  if(filter != "whole"){  
+    if(missing(group)){
+      group <- x@ped$pheno
+    }else{
+      #Check dim of group
+      if(length(group) != nrow(x@ped)) stop("group has wrong length")
+    }
+    if(!is.factor(group)) stop("'group' should be a factor")
   }
 
   filter <- match.arg(filter)

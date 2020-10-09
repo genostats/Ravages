@@ -1,7 +1,7 @@
 \name{SKAT.NullObject.continuous}
 \alias{SKAT.NullObject.continuous}
-\title{ Null Model for multi group SKAT test }
-\description{ Get the parameters under the null model to peforms SKAT}
+\title{ Null Model for SKAT test on continuous phenotype }
+\description{ Get the parameters under the null model to peform SKAT on a continuous phenotype}
 \usage{
   SKAT.NullObject.continuous(pheno, data = NULL, formula)
 }

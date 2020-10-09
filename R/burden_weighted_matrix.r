@@ -16,7 +16,7 @@ burden.weighted.matrix <- function(x, weights, genomic.region = x@snps$genomic.r
   if(length(weights.0) != ncol(x) | length(weights.1) != ncol(x) | length(weights.2) != ncol(x) | length(genomic.region) != ncol(x)) {
     stop("x and weights dimensions mismatch")
   }
-  genomic.region <- as.factor(genomic.region)
+  genomic.region <- factor(genomic.region, levels = unique(genomic.region))
 
   B <- .Call('oz_burden2', PACKAGE = "Ravages", x@bed, nlevels(genomic.region), genomic.region, weights.0, weights.1, weights.2)
   colnames(B) <- levels(genomic.region)

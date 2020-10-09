@@ -1,6 +1,6 @@
 \name{burden.NullObject.continuous}
 \alias{burden.NullObject.continuous}
-\title{ Null Model burden tests on continuous phenotypes}
+\title{ Null Model for burden tests on continuous phenotypes}
 \description{ Get the parameters under the null model to peforms burden tests on continuous phenotypes}
 \usage{
   burden.NullObject.continuous(pheno, data, formula)
@@ -11,7 +11,7 @@
   \item{formula}{ Optional, an R formula corresponding to the regression model indicating which covariates from \code{data} to include in the model if only some of them are to be included}
 }
 \details{
-  This function get the parameters under the null model for the burden tests: it creates an object containing parameters to run \code{\link{burden}} on a continuous phenotype.
+  This function gets the parameters under the null model for the burden tests: it creates an object containing parameters to run \code{\link{burden}} on a continuous phenotype.
 
   If \code{formula} is missing, all columns from data will be included as covariates.
 }

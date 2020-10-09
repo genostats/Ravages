@@ -24,7 +24,7 @@
   }
 }
 
-\source{ Data were obtained from the 1000 Genomes Project (\url{https://www.internationalgenome.org/}). }
+\source{ Data were obtained from the 1000 Genomes Project (\url{internationalgenome.org}). }
 
 \seealso{ \code{\link{LCT.haplotypes}} }
 
