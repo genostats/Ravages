@@ -51,9 +51,9 @@ x1.H0.burden <- NullObject.parameters(x1@ped$pop, ref.level = "CEU",
 burden(x1, NullObject = x1.H0.burden, burden = "CAST", cores = 1)
 
 # run SKAT, using the 1000Genome population as "outcome"
-# Null model for SKAT
+# Null model for SKAT with only few permutations
 x1.H0.SKAT <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial")
-SKAT(x1, x1.H0.SKAT, params.sampling=list(perm.target = 100, perm.max = 5e4))
+SKAT(x1, x1.H0.SKAT, params.sampling=list(perm.target = 10, perm.max = 500))
 
 ```
 
@@ -64,7 +64,7 @@ The files **genes.b37** and **genes.b38** available in Ravages which contain gen
 ## Multiple genomic regions for a variant
 If variants are annotated to multiple genomic regions, they can be split in a new bed matrix using the function **bed.matrix.split.genomic.region()**. This function takes a bed matrix as argument (*x*) and duplicates variants being assigned to multiple genes separated by *split.pattern*. If *changeID=TRUE*, the id from the bedmatrix will be changed to the format chr:pos:A1:A2:genomic.region to distinguish the duplicated variants.  
 An example is shown below:
-```{r}
+```{r, eval = F}
 #Example bed matrix with 4 variants
 x.ex <- as.bed.matrix(x=matrix(0, ncol=4, nrow=10),
                       bim=data.frame(chr=1:4, id=paste("rs", 1:4, sep=""), 
@@ -145,7 +145,7 @@ To speed up the computation time when the phenotype is categorial, calculations 
 **burden()** will return the p-value associated to the regression for each genomic region. If there is a convergence problem with the regression, the function will return 1 in the column *is.err*. The odds ratio associated to each group of cases compared to the reference group (*NullObject$ref.level*) with its confidence interval at a given alpha threshold (argument *alpha*) can also be obtained if *get.OR.value=TRUE*.   
 An example of the p-value and OR calculation with its 95% confidence interval using WSS on the LCT data is shown below with or without the inclusion of covariates. The outcome here corresponds to the population from 1000Genome.
 
-```{r}
+```{r, eval = F}
 #Null model
 x1.H0 <- NullObject.parameters(x1@ped$pop, ref.level = "CEU", 
                                RVAT = "burden", pheno.type = "categorial")
@@ -168,7 +168,7 @@ burden(NullObject = x1.H0.covar, burden=WSS.score, cores = 1)
 ```
 
 Finally, using Ravages, it is also possible to perform burden tests with a continuous phenotype by specifying *pheno.type = "continuous"*, and by giving a numeric vector to *pheno* as showed below:
-```{r}
+```{r, eval = F}
 #Random continuous phenotype
 set.seed(1) ; pheno1 <- rnorm(nrow(x1))
 #Null model
@@ -187,7 +187,7 @@ If the sample size is bigger than 2000, the analytical calculation from Liu et a
 It is possible to clearly ask for a specific method to compute the moments using *get.moments = "permutations"*, *"bootstrap"* or *"theoretical"*. By default, *get.moments = "size.based"*, and the method will depend on the sample size.   
 An example of the SKAT function by specifying the "permutations" or "theoretical" method is shown. 
 
-```{r}
+```{r, eval = F}
 #Null model
 x1.null <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial")
 #Permutations because no covariates
@@ -198,7 +198,7 @@ SKAT(x1, x1.null, get.moments = "theoretical", debug = TRUE, cores = 1)
 ```
 
 It is also possible to perform the SKAT test on a continuous phenotype by using the argument *pheno.type = "continuous"* in **NullObject.parameters()** before the **SKAT()** function:
-```{r}
+```{r, eval = F}
 #Random continuous phenotype
 set.seed(1) ; pheno1 <- rnorm(nrow(x1))
 #Null Model with covariates

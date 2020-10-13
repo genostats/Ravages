@@ -6,7 +6,7 @@ Date: 2020-10-07
 Encoding: UTF-8
 Author: Ozvan Bocher and Hervé Perdry
 Maintainer: Ozvan Bocher <bocherozvan@gmail.com>
-Description: Rare variant association tests (burden tests and SKAT) and genetic simulations.
+Description: Rare variant association tests (burden tests and the Sequence Kernel Association Test) and genetic simulations.
 License: GPL-3
 LinkingTo: Rcpp, RcppParallel, RcppEigen, gaston, BH
 Depends: R (>= 3.5.0), Rcpp, RcppParallel, methods, gaston, mlogit (>= 1.1-0)

@@ -25,6 +25,8 @@ data(genes.b38) }
   }
 }  
 
-\source{The data were obtained from the Ensembl website (see \url{http://grch37.ensembl.org/biomart/martview/} and \url{http://www.ensembl.org/biomart/martview/}).}
+\source{The data were obtained from the Ensembl website.}
+\references{ RJ Kinsella et al, 2011, \emph{Ensembl BioMarts: a hub for data retrieval across taxonomic space}, Database. doi:10.1093/database/bar030;   
 
+AD Yates et al, 2020, \emph{Ensembl 2020}, Nucleic Acide Research. doi:10.1093/nar/gkz966}
 \seealso{ \code{\link{set.genomic.region}} }

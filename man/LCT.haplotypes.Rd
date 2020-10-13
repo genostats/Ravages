@@ -23,7 +23,7 @@
   }
 }
 
-\source{ Data were obtained from the 1000 Genomes Project (\url{internationalgenome.org}). }
+\source{ Data were obtained from the 1000 Genomes Project. }
 
 \seealso{ \code{\link{LCT.matrix}} }
 

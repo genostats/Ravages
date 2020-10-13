@@ -130,7 +130,7 @@ x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, nb.causal = 30, h2=c(0.01,0.01,0
 ## Power calculation
 Power calculations are not directly implemented into **Ravages**, but the functions *burden()* and *SKAT()* can be used to perform burden tests and SKAT. To have more informations about these two functions, please refer to the main vignette of the package. After the simulation of a bedmatrix using one of the two previously explained methods, statistical power can be computed as follows:
 
-```{r}
+```{r, eval = F}
 #Simulations using GRR values
 #The two groups of cases are genetically heterogeneous
 GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov, n.case.groups = 2,
