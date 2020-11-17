@@ -4,7 +4,7 @@
 #p.causal=P(causal variant) ; p.protect=P(protective variant | causal variant)
 
 rbm.haplos.thresholds <- function(haplos, weights = -0.4*log10(colMeans(haplos)), maf.threshold = 0.01, 
-             nb.causal, p.protect = 0, h2, prev, normal.approx = TRUE, size, replicates, rep.by.causal) {
+             nb.causal, p.protect = 0, h2, prev, normal.approx = TRUE, size, replicates, rep.by.causal, verbose = TRUE) {
 
   if( (replicates %% rep.by.causal) != 0 ) 
     stop("replicates should be a multiple of rep.by.causal")
@@ -26,7 +26,7 @@ rbm.haplos.thresholds <- function(haplos, weights = -0.4*log10(colMeans(haplos))
     if(length(p.protect) != length(h2)) stop("p.protect should be of size 1 or of same size as h2 and prev")
   }
   
-  cat(length(h2), " groups of individuals will be simulated \n")
+  if(verbose) cat(length(h2), " groups of individuals will be simulated \n")
     
   
   x <- new.bed.matrix(nb_inds=sum(size), nb_snps=ncol(haplos)*replicates)

@@ -8,7 +8,7 @@
 }
 \usage{
 filter.rare.variants(x, ref.level, filter=c("whole", "controls", "any"), 
-                     maf.threshold=0.01, min.nb.snps, group)
+                     maf.threshold=0.01, min.nb.snps, group, genomic.region = NULL)
 }
 \arguments{
   \item{x}{ A bed.matrix }
@@ -17,6 +17,7 @@ filter.rare.variants(x, ref.level, filter=c("whole", "controls", "any"),
   \item{maf.threshold}{ The MAF threshold used to define a rare variant, set at 0.01 by default}
   \item{min.nb.snps}{ The minimum number of snps needed to keep a genomic region}
   \item{group}{ A factor indicating the group of each individual, only needed if \code{filter = "controls"} or \code{filter = "any"}. If missing, \code{x@ped$pheno} is taken}
+  \item{genomic.region}{ An optional factor containing the genomic region of each variant, only needed if \code{min.nb.snps} is specified and if \code{x@snps$genomic.region} doesn't exist}
 }
 \value{
   A bed.matrix with filtered variants

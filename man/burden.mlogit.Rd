@@ -41,7 +41,7 @@ burden.mlogit(x, NullObject, genomic.region = x@snps$genomic.region, burden,
   \item{l.lower}{ The lower bound of the confidence interval of each OR}
   \item{l.upper}{ The upper bound of the confidence interval of each OR}
 }
-\seealso{ \code{\link{NullObject.parameters}}, \code{\link{burden.NullObject}},  \code{\link{CAST}}, \code{\link{WSS}}, \code{\link{burden.weighted.matrix}} }
+\seealso{ \code{\link{NullObject.parameters}}, \code{\link{CAST}}, \code{\link{WSS}}, \code{\link{burden.weighted.matrix}} }
 \references{ Bocher O, et al. DOI: 10.1002/gepi.22210. \emph{Rare variant associationtesting for multicategory phenotype.} Genet.Epidemiol. 2019;43:646–656.}
 \examples{
 #Importation of data in a bed matrix

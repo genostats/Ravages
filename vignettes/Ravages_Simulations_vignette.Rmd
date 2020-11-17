@@ -15,11 +15,11 @@ require("Ravages")
 ``` 
 ## Introduction
 
-Ravages was developped to simulate genetic data and to perform rare variant association tests (burden tests and the variance-component test SKAT) on more than two groups of individuals (Bocher et al., 2019, Genetic Epidemiology). Ravages relies on the package Gaston developped by Herve Perdry and Claire Dandine-Roulland. Most functions are written in C++ thanks to the packages Rcpp, RcppParallel and RcppEigen.  
+Ravages was developped to simulate genetic data and to perform rare variant association tests (burden tests and the variance-component test SKAT) on more than two groups of individuals (Bocher et al., 2019, doi:10.1002/gepi.22210). Ravages relies on the package Gaston. Most functions are written in C++ thanks to the packages Rcpp, RcppParallel and RcppEigen.  
 Functions of Ravages use bed.matrix to manipulate genetic data as in the package Gaston (see documentation of this package for more details).  
 In this vignette, we illustrate how to perform genetic simulations and how to use it to compute power of rare variant association tests. See the main vignette for more details about rare variant association tests.  
 To learn more about all options of the functions, the reader is advised to look at the manual pages.  
-We develpped two main simulations procedures, one based on allelic frequencies and genetic relative risks (GRR), and the other one based on haplotypes and a liability model. All the functions can be used to simulate more than two groups of individuals.
+We develpped two main simulations procedures, one based on allelic frequencies and genetic relative risks (GRR), and the other one based on haplotypes. All the functions can be used to simulate more than two groups of individuals.
 
 ## Simulations based on allelic frequencies and GRR
 ### Calculation of frequencies in each group of individuals

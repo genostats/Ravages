@@ -15,7 +15,7 @@ require("Ravages")
 ``` 
 ## Introduction
 
-Ravages was developped to simulate genetic data and to perform rare variant association tests (burden tests and the variance-component test SKAT) on more than two groups of individuals (Bocher et al., 2019, Genetic Epidemiology). Ravages relies on the package Gaston developped by Herve Perdry and Claire Dandine-Roulland. Most functions are written in C++ thanks to the packages Rcpp, RcppParallel and RcppEigen.  
+Ravages was developped to simulate genetic data and to perform rare variant association tests (burden tests and the variance-component test SKAT) on more than two groups of individuals (Bocher et al., 2019, doi:10.1002/gepi.22210). Ravages relies on the package Gaston developped by Herve Perdry and Claire Dandine-Roulland. Most functions are written in C++ thanks to the packages Rcpp, RcppParallel and RcppEigen.  
 Functions of Ravages use bed.matrix to manipulate genetic data as in the package Gaston (see documentation of this package for more details).  
 In this vignette, we illustrate how to perform rare variant association tests on real data. A second vignette is available showing how to simulate genetic data and how to use them for power calculation.
 To learn more about all options of the functions, the reader is advised to look at the manual pages.
@@ -58,11 +58,11 @@ SKAT(x1, x1.H0.SKAT, params.sampling=list(perm.target = 10, perm.max = 500))
 ```
 
 ## Defining genomic regions
-For rare variant association tests, the unit of analysis is not a single variant but a genomic region, typically a gene. The first step of the analysis is therefore to group variants into genomic regions. This can be done using the function **set.genomic.region()** and known gene positions. It works on a bed.matrix (see Gaston) and simply adds a column "genomic.region" to the slot x@snps containing the genomic region (a factor) assigned to each variant. Gene positions should be given to *genes* as a dataframe containing the following columns: *Chr*, *Start*, *End*, *Gene_Name*. The dataframe should absolutely be ordered in the genome order, as well as the levels of *genes$Gene_Name*. By default, any variant being outside the gene positions won't be annotated. Gene positions can be extended to annotate more variants using the argument *flank.width* corresponding to the number of base pairs upstream and downstream the gene. If *flank.width=Inf*, each variant will be assigned to the nearest gene. If two genes overlap, variants in the overlapping zone will be attributed to both genes, separated by a comma.  
-The files **genes.b37** and **genes.b38** available in Ravages which contain gene positions from ENSEMBL versions hg19 and hg38 can be used for *genes* to define gene positions. 
+For rare variant association tests, the unit of analysis is not a single variant but a genomic region, typically a gene. The first step of the analysis is therefore to group variants into genomic regions. This can be done using the function **set.genomic.region()** and known gene positions. It works on a bed.matrix (see Gaston) and simply adds a column "genomic.region" to the slot x@snps containing the genomic region (a factor) assigned to each variant. Gene positions should be given to *regions* as a dataframe containing the following columns: *Chr*, *Start*, *End*, *Gene_Name*. The dataframe should absolutely be ordered in the genome order, as well as the levels of *regions$Gene_Name*. By default, any variant being outside the gene positions won't be annotated. Gene positions can be extended to annotate more variants using the argument *flank.width* corresponding to the number of base pairs upstream and downstream the gene. If *flank.width=Inf*, each variant will be assigned to the nearest gene. If two regions overlap, variants in the overlapping zone will be attributed to both regions, separated by a comma.  
+The files **genes.b37** and **genes.b38** available in Ravages which contain gene positions from ENSEMBL versions hg19 and hg38 can be used for *regions* to define gene positions. 
 
 ## Multiple genomic regions for a variant
-If variants are annotated to multiple genomic regions, they can be split in a new bed matrix using the function **bed.matrix.split.genomic.region()**. This function takes a bed matrix as argument (*x*) and duplicates variants being assigned to multiple genes separated by *split.pattern*. If *changeID=TRUE*, the id from the bedmatrix will be changed to the format chr:pos:A1:A2:genomic.region to distinguish the duplicated variants.  
+If variants are annotated to multiple genomic regions, they can be split in a new bed matrix using the function **bed.matrix.split.genomic.region()**. This function takes a bed matrix as argument (*x*) and duplicates variants being assigned to multiple regions separated by *split.pattern*. If *changeID=TRUE*, the id from the bedmatrix will be changed to the format chr:pos:A1:A2:genomic.region to distinguish the duplicated variants.  
 An example is shown below:
 ```{r, eval = F}
 #Example bed matrix with 4 variants
@@ -76,7 +76,7 @@ genes.ex <- data.frame(Chr=c(1,1,3,4), Start=c(10,110,190,220), End=c(170,180,25
                        Gene_Name=factor(letters[1:4]))
 
 #Attribute genomic regions
-x.ex <- set.genomic.region(x.ex, genes = genes.ex)
+x.ex <- set.genomic.region(x.ex, regions = genes.ex)
 x.ex@snps$genomic.region
 
 #Split genomic regions

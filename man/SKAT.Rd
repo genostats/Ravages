@@ -6,7 +6,7 @@
 SKAT(x, NullObject, genomic.region = x@snps$genomic.region, 
      weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
      get.moments = "size.based", estimation.pvalue = "kurtosis",
-     params.sampling, cores = 10, debug = FALSE)
+     params.sampling, cores = 10, debug = FALSE, verbose = TRUE)
 }
 \arguments{
   \item{x}{ A bed.matrix }
@@ -19,6 +19,7 @@ SKAT(x, NullObject, genomic.region = x@snps$genomic.region,
   \item{params.sampling}{ A list containing the elements "perm.target", "perm.max", "debug". Only needed if \code{get.moments = "boostrap"} or \code{get.moments = "permutations" } }
   \item{cores}{ How many cores to use for moments computation, set at 10 by default. Only needed if \code{get.moments = "theoretical"} }
   \item{debug}{ Whether to return the mean, standard deviation, skewness and kurtosis of the statistics}
+  \item{verbose}{ Whether to display information about the function actions }
 }
 \details{
   For categorial phenotypes, the p-value is calculated using a chi-square approximation based on the statistics' moments. The user has to choose how to compute these moments (argument \code{get.moments}), and which moments to use for the chi-square approximation (argument \code{estimation.pvalue}).  
@@ -60,7 +61,7 @@ If \code{debug = TRUE}, the mean, standard deviation, skewness and kurtosis are 
   \item{nb.eq}{ The number of times a permutated statistics is equal to the observed statistics \code{stat}}
   \item{nb.perms}{ The total number of simulations performed }
 }
-\seealso{ \code{\link{NullObject.parameters}}, \code{\link{SKAT.NullObject.continuous}}, \code{\link{SKAT.NullObject}}, \code{\link{SKAT.theoretical}}, \code{\link{SKAT.bootstrap}}, \code{\link{SKAT.permutations}}}
+\seealso{ \code{\link{NullObject.parameters}}, \code{\link{SKAT.theoretical}}, \code{\link{SKAT.bootstrap}}, \code{\link{SKAT.permutations}}}
 \references{ Wu et al. 2011, \emph{Rare-variant association testing for sequencing data with the sequence kernel association test}, American Journal of Human Genetics \bold{82-93} doi:10.1016/j.ajhg.2011.05.029;  
 
              Lee et al. 2012, \emph{Optimal Unified Approach for Rare-Variant Association Testing with Application to Small-Sample Case-Control Whole-Exome Sequencing Studies}, American Journal of Human Genetics, doi:10.1016/j.ajhg.2012.06.007;  
@@ -69,7 +70,37 @@ If \code{debug = TRUE}, the mean, standard deviation, skewness and kurtosis are 
 }
 
 \examples{
+#Example on simulated data from Ravages with 
+#One group of 50 controls and 
+#two groups of 25 cases, each one with a prevalence of 0.01
+#with 50% of causal variants, 5 genomic regions are simulated
+GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov,
+                      n.case.groups = 2, select.gene = "R1",
+                      GRR.multiplicative.factor=2)
+
+x.sim <- random.bed.matrix(genes.maf = Kryukov, size = c(50, 25, 25),
+                           prev = c(0.001, 0.001), GRR.matrix.del = GRR.del,
+                           p.causal = 0.5, p.protect = 0, select.gene="R1",
+                           same.variant = FALSE,
+                           genetic.model = "multiplicative", replicates = 5)
+#Null Model
+x.sim.H0 <- NullObject.parameters(x.sim@ped$pheno, RVAT = "SKAT", pheno.type = "categorial")
+
+#Run SKAT (here permutations as n<2000 and no covariates)
+#Parameters for the sampling procedure: target = 5, max = 100
+#Please increase the number of permutations for a more accurate estimation of the p-values
+params.sampling = list(perm.target = 5, perm.max = 100)
+SKAT(x.sim, x.sim.H0, params.sampling = params.sampling)
+
+#Run SKAT with a random continuous phenotype
+#Null Model
+x.sim.H0.c <- NullObject.parameters(rnorm(100), RVAT = "SKAT", pheno.type = "continuous")
+SKAT(x.sim, x.sim.H0.c)
+
+
+
 \donttest{
+#Example on 1000Genome data
 #Importation of data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
 #Add population
@@ -93,29 +124,18 @@ set.seed(1) ; u <- runif(nrow(x1))
 covar <- cbind(sex, u)
 
 #run SKAT using the 1000 genome EUR populations as "outcome"
-#The maximum number of permutations used is 500, please increase
-#this number for a more accurate estimation of the p-values
-#Fit Null model
-x1.H0 <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial")
-#Parameters for the sampling procedure 
-params.sampling = list(perm.target = 100, perm.max = 500)
-
-#Run SKAT using the method based on sample size, here permutations
-SKAT(x1, x1.H0, params.sampling = params.sampling)
-
-#Run SKAT with the covariates: use boostrap as n<2000
+#with very few permutations
+#Please increase the permutations for a more accurate estimation of the p-values
+#Fit Null model with covariate sex
 x1.H0.covar <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial",
                                      data = covar, formula = ~ sex)
+
+#Run SKAT with the covariates: use boostrap as n<2000
 SKAT(x1, x1.H0.covar, params.sampling = params.sampling, get.moments = "bootstrap")
 
-\dontrun{
 #Run SKAT using theoretical moments (discourage here as n<2000) and 1 core
-SKAT(x1, x1.H0, get.moments = "theoretical", cores = 1)
+SKAT(x1, x1.H0.covar, get.moments = "theoretical", cores = 1)
 }
 
-#Run SKAT with a random continuous phenotype
-#Null Model
-x1.H0.c <- NullObject.parameters(rnorm(nrow(x1)), RVAT = "SKAT", pheno.type = "continuous")
-SKAT(x1, x1.H0.c)
 }
-}
+

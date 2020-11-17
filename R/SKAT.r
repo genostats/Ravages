@@ -1,21 +1,21 @@
 SKAT <- function(x, NullObject, genomic.region = x@snps$genomic.region,
                  weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
                  get.moments = "size.based", estimation.pvalue = "kurtosis", 
-                 params.sampling, cores = 10, debug = FALSE){
+                 params.sampling, cores = 10, debug = FALSE, verbose = TRUE){
 
   if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
   genomic.region <- droplevels(genomic.region)
 
   #Test if phenotype is continuous or categorial
   if(NullObject$pheno.type == "categorial"){
-    cat("Categorial phenotype \n")
+    if(verbose) cat("Categorial phenotype \n")
     if(get.moments == "size.based"){
       get.moments <- NullObject$get.moments
     }else{
       if(!(get.moments %in% c("permutations", "bootstrap", "theoretical"))) stop("Wrong 'get.moments' specified")
     }
 
-    cat(get.moments, "\n")
+    if(verbose) cat(get.moments, "\n")
     
     if(get.moments == "bootstrap"){
       if(missing(params.sampling))
@@ -45,7 +45,7 @@ SKAT <- function(x, NullObject, genomic.region = x@snps$genomic.region,
     }
   }
   if(NullObject$pheno.type == "continuous"){
-    cat("Continuous phenotype \n")
+    if(verbose) cat("Continuous phenotype \n")
     res <- SKAT.continuous(x, NullObject, genomic.region = genomic.region,
                            weights = weights, maf.threshold = maf.threshold,
                            estimation.pvalue = estimation.pvalue, debug = debug)

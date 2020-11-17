@@ -33,7 +33,7 @@ A bed matrix with variants assigned to multiple genomic regions being duplicated
                          Gene_Name=factor(letters[1:4]))
 
 #Attribute genomic regions
-  x.ex <- set.genomic.region(x.ex, genes = genes.ex)
+  x.ex <- set.genomic.region(x.ex, regions = genes.ex)
 
 #Split genomic regions
   x.ex.split <- bed.matrix.split.genomic.region(x.ex, split.pattern = ",")

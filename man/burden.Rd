@@ -8,7 +8,8 @@
 }
 \usage{
 burden(x, NullObject, genomic.region = x@snps$genomic.region, burden,
-       maf.threshold = 0.5, get.OR.value = FALSE, alpha = 0.05, cores = 10)
+       maf.threshold = 0.5, get.OR.value = FALSE, alpha = 0.05, cores = 10,
+       verbose = TRUE)
 }
 \arguments{
   \item{x}{ A bed matrix, only needed if \code{burden="CAST"} or \code{burden="WSS"}}
@@ -19,6 +20,7 @@ burden(x, NullObject, genomic.region = x@snps$genomic.region, burden,
   \item{get.OR.value}{ TRUE/FALSE: whether to return OR values }
   \item{alpha}{ The alpha threshold to use for the OR confidence interval}
   \item{cores}{ How many cores to use, set at 10 by default. Only needed if \code{NullObject$pheno.type = "categorial"} }
+  \item{verbose}{ Whether to display information about the function actions }
 }
 \details{
   This function will return results from the regression of the phenotype on the genetic score for each genomic region.

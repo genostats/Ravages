@@ -4,7 +4,7 @@ bed.matrix.split.genomic.region = function( x, changeID=TRUE, genomic.region=NUL
 
   if (!is.null(genomic.region)){
     if(nrow(x@snps)!=length(genomic.region)) stop("genomic.region should have the same length as the number of markers in x")
-    if("genomic.region" %in% colnames(x@snps)) cat("genomic.region was already in x@snps, x@snps will be replaced.\n")
+    if("genomic.region" %in% colnames(x@snps)) warning("genomic.region was already in x@snps, x@snps will be replaced.\n")
     x@snps$genomic.region=genomic.region
   }
   if(is.factor(x@snps$genomic.region)) x@snps$genomic.region <- as.character(x@snps$genomic.region)

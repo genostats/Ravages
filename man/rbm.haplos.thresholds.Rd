@@ -10,7 +10,7 @@
   rbm.haplos.thresholds(haplos, weights = -0.4*log10(colMeans(haplos)), 
                         maf.threshold = 0.01, nb.causal, p.protect = 0, 
                         h2, prev, normal.approx = TRUE, size, 
-                        replicates, rep.by.causal)
+                        replicates, rep.by.causal, verbose = TRUE)
 }
 \arguments{
   \item{haplos}{ A matrix of haplotypes with one row per haplotype and one column per variant}
@@ -24,6 +24,7 @@
   \item{size}{ The sizes of each group of individuals}
   \item{replicates}{ The number of simulations to perform}
   \item{rep.by.causal}{ The number of time causal variants will be sampled}
+  \item{verbose}{ Whether to display information about the function actions }
 }
 \value{
   \item{x}{ A bed matrix with simulated genotypes}

@@ -5,7 +5,7 @@
 \title{GnomADgenes dataset}
 
 \description{
-  This dataframe contains variants from the GnomAD database with MAF values in the Non-Finnish European (NFE)  
+  This dataframe contains variants from the GnomAD database with MAF values in the Non-Finnish European (NFE)
   and their consequences from VEP with each associated gene.
 }
 
