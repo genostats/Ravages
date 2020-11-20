@@ -28,10 +28,10 @@ NumericVector moments(const Eigen::MatrixXd & g, NumericMatrix P){
   c1[3] = t4;
   */
 
-  double sigmaQ = sqrt(2*c1[1]);
+  double sigmaQ = sqrt(2.0 * c1[1]);
   double s1 = c1[2]/pow(c1[1], 1.5);
   double s2 = c1[3]/pow(c1[1], 2);
-  double beta1 = sqrt(8) * s1;
+  double beta1 = 2 * M_SQRT2 * s1; // remplace sqrt(8.0) * s1
   double beta2 = 12*s2;
   
   NumericVector M = NumericVector::create(_["mu"] = c1[0], _["sigma"] = sigmaQ, _["skewness"] = beta1, _["kurtosis"] = beta2);
