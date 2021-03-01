@@ -1,4 +1,5 @@
-NullObject.parameters <- function(pheno, RVAT, pheno.type, ref.level, data, formula){
+NullObject.parameters <- function(pheno, RVAT, pheno.type = c("categorial", "continuous"), ref.level, data, formula){
+  pheno.type <- match.arg(pheno.type)
   if(missing(data)) data <- NULL
   if(missing(formula)) formula <- NULL
   if(!(pheno.type %in% c("categorial", "continuous"))) stop("'pheno.type' should be 'categorial' or 'continuous'")

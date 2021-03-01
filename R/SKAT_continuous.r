@@ -1,9 +1,18 @@
 SKAT.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.region, 
                      weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
-                     estimation.pvalue = "kurtosis", debug = FALSE){
+                     estimation.pvalue = "kurtosis", cores = 10, debug = FALSE){
 
   if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
   genomic.region <- droplevels(genomic.region)
+
+  #Replace genomic region in x@snps
+  if("genomic.region" %in% colnames(x@snps)){
+    if (!(all(as.character(genomic.region) == as.character(x@snps$genomic.region))))
+      warning("genomic.region was already in x@snps, x@snps will be replaced.\n")
+  }
+  x@snps$genomic.region = genomic.region  
+
+  if(any(table(genomic.region)==1)) stop("All 'genomic.region' sould contain at least 2 variants, please use 'filter.rare.variants()' to filter the bed matrix")
 
   x@snps$weights <- weights
   x <- select.snps(x, x@snps$maf <= maf.threshold & x@snps$maf > 0)
@@ -17,7 +26,7 @@ SKAT.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.regio
   ymp = NullObject$ymp
   
   #P-value for all regions
-  res.allregions <- do.call(rbind, lapply(levels(genomic.region), function(reg) get.parameters.pvalue.continuous(x, region = reg, P1 = P1, ymp = ymp, estimation.pvalue = estimation.pvalue)))
+  res.allregions <- do.call(rbind, mclapply(levels(genomic.region), function(reg) get.parameters.pvalue.continuous(x, region = reg, P1 = P1, ymp = ymp, estimation.pvalue = estimation.pvalue), mc.cores = cores))
   res.final <- as.data.frame(res.allregions)
   colnames(res.final) <- colnames(res.allregions)
   rownames(res.final) <- levels(genomic.region)

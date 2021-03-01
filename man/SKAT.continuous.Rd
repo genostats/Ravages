@@ -5,7 +5,7 @@
 \usage{
 SKAT.continuous(x, NullObject, genomic.region = x@snps$genomic.region,
                 weights = (1 - x@snps$maf)**24, maf.threshold = 0.5,
-                estimation.pvalue = "kurtosis", debug = FALSE )
+                estimation.pvalue = "kurtosis", cores = 10, debug = FALSE )
 }
 \arguments{
   \item{x}{ A bed.matrix }
@@ -14,6 +14,7 @@ SKAT.continuous(x, NullObject, genomic.region = x@snps$genomic.region,
   \item{weights}{ A vector with the weight of each variant. By default, the weight of each variant is inversely proportionnal to its MAF, as it was computed in the original SKAT method}
   \item{maf.threshold}{ The MAF above which variants are removed (default is to keep all variants)}
   \item{estimation.pvalue}{ Whether to use the skewness ("skewness") or the kurtosis ("kurtosis") for the chi-square approximation }
+  \item{cores}{ How many cores to use for moments computation, set at 10 by default }
   \item{debug}{ Whether to return the mean, standard deviation, skewness and kurtosis of the statistics. Set at FALSE by default }
 }
 \details{

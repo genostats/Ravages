@@ -1,17 +1,15 @@
 
-filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "any"), maf.threshold = 0.01, min.nb.snps, group, genomic.region = NULL) {
-  if(!missing(min.nb.snps)){
-    if (is.null(genomic.region) & !("genomic.region" %in% colnames(x@snps))) stop("genomic.region should be provided or already in x@snps")
+filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "any"), maf.threshold = 0.01, min.nb.snps = 2, group, genomic.region = NULL) {
+  if (is.null(genomic.region) & !("genomic.region" %in% colnames(x@snps))) stop("genomic.region should be provided or already in x@snps")
 
-    if (!is.null(genomic.region)){
-      if(nrow(x@snps)!=length(genomic.region)) stop("genomic.region should have the same length as the number of markers in x")
-      if("genomic.region" %in% colnames(x@snps)) warning("genomic.region was already in x@snps, x@snps will be replaced.\n")
-      x@snps$genomic.region=genomic.region
-    }
-
-    if(!is.factor(x@snps$genomic.region)) stop("'x@snps$genomic.region' should be a factor")
-    x@snps$genomic.region <- droplevels(x@snps$genomic.region)
+  if (!is.null(genomic.region)){
+    if(nrow(x@snps)!=length(genomic.region)) stop("genomic.region should have the same length as the number of markers in x")
+    if("genomic.region" %in% colnames(x@snps)) warning("genomic.region was already in x@snps, x@snps will be replaced.\n")
+    x@snps$genomic.region=genomic.region
   }
+
+  if(!is.factor(x@snps$genomic.region)) stop("'x@snps$genomic.region' should be a factor")
+  x@snps$genomic.region <- droplevels(x@snps$genomic.region)
 
   #Check if good filter
   filter <- match.arg(filter)

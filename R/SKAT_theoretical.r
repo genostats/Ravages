@@ -5,6 +5,15 @@ SKAT.theoretical <- function(x, NullObject, genomic.region = x@snps$genomic.regi
   if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
   genomic.region <- droplevels(genomic.region)
 
+  #Replace genomic region in x@snps
+  if("genomic.region" %in% colnames(x@snps)){
+    if (!(all(as.character(genomic.region) == as.character(x@snps$genomic.region))))
+      warning("genomic.region was already in x@snps, x@snps will be replaced.\n")
+  }
+  x@snps$genomic.region = genomic.region
+  
+  if(any(table(genomic.region)==1)) stop("All 'genomic.region' sould contain at least 2 variants, please use 'filter.rare.variants()' to filter the bed matrix")
+
   x@snps$weights <- weights
   x <- select.snps(x, x@snps$maf <= maf.threshold & x@snps$maf > 0)
   

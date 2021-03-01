@@ -6,7 +6,7 @@
 
 \description{
   This dataframe contains variants from the GnomAD database with MAF values in the Non-Finnish European (NFE)
-  and their consequences from VEP with each associated gene.
+  and their consequences from VEP with each associated gene in build version 37.
 }
 
 \usage{data(GnomADgenes)}

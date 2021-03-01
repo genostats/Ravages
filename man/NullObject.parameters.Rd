@@ -3,7 +3,8 @@
 \title{ Null Model for SKAT and burden tests }
 \description{ Get the parameters under the null model to peforms burden tests or SKAT}
 \usage{
-  NullObject.parameters(pheno, RVAT, pheno.type, ref.level, data, formula)
+  NullObject.parameters(pheno, RVAT, pheno.type = c("categorial", "continuous"), 
+                        ref.level, data, formula)
 }
 \arguments{
   \item{pheno}{ The phenotype of each individual: a factor if \code{pheno.type = "categorial"}, and a numeric vector if \code{pheno.type = "continuous"} }
@@ -14,6 +15,8 @@
   \item{formula}{ Optional, an R formula corresponding to the regression model indicating which covariates from \code{data} to include in the model if only some of them are to be included}
 }
 \details{
+  Warning: individuals in \code{pheno} and \code{data} should be in the same order.  
+
   This function gets the parameters under the null model for SKAT or the burden tests.  
 
   For burden tests, it computes the Log-Likelihood under the null model used to perform the Likelihood Ratio Test.   
