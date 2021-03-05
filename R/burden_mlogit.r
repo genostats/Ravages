@@ -68,5 +68,8 @@ run.mlogit.withNull <- function (pheno, score, region, ref.level, alt.levels, co
       OR.values.sd <- OR.values[paste(region, alt.levels, sep = ":"), 2]
       results <- c(pval, is.err, OR.values.estimate, OR.values.estimate - quantile.alpha * OR.values.sd, OR.values.estimate + quantile.alpha * OR.values.sd)
     }else{ results <- c(pval, is.err)}
+    
+    #Cleaning temporary objects
+    rm(score) ; rm(data) ; rm(fit) ; rm(my.model) ; gc()
     return(results)
 }

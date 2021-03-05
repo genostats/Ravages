@@ -6,10 +6,6 @@ SKAT.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.regio
   genomic.region <- droplevels(genomic.region)
 
   #Replace genomic region in x@snps
-  if("genomic.region" %in% colnames(x@snps)){
-    if (!(all(as.character(genomic.region) == as.character(x@snps$genomic.region))))
-      warning("genomic.region was already in x@snps, x@snps will be replaced.\n")
-  }
   x@snps$genomic.region = genomic.region  
 
   if(any(table(genomic.region)==1)) stop("All 'genomic.region' sould contain at least 2 variants, please use 'filter.rare.variants()' to filter the bed matrix")
@@ -51,6 +47,9 @@ get.parameters.pvalue.continuous <- function(x, region, P1, ymp, estimation.pval
   #Moments
   M <- .Call("moments", PACKAGE = "Ravages", G, P1)
 
+  #Cleaning temporary objects
+  rm(G.L) ; rm(G.bloc) ; rm(GG) ; rm(G) ; gc()
+  
   #P-valeur
   pval <- p.valeur.moments.liu(Q = Q, mu = M["mu"], sigma = M["sigma"], skewness = M["skewness"], kurtosis = M["kurtosis"], estimation.pvalue = estimation.pvalue)
 

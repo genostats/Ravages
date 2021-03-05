@@ -46,6 +46,8 @@ SKAT(x, NullObject, genomic.region = x@snps$genomic.region,
   If \code{NullObject$pheno.type = "continuous"}, the method from Liu et al. will be used to compute the p-value for the continuous phenotype, but \code{estimation.pvalue} can be set at "skewness" or "kurtosis".  
 
   If \code{debug=TRUE}, more informations about the estimated statistics moments are given.  
+
+  All missing genotypes are imputed by the mean genotype.
 }
 \value{
 A data frame containing for each genomic region: 

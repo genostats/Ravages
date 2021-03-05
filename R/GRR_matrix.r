@@ -1,4 +1,4 @@
-GRR.matrix <- function(genes.maf=Kryukov, n.case.groups=2, GRR=c("SKAT", "constant", "variable"), GRR.value, GRR.function, GRR.multiplicative.factor=2, select.gene){
+GRR.matrix <- function(genes.maf=Kryukov, n.case.groups=2, GRR=c("SKAT", "constant", "variable"), GRR.value, GRR.function, GRR.multiplicative.factor, select.gene){
   ##Select MAF from the file given by the user  
   if(nlevels(genes.maf$gene)>1){
     if(missing(select.gene)){
@@ -12,8 +12,8 @@ GRR.matrix <- function(genes.maf=Kryukov, n.case.groups=2, GRR=c("SKAT", "consta
   n.variants <- length(pop.maf)
 
   ##Check on multiplicative values
-  if(is.null(GRR.multiplicative.factor) & n.case.groups>1) stop("Needs 'GRR.multiplicative.factor'")
-  if(!is.null(GRR.multiplicative.factor)){ 
+  if(missing(GRR.multiplicative.factor) & n.case.groups>1) stop("Needs 'GRR.multiplicative.factor'")
+  if(!missing(GRR.multiplicative.factor)){ 
     if(n.case.groups==1){
        warning("Only one group of cases, 'GRR.multiplicative.factor' is ignored")
     }else{

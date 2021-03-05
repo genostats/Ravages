@@ -3,6 +3,15 @@ SKAT <- function(x, NullObject, genomic.region = x@snps$genomic.region,
                  get.moments = "size.based", estimation.pvalue = "kurtosis", 
                  params.sampling, cores = 10, debug = FALSE, verbose = TRUE){
  
+  #Test if right NullObject 
+  if(!("P1" %in% names(NullObject))) stop("'NullObject' has been generated with wrong 'RVAT' in 'NullObject.parameters()'") 
+ 
+  #Check between number of individuals
+  if(nrow(x) != length(NullObject$group)) stop("Different number of individuals in 'x' and 'NullObject'")
+ 
+  #Test if estimation.pvalue has good value
+  if(estimation.pvalue != "kurtosis" & estimation.pvalue != "skewness") stop("'estimaton.pvalue' should be 'kurtosis' or 'skewness'") 
+  
   if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
   genomic.region <- droplevels(genomic.region)
 

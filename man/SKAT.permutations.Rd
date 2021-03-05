@@ -30,7 +30,9 @@ SKAT.permutations(x, NullObject, genomic.region = x@snps$genomic.region,
 
   If \code{debug=TRUE}, more informations about the estimated statistics moments are given.  
   
-  This function is used by \code{SKAT} when the sample size is smaller than 2000 and no covariates are present.
+  This function is used by \code{SKAT} when the sample size is smaller than 2000 and no covariates are present.  
+  
+  All missing genotypes are imputed by the mean genotype.
 }
 \value{
 A data frame containing for each genomic:

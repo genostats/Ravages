@@ -1,0 +1,8 @@
+v0.1.2:
+ - Parallelisation of SKAT on continuous phenotypes
+
+ - Minor bugs corrected :
+   - SKAT() with continuous phenotypes can be run only if at least 2 variants in the genomic region
+   - Cleaning temporary files in functions called by mclapply to optimise memory usage
+
+ - Checks added in multiple functions to verify the fit between functions and arguments

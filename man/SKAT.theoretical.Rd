@@ -22,7 +22,9 @@ SKAT.theoretical(x, NullObject, genomic.region = x@snps$genomic.region,
 
   If \code{estimation.pvalue = "kurtosis"}, the kurtosis is used instead of skewness in the chi-square approximation. This is equivalent to "liu.mod" in SKAT package.  
  
-  This function is used by \code{SKAT} when the sample size is larger than 2000.
+  This function is used by \code{SKAT} when the sample size is larger than 2000.  
+
+  All missing genotypes are imputed by the mean genotype.
 }
 \value{
 A data frame containing for each genomic region:

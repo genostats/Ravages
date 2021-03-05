@@ -17,6 +17,9 @@ get.parameters.pvalue.theoretical <- function(x, RR, P1, ymp, n, estimation.pval
   #Moments
   M <- .Call("moments", PACKAGE = "Ravages", G.bloc, P1)
 
+  #Cleaning temporary objects
+  rm(G.L) ; rm(G.bloc) ; rm(GG) ; rm(G) ; gc()
+ 
   #P-valeur
   pval <- p.valeur.moments.liu(Q = Q, mu = M["mu"], sigma = M["sigma"], skewness = M["skewness"], kurtosis = M["kurtosis"], estimation.pvalue = estimation.pvalue)
 
