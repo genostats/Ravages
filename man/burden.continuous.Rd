@@ -30,7 +30,7 @@
 }
 \seealso{ \code{\link{CAST}}, \code{\link{WSS}}, \code{\link{burden.weighted.matrix}} }
 \examples{
-#Importation of data in a bed matrix
+#Import data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
 
 #Add population

@@ -25,7 +25,7 @@ To learn more about all options of the functions, the reader is advised to look 
 Below is an example of an association analysis and previous steps of data filtering using the dataset LCT available with the package Ravages. This dataset containts data from the 1000Genome project in the genomic region containing the Lactase gene. In this example, we look for an association between rare variants and the european populations of 1000Genomes. The population of each individual is available in the dataframe LCT.matrix.pop1000G.
 Details about each function is given right after this example.
 ```{r}
-#Importation of data in a bed matrix
+#Import data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
 #Add population
 x@ped[,c("pop", "superpop")] <- LCT.matrix.pop1000G[,c("population", "super.population")]

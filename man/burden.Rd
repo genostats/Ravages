@@ -52,7 +52,7 @@ burden(x, NullObject, genomic.region = x@snps$genomic.region, burden,
 \seealso{ \code{\link{NullObject.parameters}}, \code{\link{burden.continuous}}, \code{\link{burden.mlogit}},  \code{\link{CAST}}, \code{\link{WSS}}, \code{\link{burden.weighted.matrix}} }
 \references{ Bocher O, et al. DOI: 10.1002/gepi.22210. \emph{Rare variant association testing for multicategory phenotype.} Genet.Epidemiol. 2019;43:646–656.}
 \examples{
-#Importation of data in a bed matrix
+#Import data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
 
 #Add population

@@ -17,7 +17,7 @@ A matrix containing the WSS genetic score with one row per individual and one co
 \seealso{ \code{\link{CAST}}, \code{\link{burden.weighted.matrix}}, \code{\link{burden.mlogit}} }
 \references{ Madsen E and Browning S. \emph{A Groupwise Association Test for Rare Mutations Using a Weighted Sum Statistic.} PLoS Genet. 2009 }
 \examples{
-#Importation of data in a bed matrix
+#Import data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
 
 # Group variants within known genes

@@ -103,7 +103,7 @@ SKAT(x.sim, x.sim.H0.c)
 
 \donttest{
 #Example on 1000Genome data
-#Importation of data in a bed matrix
+#Import data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
 #Add population
 x@ped[,c("pop", "superpop")] <- LCT.matrix.pop1000G[,c("population", "super.population")]
