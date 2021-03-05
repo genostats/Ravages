@@ -1,4 +1,7 @@
 burden.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.region, burden, maf.threshold = 0.5){
+  #Check between number of individuals
+  if(nrow(x) != length(NullObject$pheno)) stop("Different number of individuals in 'x' and 'NullObject'")
+  
   if(is.numeric(burden)) {
     if(!is.matrix(burden)){
       stop("Score is not a matrix")

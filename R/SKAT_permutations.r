@@ -3,6 +3,9 @@ SKAT.permutations <- function(x, NullObject, genomic.region = x@snps$genomic.reg
                  perm.target = 100, perm.max = 5e4, debug = FALSE,
                  estimation.pvalue = "kurtosis") {
 
+  #Check between number of individuals
+  if(nrow(x) != length(NullObject$group)) stop("Different number of individuals in 'x' and 'NullObject'")
+
   if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
   genomic.region <- droplevels(genomic.region)
 

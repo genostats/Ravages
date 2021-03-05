@@ -1,4 +1,7 @@
 burden.mlogit <- function(x, NullObject, genomic.region = x@snps$genomic.region, burden, maf.threshold = 0.5, get.OR.value = FALSE, alpha = 0.05, cores = 10){
+  #Check between number of individuals
+  if(nrow(x) != length(NullObject$group)) stop("Different number of individuals in 'x' and 'NullObject'")
+  
   if (is.numeric(burden)) {
     if (!is.matrix(burden)) {
       stop("Score is not a matrix")

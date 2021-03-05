@@ -9,7 +9,7 @@
 \usage{
 GRR.matrix(genes.maf = Kryukov, n.case.groups = 2, 
            GRR = c("SKAT", "constant", "variable"), 
-           GRR.value, GRR.function, GRR.multiplicative.factor = 2, select.gene)
+           GRR.value, GRR.function, GRR.multiplicative.factor, select.gene)
 }
 \arguments{
   \item{genes.maf}{ A dataframe containing at least the MAF in the general population (column \code{maf}) with their associated gene (column \code{gene}). By default, \code{maf} from the file Kryukov are used}

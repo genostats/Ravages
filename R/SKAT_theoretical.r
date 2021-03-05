@@ -2,6 +2,9 @@ SKAT.theoretical <- function(x, NullObject, genomic.region = x@snps$genomic.regi
                      weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
                      estimation.pvalue = "kurtosis", cores = 10, debug = FALSE){
 
+  #Check between number of individuals
+  if(nrow(x) != length(NullObject$group)) stop("Different number of individuals in 'x' and 'NullObject'")
+
   if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
   genomic.region <- droplevels(genomic.region)
 

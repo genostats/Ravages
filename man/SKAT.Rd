@@ -97,7 +97,7 @@ SKAT(x.sim, x.sim.H0, params.sampling = params.sampling)
 #Run SKAT with a random continuous phenotype
 #Null Model
 x.sim.H0.c <- NullObject.parameters(rnorm(100), RVAT = "SKAT", pheno.type = "continuous")
-SKAT(x.sim, x.sim.H0.c)
+SKAT(x.sim, x.sim.H0.c, cores = 1)
 
 
 

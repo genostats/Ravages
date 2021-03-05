@@ -57,7 +57,7 @@ x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.sn
 #Fit Null model
 x1.H0 <- NullObject.parameters(rnorm(nrow(x1)), RVAT = "SKAT", pheno.type = "continuous")
 
-SKAT.continuous(x1, x1.H0)
+SKAT.continuous(x1, x1.H0, cores = 1)
 }
 }
 

@@ -2,6 +2,9 @@ SKAT.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.regio
                      weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
                      estimation.pvalue = "kurtosis", cores = 10, debug = FALSE){
 
+  #Check between number of individuals
+  if(nrow(x) != length(NullObject$pheno)) stop("Different number of individuals in 'x' and 'NullObject'")
+ 
   if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
   genomic.region <- droplevels(genomic.region)
 
@@ -48,7 +51,7 @@ get.parameters.pvalue.continuous <- function(x, region, P1, ymp, estimation.pval
   M <- .Call("moments", PACKAGE = "Ravages", G, P1)
 
   #Cleaning temporary objects
-  rm(G.L) ; rm(G.bloc) ; rm(GG) ; rm(G) ; gc()
+  rm(GG) ; rm(G) ; gc()
   
   #P-valeur
   pval <- p.valeur.moments.liu(Q = Q, mu = M["mu"], sigma = M["sigma"], skewness = M["skewness"], kurtosis = M["kurtosis"], estimation.pvalue = estimation.pvalue)
