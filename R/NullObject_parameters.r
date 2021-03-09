@@ -7,6 +7,7 @@ NullObject.parameters <- function(pheno, RVAT, pheno.type = c("categorial", "con
   if(pheno.type == "categorial"){
     if (!is.factor(pheno))  stop("'pheno' is not a factor")
     pheno <- droplevels(pheno)
+    if(nlevels(pheno)==1) stop("Only one group of individuals, association tests cannot be run")
     if(RVAT == "burden"){
       if(is.null(ref.level)) stop("'ref.level' should be specified for the multinomial regression")
       NullObject.params <- burden.NullObject(group = pheno, ref.level = ref.level, data = data, formula = formula)

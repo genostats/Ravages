@@ -1,3 +1,4 @@
+#define RCPP_PARALLEL_USE_TBB 0
 #include <Rcpp.h>
 #include <RcppParallel.h>
 #include <iostream>

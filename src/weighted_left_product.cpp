@@ -5,6 +5,7 @@
  * mais il est pondéré...                  *
  *                                         *
  *******************************************/
+#define RCPP_PARALLEL_USE_TBB 0
 #include "weighted_left_product.h"
 
 using namespace Rcpp;

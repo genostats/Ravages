@@ -1,6 +1,4 @@
 burden.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.region, burden, maf.threshold = 0.5){
-  #Check between number of individuals
-  if(nrow(x) != length(NullObject$pheno)) stop("Different number of individuals in 'x' and 'NullObject'")
   
   if(is.numeric(burden)) {
     if(!is.matrix(burden)){
@@ -10,11 +8,17 @@ burden.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.reg
         colnames(burden) <- make.names(1:ncol(burden))
       }
     }
+    #Check between number of individuals
+    if(nrow(burden) != length(NullObject$pheno)) stop("Different number of individuals in 'burden' and 'NullObject'")
     score <- burden
   } else { 
     if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
     genomic.region <- droplevels(genomic.region)
     if(missing(x)) stop("a bed.matrix 'x' is needed to compute the score")
+
+    #Check between number of individuals
+    if(nrow(x) != length(NullObject$pheno)) stop("Different number of individuals in 'x' and 'NullObject'")
+
     if(burden == "CAST"){
       score <- CAST(x, genomic.region, maf.threshold)
     } else if(burden == "WSS"){

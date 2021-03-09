@@ -1,3 +1,4 @@
+#define RCPP_PARALLEL_USE_TBB 0
 // [[Rcpp::depends(RcppParallel)]]
 #include <Rcpp.h>
 #include <RcppParallel.h>
