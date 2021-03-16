@@ -78,6 +78,6 @@ run.mlogit.withNull <- function (pheno, score, region, ref.level, alt.levels, co
     }else{ results <- c(pval, is.err)}
     
     #Cleaning temporary objects
-    rm(score) ; rm(data) ; rm(fit) ; rm(my.model) ; gc()
+    rm(score) ; rm(data) ; rm(fit) ; gc()
     return(results)
 }
