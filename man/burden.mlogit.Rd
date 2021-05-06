@@ -59,8 +59,8 @@ x <- set.genomic.region(x)
 
 #Filter of rare variants: only non-monomorphic variants with
 #a MAF lower than 2.5%
-#keeping only genomic regions with at least 10 SNPs
-x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
+#keeping only genomic regions with at least 200 SNP
+x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 200)
 
 #Simulation of a covariate + Sex as a covariate
 sex <- x1@ped$sex

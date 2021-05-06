@@ -1,13 +1,13 @@
 .onAttach <- function(libname, pkgname) {
   rnorm(1); # force RNG seed initialisation (not done when the RNG is called from C++ code)
   if(r_check_limit_cores())
-    Sys.setenv(RCPP_PARALLEL_BACKEND = "tinythread")
+    setThreadOptions(1)
 }
 
 .onLoad <- function(libname, pkgname) {
   rnorm(1); # force RNG seed initialisation (not done when the RNG is called from C++ code)
   if(r_check_limit_cores())
-    Sys.setenv(RCPP_PARALLEL_BACKEND = "tinythread")
+    setThreadOptions(1)
 }
 
 

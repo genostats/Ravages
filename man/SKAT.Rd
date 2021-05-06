@@ -72,6 +72,7 @@ If \code{debug = TRUE}, the mean, standard deviation, skewness and kurtosis are 
 }
 
 \examples{
+\donttest{
 #Example on simulated data from Ravages with 
 #One group of 50 controls and 
 #two groups of 25 cases, each one with a prevalence of 0.01
@@ -101,7 +102,6 @@ SKAT(x.sim, x.sim.H0.c, cores = 1)
 
 
 
-\donttest{
 #Example on 1000Genome data
 #Import data in a bed matrix
 x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
@@ -136,7 +136,7 @@ x1.H0.covar <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "ca
 SKAT(x1, x1.H0.covar, params.sampling = params.sampling, get.moments = "bootstrap")
 
 #Run SKAT using theoretical moments (discourage here as n<2000) and 1 core
-SKAT(x1, x1.H0.covar, get.moments = "theoretical", cores = 1)
+#SKAT(x1, x1.H0.covar, get.moments = "theoretical", cores = 1)
 }
 
 }
