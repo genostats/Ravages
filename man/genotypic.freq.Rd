@@ -9,7 +9,8 @@
 \usage{
 genotypic.freq(genes.maf = Kryukov, GRR.het, GRR.homo.alt, prev, 
                genetic.model = c("general", "multiplicative", 
-                                 "dominant", "recessive"), select.gene)
+                                 "dominant", "recessive"), select.gene,
+               selected.controls = T)
 }
 \arguments{
   \item{genes.maf}{ A file containing the MAF in the general population (column maf) for variants with their associated gene (column gene), by default the file \code{Kryukov} is used}
@@ -18,6 +19,7 @@ genotypic.freq(genes.maf = Kryukov, GRR.het, GRR.homo.alt, prev,
   \item{prev}{ A vector containing the prevalence of each group of cases}
   \item{genetic.model}{ The genetic model of the disease }
   \item{select.gene}{ Which gene to choose from \code{genes.maf$gene} if multiple genes are present. If missing, only the first level is kept.}
+  \item{selected.controls}{ Whether controls are selected controls (by default) or controls from the general population}
 }
 \value{
   A matrix of MAF values with one column per variant and one row per group (the first one being the controls group)
@@ -42,6 +44,9 @@ genotypic.freq(genes.maf = Kryukov, GRR.het, GRR.homo.alt, prev,
 
   \code{prev} corresponds to the proportion of each sub-group of cases in the population. 
   It is used only to calculate the MAF in the controls group.  
+
+  If \code{selected.controls} = T, genotypic frequencies in the control group are computed from genotypic frequencies in the cases groups and the prevalence of the disease. 
+  If FALSE, genotypic frequencies in the control group are computed from allelic frequencies under Hardy-Weinberg equilibrium.  
 
   The dataframes \code{Kryukov} or \code{GnomADgenes} available with the package Ravages can be used for the argument \code{genes.maf}.
 }

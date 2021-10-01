@@ -1,12 +1,15 @@
-set.genomic.region <- function(x, regions = genes.b37, flank.width = 0L) {
-  if(!is.factor(regions$Gene_Name)) stop("regions$Gene_Name should be a factor with levels ordered in the genome order")
+set.genomic.region <- function(x, regions = genes.b37, flank.width = 0L, split = TRUE) {
+  #Possibility to have a column named "Gene_Name" as before
+  if("Gene_Name" %in% colnames(regions) & !("Name" %in% colnames(regions))) regions$Name <- regions$Gene_Name
+ 
+  if(!is.factor(regions$Name)) stop("regions$Name should be a factor with levels ordered in the genome order")
 
   # ce test est OK pour les facteurs aussi
   if(typeof(x@snps$chr) != "integer") 
     stop("x@snps$chr should be either a vector of integers, or a factor with same levels as regions$Chr")
   
   # remove duplicated regions if any
-  w <- duplicated(regions$Gene_Name)
+  w <- duplicated(regions$Name)
   if(any(w)) {
     regions <- regions[!w,]
   }
@@ -40,11 +43,14 @@ set.genomic.region <- function(x, regions = genes.b37, flank.width = 0L) {
 
   
   R <- .Call("label_multiple_genes", PACKAGE = "Ravages", regions$Chr, regions$Start, regions$End, x@snps$chr, x@snps$pos)
-  R.genename <- unlist(lapply(R, function(z) paste(levels(regions$Gene_Name)[unlist(z)], collapse=",")))  
+  R.genename <- unlist(lapply(R, function(z) paste(levels(regions$Name)[unlist(z)], collapse=",")))  
   R.genename[which(R.genename=="")] <- NA
 
   x@snps$genomic.region <- R.genename
   x@snps$genomic.region <- factor(x@snps$genomic.region, levels = unique(x@snps$genomic.region))
+  if(any(grepl(x@snps$genomic.region, pattern = ","))){
+    x <- bed.matrix.split.genomic.region(x, genomic.region = x@snps$genomic.region, split.pattern = ",")
+  }
   x
 }
 

@@ -6,6 +6,11 @@
 rbm.haplos.thresholds <- function(haplos, weights = -0.4*log10(colMeans(haplos)), maf.threshold = 0.01, 
              nb.causal, p.protect = 0, h2, prev, normal.approx = TRUE, size, replicates, rep.by.causal, verbose = TRUE) {
 
+  if (length(weights) == 1) {
+        weights <- rep(weights, ncol(haplos))
+  }
+
+  
   if( (replicates %% rep.by.causal) != 0 ) 
     stop("replicates should be a multiple of rep.by.causal")
 

@@ -16,7 +16,7 @@ burden.weighted.matrix(x, weights, genomic.region = x@snps$genomic.region)
 A matrix containing the computed genetic score with one row per individual and one column per \code{genomic.region}.
 }
 \details{
-For variant \emph{i} and individual \emph{j}, the genetic score will be computed as weight of variant \emph{i} * number of minor alleles for individual \emph{j}.
+For variant \emph{i} and individual \emph{j}, the genetic score will be computed as weight of variant \emph{i} * number of minor alleles for individual \emph{j}. This function returns a weighted score of rare alleles in the genomic region: if the reference allele is rare, it will be counted in the score instead of the atlernative allele.
 }
 \seealso{ \code{\link{CAST}}, \code{\link{WSS}}, \code{\link{burden.mlogit}} }
 \examples{

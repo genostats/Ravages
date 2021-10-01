@@ -22,7 +22,7 @@ To learn more about all options of the functions, the reader is advised to look 
 
 
 ## Example of analysis using LCT data
-Below is an example of an association analysis and previous steps of data filtering using the dataset LCT available with the package Ravages. This dataset containts data from the 1000Genome project in the genomic region containing the Lactase gene. In this example, we look for an association between rare variants and the european populations of 1000Genomes. The population of each individual is available in the dataframe LCT.matrix.pop1000G.
+Below is an example of an association analysis and previous steps of data filtering using the dataset LCT available with the package Ravages. This dataset containts data from the 1000Genome project in the genomic region containing the Lactase gene. In this example, we look for an association between rare variants and the european populations of 1000Genomes. The population of each individual is available in the dataframe LCT.matrix.pop1000G. A classical analysis by gene is performed, or an analysis using the strategy "RAVA-FIRST".
 Details about each function is given right after this example.
 ```{r}
 #Import data in a bed matrix
@@ -55,14 +55,15 @@ burden(x1, NullObject = x1.H0.burden, burden = "CAST", cores = 1)
 x1.H0.SKAT <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial")
 SKAT(x1, x1.H0.SKAT, params.sampling=list(perm.target = 10, perm.max = 500))
 
+#run RAVA-FIRST approach using WSS
+#RAVA-FIRST(x1, x1.H0.burden, SKAT = F)
+
 ```
 
 ## Defining genomic regions
-For rare variant association tests, the unit of analysis is not a single variant but a genomic region, typically a gene. The first step of the analysis is therefore to group variants into genomic regions. This can be done using the function **set.genomic.region()** and known gene positions. It works on a bed.matrix (see Gaston) and simply adds a column "genomic.region" to the slot x@snps containing the genomic region (a factor) assigned to each variant. Gene positions should be given to *regions* as a dataframe containing the following columns: *Chr*, *Start*, *End*, *Gene_Name*. The dataframe should absolutely be ordered in the genome order, as well as the levels of *regions$Gene_Name*. By default, any variant being outside the gene positions won't be annotated. Gene positions can be extended to annotate more variants using the argument *flank.width* corresponding to the number of base pairs upstream and downstream the gene. If *flank.width=Inf*, each variant will be assigned to the nearest gene. If two regions overlap, variants in the overlapping zone will be attributed to both regions, separated by a comma.  
-The files **genes.b37** and **genes.b38** available in Ravages which contain gene positions from ENSEMBL versions hg19 and hg38 can be used for *regions* to define gene positions. 
-
-## Multiple genomic regions for a variant
-If variants are annotated to multiple genomic regions, they can be split in a new bed matrix using the function **bed.matrix.split.genomic.region()**. This function takes a bed matrix as argument (*x*) and duplicates variants being assigned to multiple regions separated by *split.pattern*. If *changeID=TRUE*, the id from the bedmatrix will be changed to the format chr:pos:A1:A2:genomic.region to distinguish the duplicated variants.  
+For rare variant association tests, the unit of analysis is not a single variant but a genomic region, typically a gene. The first step of the analysis is therefore to group variants into genomic regions. This can be done using the function **set.genomic.region()** and known gene positions. It works on a bed.matrix (see Gaston) and simply adds a column "genomic.region" to the slot x@snps containing the genomic region (a factor) assigned to each variant. Gene positions should be given to *regions* as a dataframe containing the following columns: *Chr*, *Start*, *End*, *Gene_Name*. The dataframe should absolutely be ordered in the genome order, as well as the levels of *regions$Gene_Name*. By default, any variant being outside the gene positions won't be annotated. Gene positions can be extended to annotate more variants using the argument *flank.width* corresponding to the number of base pairs upstream and downstream the gene. If *flank.width=Inf*, each variant will be assigned to the nearest gene. If two regions overlap, variants in the overlapping zone will be attributed to both regions, separated by a comma. By default, *split=TRUE* which means that variants attributed to multiple regions will be duplicated in the bed matrix. This is done by calling the function **bed.matrix.split.genomic.region()** which takes a bed matrix as argument (*x*) and duplicates variants being assigned to multiple regions separated by *split.pattern*. If *changeID=TRUE*, the id from the bedmatrix will be changed to the format chr:pos:A1:A2:genomic.region to distinguish the duplicated variants.  
+The files **genes.b37** and **genes.b38** available in Ravages which contain gene positions from ENSEMBL versions hg19 and hg38 can be used for *regions* to define gene positions.  
+ 
 An example is shown below:
 ```{r, eval = F}
 #Example bed matrix with 4 variants
@@ -75,8 +76,9 @@ x.ex <- as.bed.matrix(x=matrix(0, ncol=4, nrow=10),
 genes.ex <- data.frame(Chr=c(1,1,3,4), Start=c(10,110,190,220), End=c(170,180,250,260),
                        Gene_Name=factor(letters[1:4]))
 
-#Attribute genomic regions
-x.ex <- set.genomic.region(x.ex, regions = genes.ex)
+#Attribute genomic regions without splitting the variants
+#attributed to multiple genomic regions
+x.ex <- set.genomic.region(x.ex, regions = genes.ex, split = F)
 x.ex@snps$genomic.region
 
 #Split genomic regions
@@ -85,14 +87,15 @@ x.ex.split@snps$genomic.region
 ``` 
 
 
-## Rare variant definition
+## Rare variant selection
+###Frequency filter
 To perform rare variant analysis, it is also important to define what is a rare variant in order to leave out common ones. The function **filter.rare.variants()** enables to keep only variants with a MAF (Minor Allele Frequency) below a given threshold while leaving out monomorphic variants. This function uses and returns a bed.matrix which can be filtered in three different ways:  
 
 * If *filter="whole"*, all the variants with a MAF lower than the threshold in the entire sample will be kept. 
 * If *filter="controls"*, all the variants with a MAF lower than the threshold in the controls group will be kept. In this situation, the controls group needs to be specified to the argument *ref.level*.
 * If *filter="any"*, all the variants with a MAF lower than the threshold in any of the groups will be kept.  
 
-It is also possible to specify the minimum number of variants needed in a genomic region to keep it using the parameter *min.nb.snps*.  
+It is also possible to specify the minimum number of variants needed in a genomic region to keep it using the parameter *min.nb.snps*, as well as the minimum cumulative MAF using *min.cumulative.maf*.  
 
 For the filter *any* and *controls*, the group of each individual should be given as a factor to *group*.
 
@@ -103,7 +106,7 @@ The general idea of burden tests is to compute a genetic score per individual an
 The variance-component test SKAT looks at the dispersion of genetics effects of rare variants. A geometrical interpretation of the test was used for its extension to more than two groups of individuals. Covariates can also be included in this model.
 
 ### Genetic score for burden tests
-We have implemented two functions to compute CAST and WSS scores respectively. These functions return a matrix with one row per individual and one column by genomic region. They are directly called in the function **burden()** if these scores are used to perform the association tests. It is also possible to compute genetic scores in a genomic region based on a vector of weights for each variant using the function **burden.weighted.matrix()**.  
+We have implemented two functions to compute CAST and WSS scores respectively. These functions return a matrix with one row per individual and one column by genomic region. They are directly called in the function **burden()** if these scores are used to perform the association tests. It is also possible to compute genetic scores in a genomic region based on a vector of weights for each variant using the function **burden.weighted.matrix()**.It is important to note that all burden functions compute a score for the rare alleles. Therefore, if the reference allele is rare, the alleles will be flipped and it will be counted in the score instead of the alternative allele. This can be avoided only in the **CAST()** score with the argument *flip.rare.alleles* set at TRUE by default. 
 
 #### CAST
 CAST is based on a binary score which has a value of one if an individual carries at least one variant in the considered genomic region, and 0 otherwise. A MAF threshold for the definition of a rare variant is therefore needed as an argument to *maf.threshold*. This score can be computed using the function **CAST()** as shown here on the LCT data:
@@ -141,8 +144,8 @@ This regression can be performed on a bed.matrix using the function **burden()**
 **NullObject.parameters()** will return a list with the parameters to use in **burden()** to run the burden test, including the Log-Likelihood computed under the null model, the argument *data* with the covariates to include determined from the argument *formula*.  
 Once the null model has been run, the function **burden()** can be used to perform burden tests. To do so, the user needs to give the results from **NullObject.parameters()** to the argument *NullObject*, and needs to specify the genomic region associated to each variant (argument *genomic.region*).  
 The  CAST or WSS genetic scores can be directly calculated in the regression (*burden="CAST"* or *burden="WSS"*). The user can also use another genetic score in the regression, which has to be specified as a matrix with one individual per row and one genomic region per column to *burden*.  In this situation, no bed matrix is needed, and the result from **burden.weighted.matrix()** can be used directly.  
-To speed up the computation time when the phenotype is categorial, calculations can be parallelised using the argument *cores*, set at 10 by default.  
-**burden()** will return the p-value associated to the regression for each genomic region. If there is a convergence problem with the regression, the function will return 1 in the column *is.err*. The odds ratio associated to each group of cases compared to the reference group (*NullObject$ref.level*) with its confidence interval at a given alpha threshold (argument *alpha*) can also be obtained if *get.OR.value=TRUE*.   
+To speed up the computation time, calculations can be parallelised using the argument *cores*, set at 10 by default.  
+**burden()** will return the p-value associated to the regression for each genomic region. If there is a convergence problem with the regression, the function will return 1 in the column *is.err*. The effect size (odds ratio for categorial phenotypes and beta value for continuous phenotypes) associated to each group of cases compared to the reference group (*NullObject$ref.level*) with its confidence interval at a given alpha threshold (argument *alpha*) can also be obtained if *get.effect.size=TRUE*.   
 An example of the p-value and OR calculation with its 95% confidence interval using WSS on the LCT data is shown below with or without the inclusion of covariates. The outcome here corresponds to the population from 1000Genome.
 
 ```{r, eval = F}
@@ -151,7 +154,7 @@ x1.H0 <- NullObject.parameters(x1@ped$pop, ref.level = "CEU",
                                RVAT = "burden", pheno.type = "categorial")
 # WSS 
 burden(x = x1, NullObject = x1.H0, burden ="WSS", 
-      alpha=0.05, get.OR.value=TRUE, cores = 1)
+      alpha=0.05, get.effect.size=TRUE, cores = 1)
 
 #Sex + a simulated variable as covariates
 sex <- x1@ped$sex
@@ -175,7 +178,7 @@ set.seed(1) ; pheno1 <- rnorm(nrow(x1))
 x1.H0.continuous <- NullObject.parameters(pheno1, RVAT = "burden", 
                                           pheno.type = "continuous")
 #Test CAST 
-burden(x1, NullObject = x1.H0.continuous, burden = "CAST")
+burden(x1, NullObject = x1.H0.continuous, burden = "CAST", cores = 1)
 ```
 
 ### SKAT
@@ -206,6 +209,55 @@ x1.H0.c <- NullObject.parameters(pheno1, RVAT = "SKAT", pheno.type = "continuous
                                  data = covar)
 #Run SKAT
 SKAT(x1, x1.H0.c)
+```
+
+## RAVA-FIRST(RAre Variant Analysis and GEnetic Simulations for multi-category phenotypes)
+Ravages also offers the possibility to analyse rare variants using the 'RAVA-FIRST' strategy, composed of three main steps.
+
+###Definition of testing units: CADD regions
+CADD regions are testing units which correspond to non-overlapping regions defined genome-wide using the variant pathogenicity score CADD: regions are defined between variants observed at least two times in GnomAD with a high CADD score. This CADD score is not the original CADD score v1.4 oublished by Rentzch et al., but an adjusted score that take into account three types of functional areas : coding, regulatory and intergenic areas. This enable to find the most important functional variants within each of those three areas. To attribute adjusted CADD scores to variants, the function **adjustedCADD.annotation()** can be used. It will either annotate variants in the bed matrix using a provided file with adjusted CADD scores to *variant.scores*, or by downloading the adjusted scores from https://lysine.univ-brest.fr/CADD_Regions/ in Ravages repository. To assign variants to CADD regions and to the functional areas, the function **set.CADDregions()** can be used. It will add *genomic.region* to the bed matrix with the corresponding CADD regions present in the file "CADDRegions.2021.hg19.tsv.gz" and *SubRegion* with the functional area present in the file "FunctionalAreas.hg19.tsv.gz", both directly downloaded from https://lysine.univ-brest.fr/CADD_Regions/ in the repository from the package Ravages. In addition, *adjCADD.Median* will be given which correspond to the median adjusted CADD score of variants observed at least two times in GnomAD and can be used for variant filtering as explained later.
+
+```{r}
+###Annotation of variants with adjusted CADD scores
+#x <- adjustedCADD.annotation(x)
+###Attribution of CADD regions
+#x.CADDregions <- set.CADDregions(x)
+```
+
+###Filtering of rare variants: region-dependant thresholds
+In RAVA-FIRST, we propose a new approach to select rare variants to include in the RVAT that keeps within each CADD region only the variants with an adjusted CADD score greater than the median observed in GnomAD. To this end, the function **filter.adjustedCADD()** can be used which relies on the same arguments than **filter.rare.variants()** for the filtering based on the frequency. Within this function, bi-allelic variants of the bed matrix will be directly annotated with the adjusted CADD scores using the file "AdjustedCADD_v1.4_202108.tsv.gz" that will be downloaded from https://lysine.univ-brest.fr/CADD_Regions/ into the repostitoy of the package Ravages. Only the variants with a score greater than the median will be kept. It is necessary that the bed matrix is first annotated with **set.CADDregion()**. If the bed matrix has previously been annotated by **adjustedCADD.annotation()**, **filter.adjustedCADD()** will filter rare variants based on *x@snps$adjCADD* without anootating the variants to gain in computation time  
+
+```{r}
+#Keep only CADD regions with 2 variants
+#and variants with a MAF greater than 1% 
+#and with an adjusted CADD score greater than the median
+#x.median <- filter.adjustedCADD(x.CADDregions, maf.threshold = 0.01, min.nb.snps = 2)
+```
+
+###Functionally-informed burden tests
+In RAVA-FIRST, different types of functional areas (coding, regulatory or intergenic regions) can be found within CADD regions. To take them into account, we propose to use subscores in the regression, one for each functional area, within each CADD region. There will be at most three sub-scores in the regression. This can be performed using **burden.subscores()** which works similarily as **burden()** with the extra argument *SubRegion* corresponding to the vector with the subregions on which subscores should be computed. In addition, the argument *burden.function* replaces the argument *burden* and requires to give a function which determines how the genetic score is computed (for example *CAST* or *WSS*). **burden.subscores()** can be directly applied on the bed matrix obtained from **set.CADDregions()** or **filter.adjustedCADD()**.  
+**SKAT()** can also be applied on the bed matrix with variants grouped and filtered according to RAVA-FIRST but it will correspond to the classical SKAT analysis without the integration of functional information. 
+
+```{r}
+###Functionally-informed WSS analysis
+#x.burden <- burden.subscores(x.median, x1.H0.burden, burden.function = WSS)
+###SKAT analysis
+#x.SKAT <- SKAT(x.median, x1.H0.SKAT)
+```
+
+###Complete RAVA-FIRST approach and whole-genome analysis
+RAVA-FIRST enables to perform RVAT in the whole genome. To facilitate the analysis, we propose the function **RAVA.FIRST()** which gathers all the previous functions and enables to directly performs the whole RAVA-FIRST strategy from a bed matrix. It simply needs the bed matrix and the NullObject (that can be obtained from **NullObject.parameters()**) and optional filtering arguments and parameters for the RVAT. Due to time and memory managment, we advise the user to import the data and apply the different functions of annotation, filtering and association (or directly **RAVA.FIRST()**) chromosome by chromosomes for large datasets as shown below:
+
+```{r}
+###RAVA-FIRST analysis with functionally-informed burden and SKAT
+###Chromosome by chromosome
+#NullObject.parameters()
+#res.bychr <- vector("list", 22)
+#for(chr in 1:22){
+#  x <- read.bed.matrix(paste0(path_file, prefix_vcf, chr, ".vcf.gz"))
+#  res.bychr[[chr]] <- RAVA.FIRST(x, H0.burden = H0.burden, 
+#                                 burden.function = WSS, H0.SKAT = H0.SKAT)
+#}
 ```
 
 ## Data management

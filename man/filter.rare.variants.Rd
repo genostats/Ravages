@@ -4,20 +4,22 @@
   Rare variants filtering
 }
 \description{
-  Filter rare variants based on a MAF threshold and a given number of SNP per genomic region
+  Filter rare variants based on a MAF threshold and a given number of SNP or a given cumulative MAF per genomic region
 }
 \usage{
 filter.rare.variants(x, ref.level, filter=c("whole", "controls", "any"), 
-                     maf.threshold=0.01, min.nb.snps = 2, group, genomic.region = NULL)
+                     maf.threshold=0.01, min.nb.snps = 2, min.cumulative.maf, 
+                     group, genomic.region = NULL)
 }
 \arguments{
   \item{x}{ A bed.matrix }
   \item{ref.level}{ The level corresponding to the controls group, only needed if \code{filter=="controls"} }
   \item{filter}{ On which group the filter will be applied }
   \item{maf.threshold}{ The MAF threshold used to define a rare variant, set at 0.01 by default}
-  \item{min.nb.snps}{ The minimum number of snps needed to keep a genomic region, set at 2 by default}
+  \item{min.nb.snps}{ The minimum number of variants needed to keep a genomic region, set at 2 by default}
+  \item{min.cumulative.maf}{ The minimum cumulative maf of variants needed to keep a genomic region}
   \item{group}{ A factor indicating the group of each individual, only needed if \code{filter = "controls"} or \code{filter = "any"}. If missing, \code{x@ped$pheno} is taken}
-  \item{genomic.region}{ An optional factor containing the genomic region of each variant, only needed if \code{min.nb.snps} is specified and if \code{x@snps$genomic.region} doesn't exist}
+  \item{genomic.region}{ An optional factor containing the genomic region of each variant, only needed if \code{min.nb.snps} or \code{min.cumulative.maf} is specified and if \code{x@snps$genomic.region} doesn't exist}
 }
 \value{
   A bed.matrix with filtered variants
@@ -32,6 +34,7 @@ filter.rare.variants(x, ref.level, filter=c("whole", "controls", "any"),
   If \code{filter="any"}, only the variants having a MAF lower than the threshold in any of the groups are kept.
 }
 \examples{
+\donttest{
 #Import 1000Genome data from region around LCT gene
 x <- as.bed.matrix(LCT.gen, LCT.fam, LCT.bim)
 
@@ -44,4 +47,10 @@ table(x@snps$genomic.region, useNA="ifany")
 #keeping only genomic regions with at least 10 SNPs
 x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.snps = 10)
 table(x1@snps$genomic.region, useNA="ifany")
+
+#Keep only variants with a MAF<2%
+#and regions with a cumulative MAF>10%
+filter.rare.variants(x, filter = "whole", maf.threshold = 0.02, min.nb.snps = 1, 
+                     min.cumulative.maf=0.2)
+}
 }

@@ -1,4 +1,4 @@
-burden.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.region, burden, maf.threshold = 0.5){
+burden.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.region, burden, maf.threshold = 0.5, get.effect.size = F, alpha = 0.05, cores = 10){
   
   if(is.numeric(burden)) {
     if(!is.matrix(burden)){
@@ -35,11 +35,12 @@ burden.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.reg
   # preparation data / formula
   data.reg <- cbind(NullObject$data, score) ; rownames(data.reg) <- NULL
 
-  R <- sapply( names(score), function(reg) run.burden.continuous(pheno = NullObject$pheno, score = score, region = reg, covar.toinclude = NullObject$covar.toinclude, data = data.reg))
+  R <- do.call(rbind, mclapply( names(score), function(reg) run.burden.continuous(pheno = NullObject$pheno, score = score, region = reg, covar.toinclude = NullObject$covar.toinclude, data = data.reg, get.effect.size = get.effect.size, alpha = alpha), mc.cores = cores))
 
-  R <- as.data.frame( t(R) );
+  R <- as.data.frame( R );
 
-  colnames(R) <- c("p.value", "is.err")
+  if (get.effect.size) colnames(R) <- c("p.value", "is.err", "beta", "l.lower", "l.upper")
+  else colnames(R) <- c("p.value", "is.err")
 
   rownames(R) <- old.names
 
@@ -47,7 +48,7 @@ burden.continuous <- function(x, NullObject, genomic.region = x@snps$genomic.reg
 }
 
 
-run.burden.continuous <- function(pheno, score, region, covar.toinclude, data){
+run.burden.continuous <- function(pheno, score, region, covar.toinclude, data, get.effect.size, alpha){
   # Formula for the current region
   if(is.null(covar.toinclude)) { 
     my.formula <- as.formula(paste("ind.pheno ~ ", region))
@@ -62,13 +63,25 @@ run.burden.continuous <- function(pheno, score, region, covar.toinclude, data){
   if(is(fit, "error")) {
     pval <- NA ; 
     is.err <- 1 ; 
+    beta.values <- data.frame(Estimate = NA, sd = NA)
   } else {
     my.model <- summary(fit)
     pval <- my.model$coefficients[region, 4]
     is.err <- 0
+    if(get.effect.size)  beta.values <- my.model$coefficients
   }
+  
+  quantile.alpha <- qnorm(alpha/2, lower.tail = FALSE)
+  if (get.effect.size){
+    beta.values.estimate <- beta.values[region,2]
+    beta.values.sd <- beta.values[region, 2]
+      results <- c(pval, is.err, beta.values.estimate, beta.values.estimate - quantile.alpha * beta.values.sd, beta.values.estimate + quantile.alpha * beta.values.sd)
+    }else{ results <- c(pval, is.err)}
+    
+    #Cleaning temporary objects
+    rm(score) ; rm(data) ; rm(fit) ; gc()
+    return(results)
 
-  return(c(pval, is.err))
 }
   
 

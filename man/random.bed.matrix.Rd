@@ -11,7 +11,8 @@ random.bed.matrix(genes.maf = Kryukov, size, prev, replicates,
                   GRR.matrix.del, GRR.matrix.pro, 
                   p.causal = 0.5, p.protect = 0, same.variant = FALSE, 
                   genetic.model=c("general", "multiplicative", 
-                                  "dominant", "recessive"), select.gene)
+                                  "dominant", "recessive"), select.gene,
+                  selected.controls = T)
 }
 \arguments{
   \item{genes.maf}{ A dataframe containing at least the MAF in the general population (column maf) for variants with their associated gene (column gene), by default the file \code{Kryukov} is used}
@@ -25,6 +26,7 @@ random.bed.matrix(genes.maf = Kryukov, size, prev, replicates,
   \item{same.variant}{ TRUE/FALSE: whether the causal variants are the same in the different groups of cases}
   \item{genetic.model}{ The genetic model of the disease }
   \item{select.gene}{ Which gene to choose from \code{genes.maf$gene} if multiple genes are present. If missing, only the first level is kept.}
+  \item{selected.controls}{ Whether controls are selected controls (by default) or controls from the general population}
 }
 \value{
   A bed.matrix with as much columns (variants) as \code{replicates}*number of variants.
@@ -44,12 +46,15 @@ random.bed.matrix(genes.maf = Kryukov, size, prev, replicates,
 
   \code{GRR.matrix.del} contains GRR values as if all variants are deleterious. These values will be used only for the proportion \code{p.causal} of variants that will be sampled as causal.  
 
+  If \code{selected.controls} = T, genotypic frequencies in the control group are computed from genotypic frequencies in the cases groups and the prevalence of the disease.
+  If FALSE, genotypic frequencies in the control group are computed from allelic frequencies under Hardy-Weinberg equilibrium.  
+
   The files \code{Kryukov} or \code{GnomADgenes} available with the package Ravages can be used as the argument \code{genes.maf}.
 
   If \code{GRR.matrix.del} (or \code{GRR.matrix.pro}) has been generated using the function \code{GRR.matrix}, the arguments \code{genes.maf} and \code{select.gene} should have
   the same value as in \code{GRR.matrix}.
 }
-\seealso{ \code{\link{GRR.matrix}}, \code{\link{Kryukov}}, \code{\link{GnomADgenes}} }
+\seealso{ \code{\link{GRR.matrix}}, \code{\link{Kryukov}}, \code{\link{GnomADgenes}}, \code{\link{random.bed.matrix.power}} }
 \examples{
 #GRR values calculated with the SKAT formula
 GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov, 

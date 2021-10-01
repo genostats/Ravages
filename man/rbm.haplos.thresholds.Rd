@@ -14,7 +14,7 @@
 }
 \arguments{
   \item{haplos}{ A matrix of haplotypes with one row per haplotype and one column per variant}
-  \item{weights}{ A vector of weights for each variant to compute the burden used in the liability model. By default, wieghts=-0.4*log10(MAF)}
+  \item{weights}{ A vector of weights for each variant to compute the burden used in the liability model. By default, wieghts=-0.4*log10(MAF). It can also be a single value that will be given to all variants}
   \item{maf.threshold}{ The maf threshold to consider a rare variant  (set at 0.01 by default), variants with a MAF upper this threshold will have a weight of 0}
   \item{nb.causal}{ The number of causal variants}
   \item{p.protect}{ The proportion of protective variants among causal variants}

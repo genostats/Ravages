@@ -1,5 +1,5 @@
 #We only accept matrices of good dimensions
-genotypic.freq <- function(genes.maf = Kryukov, GRR.het, GRR.homo.alt, prev, genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene) {
+genotypic.freq <- function(genes.maf = Kryukov, GRR.het, GRR.homo.alt, prev, genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene, selected.controls = T) {
   
   genetic.model <- match.arg(genetic.model)
   #Test if a good genetic model is given
@@ -63,7 +63,11 @@ genotypic.freq <- function(genes.maf = Kryukov, GRR.het, GRR.homo.alt, prev, gen
   p.t <- numeric(ncol(GRR.het))
   for (i in 1:ncol(GRR.het)){
     freq.case <- p.case(pop.maf[i], GRR.het[,i], GRR.homo.alt[,i])
-    freq.controls <- p.tem.GRR(pop.maf[i], GRR.het[,i], GRR.homo.alt[,i], prev=prev)
+    if(selected.controls){ 
+      freq.controls <- p.tem.GRR(pop.maf[i], GRR.het[,i], GRR.homo.alt[,i], prev=prev)
+    }else{
+      freq.controls <- c(pop.maf[i]**2, 2*pop.maf[i]*(1-pop.maf[i]), (1-pop.maf[i])**2)
+    }
 
     homo.ref[,i] <- c(freq.controls[3], freq.case[,3])
     het[,i] <- c(freq.controls[2], freq.case[,2])

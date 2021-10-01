@@ -128,43 +128,18 @@ x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, nb.causal = 30, h2=c(0.01,0.01,0
 ```
 
 ## Power calculation
-Power calculations are not directly implemented into **Ravages**, but the functions *burden()* and *SKAT()* can be used to perform burden tests and SKAT. To have more informations about these two functions, please refer to the main vignette of the package. After the simulation of a bedmatrix using one of the two previously explained methods, statistical power can be computed as follows:
-
-```{r, eval = F}
-#Simulations using GRR values
-#The two groups of cases are genetically heterogeneous
+Power of the RVAT can be directly computed using **Ravages**. To do so, the functions *random.bed.matrix.power()* and *rbm.haplos.power()* can be used which rely on simulations based on GRR and on haplotypes respectively. Those two functions use the same arguments as the simulation functions previously presented. Power calculations are available for *CAST*, *WSS* and *SKAT*. In addition, using *random.bed.matrix.power()*, theoretical power can be rapidly computed for CAST by using **power.type="theoretical"** and **RVAT="CAST"**. Below are an example of CAST power based on theoretical calculations or simulations with haplotypes. 
+```{r}
+#CAST theoretical power
 GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov, n.case.groups = 2,
                       GRR.multiplicative.factor=2, select.gene = "R1")
+random.bed.matrix.power(genes.maf = Kryukov, size = c(1000, 500, 500),
+                        prev = c(0.001, 0.001), GRR.matrix.del = GRR.del,
+                        p.causal = 0.5, p.protect = 0, select.gene="R1",
+                        same.variant = FALSE, genetic.model = "multiplicative",
+                        power.type="theoretical")
 
-x.GRR <- random.bed.matrix(genes.maf = Kryukov, size = c(200, 100, 100), 
-                          prev = c(0.001, 0.001), GRR.matrix.del = GRR.del, 
-                          p.causal = 0.3, p.protect = 0, same.variant = TRUE,
-                          replicates = 100, genetic.model = "multiplicative", 
-                          select.gene = "R1")
-table(x.GRR@ped$pheno)
-#Selection of rare variants: MAF<1% in the entire sample
-x.GRR.filter <- filter.rare.variants(x.GRR, maf.threshold=0.01, filter="whole")
-
-#Comparing each group of cases to the controls with WSS
-x.GRR.1 <- select.inds(x.GRR.filter, x.GRR.filter@ped$pheno %in% c(0,1))
-x.GRR.2 <- select.inds(x.GRR.filter, x.GRR.filter@ped$pheno %in% c(0,2))
-#Construction of null models
-H0.cas1 <- NullObject.parameters(x.GRR.1@ped$pheno, ref.level = 0, 
-                                 RVAT = "burden", pheno.type = "categorial")
-H0.cas2 <- NullObject.parameters(x.GRR.2@ped$pheno, ref.level = 0, 
-                                 RVAT = "burden", pheno.type = "categorial")
-#Run WSS
-wss.cas1 <- burden(x.GRR.1, H0.cas1, burden="WSS", cores = 1)
-mean(wss.cas1$p.value<0.05)
-wss.cas2 <- burden(x.GRR.2, H0.cas2, burden="WSS", cores = 1)
-mean(wss.cas2$p.value<0.05)
-
-
-#Power of SKAT with each group considered separately
-#Null model
-skat.null.3gps <- NullObject.parameters(x.GRR.filter@ped$pheno, 
-                                        RVAT = "SKAT", pheno.type = "categorial")
-skat.3gps <- SKAT(x.GRR.filter, skat.null.3gps, 
-                  params.sampling = list(perm.target = 100, perm.max = 5e4))
-mean(skat.3gps$p.value<0.05)
+#WSS power based on simulations on haplotypes
+rbm.haplos.power(haplos=LCT.gene.hap, freqs=LCT.freqs, size=rep(50,5), 
+                 replicates=5, rep.by.causal = 5,  RVAT = "CAST", cores = 1)
 ```

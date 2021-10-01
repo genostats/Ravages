@@ -1,5 +1,21 @@
-v0.1.3:
- - Fix bugs with tinythreads and RcppParallel
+v0.2.0 :
+ - Analysis by CADD regions implemented:
+    *File CADDRegions containing CADD regions and their associated median
+    *File FunctionalAreas containing the positions of the three genomic areas (coding, intergenic, regulatory)
+    *Variants can be annotated into these two types of regions (set.CADDregions)
+    *Possilibity to annotate variants with the adjusted CADD score and to filter them based on the median observed in each CADD region (filter.adjustedCADD)
+    *Possibility to perform burden tests with subscores in the regression to take into account the genomic areas (burden.subscores)
+
+ - Parallelisation of burden on continuous phenotypes
+
+ - get.effect.size replaces get.OR.values in burden() and enables to get the beta estimate for continuous phenotypes
+
+ - Add the possibility to filter genomic regions based on the cumulative MAF (min.cumulative.maf)
+
+ - Simulations: rbm.haplos.power() and random.bed.matrix.power() to directly compute power of CAST, WSS and SKAT on the corresponding simulations
+
+v0.1.5:
+ - Fix bugs with tinythreads and RcppParallel in SKAT
 
 v0.1.2:
  - Parallelisation of SKAT on continuous phenotypes
@@ -9,3 +25,5 @@ v0.1.2:
    - Cleaning temporary files in functions called by mclapply to optimise memory usage
 
  - Checks added in multiple functions to verify the fit between functions and arguments
+
+

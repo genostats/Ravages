@@ -8,14 +8,18 @@
 }
 \usage{
   burden.continuous(x, NullObject, genomic.region = x@snps$genomic.region, 
-                    burden, maf.threshold = 0.5)
+                    burden, maf.threshold = 0.5, get.effect.size = F, 
+                    alpha = 0.05, cores = 10)
 }
 \arguments{
   \item{x}{ A bed matrix, only needed if \code{burden="CAST"} or \code{burden="WSS"}}
   \item{NullObject}{ A list returned from \code{NullObject.parameters} }
-  \item{genomic.region}{ A factor containg the genomic region of each SNP, \code{x@snps$genomic.region} by default, only needed if \code{burden}="CAST" or \code{burden}="WSS"}
+  \item{genomic.region}{ A factor containing the genomic region of each SNP, \code{x@snps$genomic.region} by default, only needed if \code{burden}="CAST" or \code{burden}="WSS"}
   \item{burden}{"CAST" or "WSS" to directly compute the CAST or the WSS genetic score, or a matrix with one row per individual and one column per \code{genomic.region} if another genetic score is wanted.}
   \item{maf.threshold}{ The MAF threshold to use for the definition of a rare variant in the CAST score. Set at 0.5 by default}
+  \item{get.effect.size}{ TRUE/FALSE: whether to return the beta value}
+  \item{alpha}{ The alpha threshold to use for the OR confidence interval}
+  \item{cores}{ How many cores to use for moments computation, set at 10 by default }
 }
 \details{
   This function will return results from the regression of the continuous phenotype on the genetic score for each genomic region.
@@ -27,6 +31,9 @@
   A dataframe with one row per genomic region and at least two columns:
   \item{p.value}{ The p.value of the regression}
   \item{is.err}{ 0/1: whether there was a convergence problem with the regression}
+  \item{beta}{ The beta coefficient associated to the tested genomic region}
+  \item{l.lower}{ The lower bound of the confidence interval of beta}
+  \item{l.upper}{ The upper bound of the confidence interval of beta}
 }
 \seealso{ \code{\link{CAST}}, \code{\link{WSS}}, \code{\link{burden.weighted.matrix}} }
 \examples{
@@ -53,7 +60,9 @@ x1@ped$pheno <- rnorm(nrow(x1))
 #Null model
 x1.H0 <- NullObject.parameters(pheno = x1@ped$pheno, 
                                RVAT = "burden", pheno.type = "continuous")
-burden.continuous(x1, NullObject = x1.H0, burden = "WSS")
+#Get the beta value
+burden.continuous(x1, NullObject = x1.H0, burden = "WSS", 
+                  get.effect.size = TRUE, cores = 1)
 
 }
 

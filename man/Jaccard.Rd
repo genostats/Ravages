@@ -21,6 +21,7 @@ A squared matrix giving the Jaccard index for each pair of individuals
 }
 \references{ Jaccard, P. (1908) \emph{Nouvelles researches sur la distribution florale}, Bulletin de la Société vaudoise des sciences naturelles, \bold{44, 223-270} } 
 \examples{
+\donttest{
 #Simulation of genetic data with GRR values according to the SKAT formula
 GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov, 
                       n.case.groups = 2, select.gene = "R1",
@@ -35,4 +36,5 @@ x <- random.bed.matrix(genes.maf=Kryukov, size = c(1000, 500, 500),
                            
 #Calculate the Jaccard matrix
 J <- Jaccard(x, maf.threshold = 0.01)
+}
 }

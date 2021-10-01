@@ -5,19 +5,20 @@
 Attributes regions to variants based on given region positions
 }
 \usage{
-set.genomic.region(x, regions = genes.b37, flank.width = 0L)
+set.genomic.region(x, regions = genes.b37, flank.width = 0L, split = TRUE)
 }
 \arguments{
   \item{x}{ A bed.matrix }
   \item{regions}{
     A dataframe containing the fields : \code{Chr} (the chromosome of the gene),
     \code{Start} (the start position of the gene), \code{End} (the end position of the gene), and
-    \code{Gene_Name} (the name of the gene - a factor),
+    \code{Name} (the name of the gene - a factor),
   }
   \item{flank.width}{ An integer: width of the flanking regions in base pairs downstream and upstream the regions. }
+  \item{split}{ Whether to split variants attributed to multiple regions by duplicating this variants, set at TRUE by default}
 }
 \details{ 
-Warnings: \code{regions$Gene_Name} should be a factor containing the names of the regions, ordered in the genome order. 
+Warnings: \code{regions$Name} should be a factor containing UNIQUE names of the regions, ORDERED in the genome order. 
 
 We provide two data sets of autosomal humain genes, \code{genes.b37} and \code{genes.b38}.  
 
@@ -28,9 +29,11 @@ When two regions overlap, variants in the overlapping zone will be assigned to t
 
 If \code{flank.width} is a positive number, variants \code{flank.width} downstream or upstream a gene will be annotated annotated to this gene. You can use \code{flank.width = Inf}
 to have each variant attributed to the nearest gene.  
+
+If a variant is attributed to multiple genomic regions, it will be duplicated in the bed matrix with one row per genomic region if \code{split = TRUE}.  
 }
 \value{
-The same bed matrix as x with an additional column \code{x@snps$genomic.region} containing the annotation of each variant (character).
+The same bed matrix as x with an additional column \code{x@snps$genomic.region} containing the annotation of each variant.
 }
 \seealso{
  \code{\link{genes.b37}}, \code{\link{genes.b38}}

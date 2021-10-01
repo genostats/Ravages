@@ -8,18 +8,18 @@
 }
 \usage{
 burden(x, NullObject, genomic.region = x@snps$genomic.region, burden,
-       maf.threshold = 0.5, get.OR.value = FALSE, alpha = 0.05, cores = 10,
+       maf.threshold = 0.5, get.effect.size = FALSE, alpha = 0.05, cores = 10,
        verbose = TRUE)
 }
 \arguments{
   \item{x}{ A bed matrix, only needed if \code{burden="CAST"} or \code{burden="WSS"}}
   \item{NullObject}{ A list returned from \code{NullObject.parameters} }
-  \item{genomic.region}{ A factor containg the genomic region of each SNP, \code{x@snps$genomic.region} by default, only needed if \code{burden}="CAST" or \code{burden}="WSS"}
+  \item{genomic.region}{ A factor containing the genomic region of each SNP, \code{x@snps$genomic.region} by default, only needed if \code{burden}="CAST" or \code{burden}="WSS"}
   \item{burden}{"CAST" or "WSS" to directly compute the CAST or the WSS genetic score, or a matrix with one row per individual and one column per \code{genomic.region} if another genetic score is wanted.}
   \item{maf.threshold}{ The MAF threshold to use for the definition of a rare variant in the CAST score. Set at 0.5 by default}
-  \item{get.OR.value}{ TRUE/FALSE: whether to return OR values }
+  \item{get.effect.size}{ TRUE/FALSE: whether to return effect sizes of the tested \code{genomic.region} (OR for categorial phenotypes, betas for continuous phenotypes) }
   \item{alpha}{ The alpha threshold to use for the OR confidence interval}
-  \item{cores}{ How many cores to use, set at 10 by default. Only needed if \code{NullObject$pheno.type = "categorial"} }
+  \item{cores}{ How many cores to use, set at 10 by default.}
   \item{verbose}{ Whether to display information about the function actions }
 }
 \details{
@@ -43,9 +43,9 @@ burden(x, NullObject, genomic.region = x@snps$genomic.region, burden,
   \item{p.value}{ The p.value of the regression}
   \item{is.err}{ 0/1: whether there was a convergence problem with the regression}
   If \code{NullObject$pheno.type = "categorial"} and \code{get.OR.value=TRUE}, additional columns are present:
-  \item{OR}{ The OR value(s) associated to the regression. If there are more than two groups, there will be one OR value per group compared to the reference group}
-  \item{l.lower}{ The lower bound of the confidence interval of each OR}
-  \item{l.upper}{ The upper bound of the confidence interval of each OR}
+  \item{OR/beta}{ The OR/beta value(s) associated to the regression. For categorial phenotypes, if there are more than two groups, there will be one OR value per group compared to the reference group}
+  \item{l.lower}{ The lower bound of the confidence interval of each OR/beta}
+  \item{l.upper}{ The upper bound of the confidence interval of each OR/beta}
 }
 
 
@@ -75,7 +75,7 @@ x1.H0 <- NullObject.parameters(pheno = x1@ped$pop, ref.level = "CEU",
                                RVAT = "burden", pheno.type = "categorial")
 
 #run burden test WSS
-burden(x1, NullObject = x1.H0, burden = "WSS", get.OR.value=TRUE, cores = 1)
+burden(x1, NullObject = x1.H0, burden = "WSS", get.effect.size=TRUE, cores = 1)
 
 
 #Simulation of a covariate + Sex as a covariate
@@ -88,7 +88,8 @@ x1.H0.covar <- NullObject.parameters(pheno = x1@ped$pheno <- rnorm(nrow(x1)),
                                      RVAT = "burden", pheno.type = "continuous",
                                      data = covar, formula = ~ sex)
 #WSS test
-burden(x1, NullObject = x1.H0.covar, burden = "WSS", get.OR.value=TRUE)
+burden(x1, NullObject = x1.H0.covar, burden = "WSS", 
+       get.effect.size=TRUE, cores = 1)
 
 }
 

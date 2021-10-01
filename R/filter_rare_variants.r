@@ -1,5 +1,5 @@
 
-filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "any"), maf.threshold = 0.01, min.nb.snps = 2, group, genomic.region = NULL) {
+filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "any"), maf.threshold = 0.01, min.nb.snps = 2, min.cumulative.maf, group, genomic.region = NULL) {
   if (is.null(genomic.region) & !("genomic.region" %in% colnames(x@snps))) stop("genomic.region should be provided or already in x@snps")
 
   if (!is.null(genomic.region)){
@@ -50,9 +50,16 @@ filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "
   }
 
   x <- select.snps(x, w & x@snps$maf > 0)
-  if(!missing(min.nb.snps)) {
-    nb.snps <- table(x@snps$genomic.region)
-    keep <- names(nb.snps)[nb.snps >= min.nb.snps]
+  #Filter genomic regions based on minimum number of SNPs
+  nb.snps <- table(x@snps$genomic.region)
+  keep <- names(nb.snps)[nb.snps >= min.nb.snps]
+  x <- select.snps(x, x@snps$genomic.region %in% keep)
+  x@snps$genomic.region <- droplevels(x@snps$genomic.region)
+  
+  #Filter genomic regions based on minimum cumulative MAF
+  if(!missing(min.cumulative.maf)) {
+    cmaf.snps <- by(x@snps$maf, x@snps$genomic.region, sum)
+    keep <- names(cmaf.snps)[cmaf.snps >= min.cumulative.maf]
     x <- select.snps(x, x@snps$genomic.region %in% keep)
     x@snps$genomic.region <- droplevels(x@snps$genomic.region)
   }

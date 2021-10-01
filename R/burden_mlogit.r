@@ -1,4 +1,4 @@
-burden.mlogit <- function(x, NullObject, genomic.region = x@snps$genomic.region, burden, maf.threshold = 0.5, get.OR.value = FALSE, alpha = 0.05, cores = 10){
+burden.mlogit <- function(x, NullObject, genomic.region = x@snps$genomic.region, burden, maf.threshold = 0.5, get.effect.size = FALSE, alpha = 0.05, cores = 10){
   
   if (is.numeric(burden)) {
     if (!is.matrix(burden)) {
@@ -36,8 +36,8 @@ burden.mlogit <- function(x, NullObject, genomic.region = x@snps$genomic.region,
   alt.levels <- levels(NullObject$group)[levels(NullObject$group) != NullObject$ref.level]
   data.reg <- cbind(NullObject$data, score) ; rownames(data.reg) <- NULL
   data.reg <- dfidx(data.reg, varying = NULL, shape = "wide", choice = "ind.pheno")
-  R <- do.call(rbind, mclapply(names(score), function(reg) run.mlogit.withNull(pheno = NullObject$group,  score = score, region = reg, ref.level = NullObject$ref.level, alt.levels = alt.levels, covar.toinclude = NullObject$covar.toinclude, data = data.reg, alpha = alpha, get.OR.value = get.OR.value, H0.LogLik = NullObject$H0.LogLik), mc.cores = cores))
-  if (get.OR.value) colnames(R) <- c("p.value", "is.err", paste("OR", alt.levels, sep = "."), paste("l.lower", alt.levels, sep = "."), paste("l.upper", alt.levels, sep = "."))
+  R <- do.call(rbind, mclapply(names(score), function(reg) run.mlogit.withNull(pheno = NullObject$group,  score = score, region = reg, ref.level = NullObject$ref.level, alt.levels = alt.levels, covar.toinclude = NullObject$covar.toinclude, data = data.reg, alpha = alpha, get.effect.size = get.effect.size, H0.LogLik = NullObject$H0.LogLik), mc.cores = cores))
+  if (get.effect.size) colnames(R) <- c("p.value", "is.err", paste("OR", alt.levels, sep = "."), paste("l.lower", alt.levels, sep = "."), paste("l.upper", alt.levels, sep = "."))
   else colnames(R) <- c("p.value", "is.err")
   rownames(R) <- old.names
   return(as.data.frame(R))
@@ -45,7 +45,7 @@ burden.mlogit <- function(x, NullObject, genomic.region = x@snps$genomic.region,
 
 
 
-run.mlogit.withNull <- function (pheno, score, region, ref.level, alt.levels, covar.toinclude, data, alpha, get.OR.value, H0.LogLik){
+run.mlogit.withNull <- function (pheno, score, region, ref.level, alt.levels, covar.toinclude, data, alpha, get.effect.size, H0.LogLik){
     if (is.null(covar.toinclude)) {
       my.formula <- Formula(as.formula(paste("ind.pheno ~ 0 |", region)))
     }else {
@@ -62,19 +62,19 @@ run.mlogit.withNull <- function (pheno, score, region, ref.level, alt.levels, co
       if (is.null(covar.toinclude)) {
         my.model <- summary(fit)
         pval <- as.numeric(my.model$lratio$p.value)
-        if (get.OR.value == TRUE) OR.values <- my.model$CoefTable
+        if (get.effect.size == TRUE) OR.values <- my.model$CoefTable
       }else {
         my.model.H1 <- summary(fit)
         pval <- pchisq(-2 * H0.LogLik + 2 * as.numeric(my.model.H1$logLik), nlevels(pheno) - 1, lower.tail = FALSE)
-        if (get.OR.value == TRUE) OR.values <- my.model.H1$CoefTable
+        if (get.effect.size == TRUE) OR.values <- my.model.H1$CoefTable
       }
       is.err <- 0
     }
     quantile.alpha <- qnorm(alpha/2, lower.tail = FALSE)
-    if (get.OR.value){
-      OR.values.estimate <- exp(OR.values[paste(region, alt.levels, sep = ":"), 1])
+    if (get.effect.size){
+      OR.values.estimate <- OR.values[paste(region, alt.levels, sep = ":"), 1]
       OR.values.sd <- OR.values[paste(region, alt.levels, sep = ":"), 2]
-      results <- c(pval, is.err, OR.values.estimate, OR.values.estimate - quantile.alpha * OR.values.sd, OR.values.estimate + quantile.alpha * OR.values.sd)
+      results <- c(pval, is.err, exp(OR.values.estimate), exp(OR.values.estimate - quantile.alpha * OR.values.sd), exp(OR.values.estimate + quantile.alpha * OR.values.sd))
     }else{ results <- c(pval, is.err)}
     
     #Cleaning temporary objects
