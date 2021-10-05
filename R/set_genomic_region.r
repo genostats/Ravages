@@ -8,6 +8,9 @@ set.genomic.region <- function(x, regions = genes.b37, flank.width = 0L, split =
   if(typeof(x@snps$chr) != "integer") 
     stop("x@snps$chr should be either a vector of integers, or a factor with same levels as regions$Chr")
   
+  #Add one to start to take into account bed format
+  regions$Start <- regions$Start + 1 
+  
   # remove duplicated regions if any
   w <- duplicated(regions$Name)
   if(any(w)) {

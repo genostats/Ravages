@@ -16,7 +16,7 @@ burden.mlogit.subscores(x, NullObject, genomic.region = x@snps$genomic.region,
   \item{x}{ A bed matrix, only needed if \code{burden="CAST"} or \code{burden="WSS"}}
   \item{NullObject}{ A list returned from \code{NullObject.parameters} }
   \item{genomic.region}{ A factor containing the genomic region of each SNP, \code{x@snps$genomic.region} by default, for example the CADD regions}
-  \item{SubRegion}{ A vector containing subregions within each \code{genomic.region}, \code{x@snps$SubRegion} by default, for example genomic areas}
+  \item{SubRegion}{ A vector containing subregions within each \code{genomic.region}, \code{x@snps$SubRegion} by default, for example genomic categories}
   \item{burden.function}{A function to compute the genetic score, \code{WSS} by default.}
   \item{maf.threshold}{ The MAF threshold to use for the definition of a rare variant in the CAST score. Set at 0.5 by default}
   \item{get.effect.size}{ TRUE/FALSE: whether to return effect sizes of the tested \code{genomic.region} (OR for categorial phenotypes, betas for continuous phenotypes) }
@@ -55,7 +55,7 @@ burden.mlogit.subscores(x, NullObject, genomic.region = x@snps$genomic.region,
 #x <- select.inds(x, superpop=="EUR")
 #x@ped$pop <- droplevels(x@ped$pop)
 
-#Group variants within CADD regions and genomic areas
+#Group variants within CADD regions and genomic categories
 #x <- set.CADDregions(x)
 
 #Filter of rare variants: only non-monomorphic variants with

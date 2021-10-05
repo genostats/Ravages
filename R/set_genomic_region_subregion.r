@@ -6,16 +6,13 @@ set.genomic.region.subregion <- function(x, regions, subregions, split = TRUE) {
   if(typeof(x@snps$chr) != "integer") 
     stop("x@snps$chr should be either a vector of integers, or a factor with same levels as regions$Chr")
   
+  #Add one to start to take into account bed format
+  regions$Start <- regions$Start + 1 
+  
   # remove duplicated regions if any
   w <- duplicated(regions$Name)
   if(any(w)) {
     regions <- regions[!w,]
-  }
-  
-  # remove duplicated subregions if any
-  w <- duplicated(subregions$Name)
-  if(any(w)) {
-    subregions <- subregions[!w,]
   }
 
   # check if regions is sorted by chr / starting pos
@@ -49,14 +46,14 @@ set.genomic.region.subregion <- function(x, regions, subregions, split = TRUE) {
   
   ###Annotation subregion
   Rsub <- .Call("label_multiple_genes", PACKAGE = "Ravages", subregions$Chr, subregions$Start, subregions$End, x@snps$chr, x@snps$pos)
-  Rsub.genename <- unlist(lapply(Rsub, function(z) paste(subregions$GenomicArea[unlist(z)], collapse=",")))  
+  Rsub.genename <- unlist(lapply(Rsub, function(z) paste(subregions$Name[unlist(z)], collapse=",")))  
   Rsub.genename[which(Rsub.genename=="")] <- NA
 
   x@snps$SubRegion <- Rsub.genename 
   x@snps$SubRegion <- factor(x@snps$SubRegion, levels = unique(x@snps$SubRegion))
-  if(any(grepl(x@snps$SubRegion, pattern = ","))){
-    x <- bed.matrix.split.genomic.region(x, genomic.region = x@snps$SubRegion, split.pattern = ",")
-  }
+  #if(any(grepl(x@snps$SubRegion, pattern = ","))){
+  #  x <- bed.matrix.split.genomic.region(x, genomic.region = x@snps$SubRegion, split.pattern = ",")
+  #}
   
   x
 }

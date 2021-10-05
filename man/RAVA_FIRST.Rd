@@ -38,14 +38,14 @@ RAVA.FIRST(x, variant.scores = NULL, ref.level,
   Rare variants are analysed using the 'RAVA-FIRST' strategy composed of three steps:  
   - Rare variants are grouped in 'CADD regions' defined from the CADD scores of variants observed in GnomAD.  
   - Rare variant are selected within each CADD region based on an adjusted CADD score using a region-specific threshold corresponding to the median of scores observed in GnomAD in each region.  
-  - Burden analysis is performed by integrating sub-scores for the coding, regulatory and intergenic areas within each CADD region. For SKAT analysis, a test for each CADD region is performed.  
+  - Burden analysis is performed by integrating sub-scores for the coding, regulatory and intergenic categories within each CADD region. For SKAT analysis, a test for each CADD region is performed.  
 
   RAVA.FIRST() is based on the functions \code{set.CADDregions}, \code{filter.adjustedCADD}, \code{burden.subscores} and \code{SKAT}. Please refer to these functions for more information.
   Especially, refer to the functions \code{burden.subscores} and \code{SKAT} to get more information about what is need in \code{burden.parameters} and \code{SKAT.parameters}.   
 
   It is recommended to use this function chromosome by chromosome for large datasets.
 }
-\source{https://lysine.univ-brest.fr/CADD_Regions/}
+\source{https://lysine.univ-brest.fr/RAVA-FIRST/}
 \seealso{
   \code{set.CADDregions}, \code{filter.adjustedCADD}, \code{burden.subscores}, \code{SKAT}
 }

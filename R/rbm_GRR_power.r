@@ -1,4 +1,4 @@
-random.bed.matrix.power <- function(genes.maf = Kryukov, size, prev, GRR.matrix.del, GRR.matrix.pro, p.causal = 0.5, p.protect = 0, same.variant = FALSE, genetic.model = c("general", "multiplicative", "dominant", "recessive"), select.gene, alpha = 2.5e-6, selected.controls = TRUE, power.type = c("simulations", "theoretical"), verbose = TRUE, RVAT = c("CAST", "WSS", "SKAT"), maf.threshold = 0.01, replicates = 1000, cores = 10){
+rbm.GRR.power <- function(genes.maf = Kryukov, size, prev, GRR.matrix.del, GRR.matrix.pro, p.causal = 0.5, p.protect = 0, same.variant = FALSE, genetic.model = c("general", "multiplicative", "dominant", "recessive"), select.gene, alpha = 2.5e-6, selected.controls = TRUE, power.type = c("simulations", "theoretical"), verbose = TRUE, RVAT = c("CAST", "WSS", "SKAT"), maf.threshold = 0.01, replicates = 1000, cores = 10){
   power.type <- match.arg(power.type)
   if(power.type != "simulations" & power.type != "theoretical") stop("'power.type' should be 'simulations' or 'theoretical'")
   if(power.type=="simulations" & !("CAST" %in% RVAT | "WSS" %in% RVAT | "SKAT" %in% RVAT)) stop("Power calculations are only available for 'CAST', 'WSS' and 'SKAT'")
@@ -120,7 +120,7 @@ random.bed.matrix.power <- function(genes.maf = Kryukov, size, prev, GRR.matrix.
       ##Compute power 
       pow <- c(pow, pchisq(q=qchisq(alpha, df=length(size)-1, lower.tail=FALSE), ncp=ncp, df=length(size)-1, lower.tail=FALSE))
     }else{
-    #Simulations as in random.bed.matrix()
+    #Simulations as in rbm.GRR()
       MAFS <- genotypic.freq(genes.maf = genes.maf, GRR.het = GRR.het, GRR.homo.alt = GRR.homo.alt, prev = prev, select.gene = select.gene, genetic.model = genetic.model, selected.controls = selected.controls)
       if (any(MAFS$freq.homo.ref[1, ] > 1 | MAFS$freq.het[1,] < 0 | MAFS$freq.homo.alt[1, ] < 0)) stop("Impossible genetic model, please change your parametrization")
       .Call("oz_random_filling_bed_matrix_noHW", PACKAGE = "Ravages", x@bed, MAFS$freq.homo.ref, MAFS$freq.het, size, (b - 1) * GRR.pars$n.variants)

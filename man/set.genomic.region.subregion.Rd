@@ -10,8 +10,8 @@ set.genomic.region.subregion(x, regions, subregions, split = TRUE)
 \arguments{
   \item{x}{ A bed.matrix }
   \item{regions}{
-    A dataframe containing the regions with the fields : \code{Chr} (the chromosome of the gene),
-    \code{Start} (the start position of the gene), \code{End} (the end position of the gene), and
+    A dataframe in bed format (start is 0-based and end is 1-based) containing the regions with the fields : \code{Chr} (the chromosome of the gene),
+    \code{Start} (the start position of the gene, 0-based), \code{End} (the end position of the gene, 1-based), and
     \code{Name} (the name of the gene - a factor),
   }
   \item{subregions}{ A dataframe containing the subregions in the same format as \code{regions} }
@@ -31,4 +31,13 @@ The same bed matrix as x with two additional columns: \code{x@snps$genomic.regio
 }
 \seealso{
  \code{\link{set.genomic.region}}, \code{\link{burden.subscores}}
+}
+\examples{
+#Import 1000Genome data from region around LCT gene
+x <- as.bed.matrix(LCT.gen, LCT.fam, LCT.bim)
+
+#Group variants within known genes and 
+#Within coding and regulatory regions
+x <- set.genomic.region.subregion(x, 
+ regions = genes.b37, subregions = subregions.LCT)
 }

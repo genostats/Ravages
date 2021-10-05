@@ -22,6 +22,6 @@
   }
 }
 
-\source{The data were obtained from the GnomAD website (see \url{http://gnomad.broadinstitute.org/}) and the VEP website (see \url{https://www.ensembl.org/info/docs/tools/vep/}).}
+\source{The data were obtained from the GnomAD website (see http://gnomad.broadinstitute.org/) and the VEP website (see https://www.ensembl.org/info/docs/tools/vep/).}
 
 

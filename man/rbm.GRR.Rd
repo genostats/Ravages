@@ -1,5 +1,5 @@
-\name{random.bed.matrix}
-\alias{random.bed.matrix}
+\name{rbm.GRR}
+\alias{rbm.GRR}
 \title{
   Simulation of genetic data using GRR values
 }
@@ -7,12 +7,11 @@
   Generates a simulated bed.matrix with genotypes for cases and controls based on GRR values
 }
 \usage{
-random.bed.matrix(genes.maf = Kryukov, size, prev, replicates, 
-                  GRR.matrix.del, GRR.matrix.pro, 
-                  p.causal = 0.5, p.protect = 0, same.variant = FALSE, 
-                  genetic.model=c("general", "multiplicative", 
-                                  "dominant", "recessive"), select.gene,
-                  selected.controls = T)
+rbm.GRR(genes.maf = Kryukov, size, prev, replicates, 
+        GRR.matrix.del, GRR.matrix.pro, 
+        p.causal = 0.5, p.protect = 0, same.variant = FALSE, 
+        genetic.model=c("general", "multiplicative", "dominant", "recessive"), 
+        select.gene, selected.controls = T)
 }
 \arguments{
   \item{genes.maf}{ A dataframe containing at least the MAF in the general population (column maf) for variants with their associated gene (column gene), by default the file \code{Kryukov} is used}
@@ -54,7 +53,7 @@ random.bed.matrix(genes.maf = Kryukov, size, prev, replicates,
   If \code{GRR.matrix.del} (or \code{GRR.matrix.pro}) has been generated using the function \code{GRR.matrix}, the arguments \code{genes.maf} and \code{select.gene} should have
   the same value as in \code{GRR.matrix}.
 }
-\seealso{ \code{\link{GRR.matrix}}, \code{\link{Kryukov}}, \code{\link{GnomADgenes}}, \code{\link{random.bed.matrix.power}} }
+\seealso{ \code{\link{GRR.matrix}}, \code{\link{Kryukov}}, \code{\link{GnomADgenes}}, \code{\link{rbm.GRR.power}} }
 \examples{
 #GRR values calculated with the SKAT formula
 GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov, 
@@ -64,9 +63,9 @@ GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov,
 #Simulation of one group of 1,000 controls and two groups of 500 cases, 
 #each one with a prevalence of 0.001
 #with 50% of causal variants, 5 genomic regions are simulated.
-x <- random.bed.matrix(genes.maf = Kryukov, size = c(1000, 500, 500), 
-                       prev = c(0.001, 0.001), GRR.matrix.del = GRR.del, 
-                       p.causal = 0.5, p.protect = 0, select.gene="R1",
-                       same.variant = FALSE, 
-                       genetic.model = "multiplicative", replicates = 5)
+x <- rbm.GRR(genes.maf = Kryukov, size = c(1000, 500, 500), 
+             prev = c(0.001, 0.001), GRR.matrix.del = GRR.del, 
+             p.causal = 0.5, p.protect = 0, select.gene="R1",
+             same.variant = FALSE, 
+             genetic.model = "multiplicative", replicates = 5)
 }

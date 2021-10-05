@@ -34,9 +34,9 @@ GRR.matrix(genes.maf = Kryukov, n.case.groups = 2,
 
   The two dataframes \code{Kryukov} (used by default) and \code{GnomADgenes} (containing MAF in the NFE population) can be used as \code{genes.maf}.
 
-  \code{GRR.matrix} returns a matrix that can be used in other simulation functions such as \code{random.bed.matrix}.
+  \code{GRR.matrix} returns a matrix that can be used in other simulation functions such as \code{rbm.GRR}.
 }
-\seealso{ \code{\link{random.bed.matrix}}, \code{\link{GnomADgenes}}, \code{\link{Kryukov}} }
+\seealso{ \code{\link{rbm.GRR}}, \code{\link{GnomADgenes}}, \code{\link{Kryukov}} }
 \examples{
 #GRR calculated on the MAF from the first unit of the file Kryukov
 #using the formula from the SKAT paper, with the second group of cases 

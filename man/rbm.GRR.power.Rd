@@ -1,5 +1,5 @@
-\name{random.bed.matrix.power}
-\alias{random.bed.matrix.power}
+\name{rbm.GRR.power}
+\alias{rbm.GRR.power}
 \title{
   Power of RVAT based on simulations and theoretical calculations (CAST) with GRR
 }
@@ -7,15 +7,13 @@
   Computes the power of the tests CAST, WSS and SKAT based on simulations with GRR and based on theoretical calculations for CAST
 }
 \usage{
-random.bed.matrix.power(genes.maf = Kryukov, size, prev, 
-                        GRR.matrix.del, GRR.matrix.pro, 
-                        p.causal = 0.5, p.protect = 0, same.variant = FALSE, 
-                        genetic.model=c("general", "multiplicative", 
-                                        "dominant", "recessive"), select.gene,
-                        alpha = 2.5e-6, selected.controls = TRUE, 
-                        power.type = c("simulations", "theoretical"),
-                        verbose = TRUE, RVAT = c("CAST", "WSS", "SKAT"),
-                        maf.threshold = 0.01, replicates = 1000, cores = 10)
+rbm.GRR.power(genes.maf = Kryukov, size, prev, GRR.matrix.del, GRR.matrix.pro, 
+              p.causal = 0.5, p.protect = 0, same.variant = FALSE, 
+              genetic.model=c("general", "multiplicative", "dominant", "recessive"), 
+              select.gene, alpha = 2.5e-6, selected.controls = TRUE, 
+              power.type = c("simulations", "theoretical"), verbose = TRUE, 
+              RVAT = c("CAST", "WSS", "SKAT"), maf.threshold = 0.01, 
+              replicates = 1000, cores = 10)
 }
 \arguments{
   \item{genes.maf}{ A dataframe containing at least the MAF in the general population (column maf) for variants with their associated gene (column gene), by default the file \code{Kryukov} is used}
@@ -41,12 +39,12 @@ random.bed.matrix.power(genes.maf = Kryukov, size, prev,
   A single value giving the power of CAST if \code{power.type="theoretical"} or the power of \code{RVAT} if \code{power.type="simulations"}. 
 }
 \details{
-  Simulations are performed in the same was as in \code{random.bed.matrix}. Please refer to the documentation of this function.  
+  Simulations are performed in the same was as in \code{rbm.GRR}. Please refer to the documentation of this function.  
 
   Theoretical power is only available for CAST for which a non-central Chi-squared is used.   
 
 }
-\seealso{ \code{\link{GRR.matrix}}, \code{\link{Kryukov}}, \code{\link{GnomADgenes}}, \code{\link{random.bed.matrix}} }
+\seealso{ \code{\link{GRR.matrix}}, \code{\link{Kryukov}}, \code{\link{GnomADgenes}}, \code{\link{rbm.GRR}} }
 \examples{
 #GRR values calculated with the SKAT formula
 GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov, 
@@ -56,9 +54,9 @@ GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov,
 #Simulation of one group of 1,000 controls and two groups of 500 cases, 
 #each one with a prevalence of 0.001
 #with 50% of causal variants, 5 genomic regions are simulated.
-random.bed.matrix.power(genes.maf = Kryukov, size = c(1000, 500, 500), 
-                        prev = c(0.001, 0.001), GRR.matrix.del = GRR.del, 
-                        p.causal = 0.5, p.protect = 0, select.gene="R1",
-                        same.variant = FALSE, genetic.model = "multiplicative", 
-                        power.type="theoretical", cores = 1)
+rbm.GRR.power(genes.maf = Kryukov, size = c(1000, 500, 500), 
+              prev = c(0.001, 0.001), GRR.matrix.del = GRR.del, 
+              p.causal = 0.5, p.protect = 0, select.gene="R1",
+              same.variant = FALSE, genetic.model = "multiplicative", 
+              power.type="theoretical", cores = 1)
 }

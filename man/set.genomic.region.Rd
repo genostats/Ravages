@@ -10,8 +10,8 @@ set.genomic.region(x, regions = genes.b37, flank.width = 0L, split = TRUE)
 \arguments{
   \item{x}{ A bed.matrix }
   \item{regions}{
-    A dataframe containing the fields : \code{Chr} (the chromosome of the gene),
-    \code{Start} (the start position of the gene), \code{End} (the end position of the gene), and
+    A dataframe in bed format (start is 0-based and end is 1-based) containing the fields : \code{Chr} (the chromosome of the gene),
+    \code{Start} (the start position of the gene, 0-based), \code{End} (the end position of the gene, 1-based), and
     \code{Name} (the name of the gene - a factor),
   }
   \item{flank.width}{ An integer: width of the flanking regions in base pairs downstream and upstream the regions. }

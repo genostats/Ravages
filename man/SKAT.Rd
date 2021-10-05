@@ -81,11 +81,10 @@ GRR.del <- GRR.matrix(GRR = "SKAT", genes.maf = Kryukov,
                       n.case.groups = 2, select.gene = "R1",
                       GRR.multiplicative.factor=2)
 
-x.sim <- random.bed.matrix(genes.maf = Kryukov, size = c(50, 25, 25),
-                           prev = c(0.001, 0.001), GRR.matrix.del = GRR.del,
-                           p.causal = 0.5, p.protect = 0, select.gene="R1",
-                           same.variant = FALSE,
-                           genetic.model = "multiplicative", replicates = 5)
+x.sim <- rbm.GRR(genes.maf = Kryukov, size = c(50, 25, 25),
+                 prev = c(0.001, 0.001), GRR.matrix.del = GRR.del,
+                 p.causal = 0.5, p.protect = 0, select.gene="R1",
+                 same.variant = FALSE, genetic.model = "multiplicative", replicates = 5)
 #Null Model
 x.sim.H0 <- NullObject.parameters(x.sim@ped$pheno, RVAT = "SKAT", pheno.type = "categorial")
 

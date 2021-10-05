@@ -28,13 +28,13 @@ filter.adjustedCADD(x, variant.scores = NULL, ref.level,
   A bed.matrix with filtered variants
 }
 \details{
-  Variants are directly annotated with the adjusted CADD scores in the function using the file "AdjustedCADD_v1.4_202108.tsv.gz" downloaded from https://lysine.univ-brest.fr/CADD_Regions/ in the repository of the package Ravages or the scores of variants can be provided to \code{variant.scores} to gain in computation time (this file should contain 5 columns: the chromosome ('chr'), position ('pos'), reference allele ('A1'), alternative allele ('A2') and adjusted CADD scores ('adjCADD'). As CADD scores are only available for SNVs, only those ones will be kept in the analysis.  
+  Variants are directly annotated with the adjusted CADD scores in the function using the file "AdjustedCADD_v1.4_202108.tsv.gz" downloaded from https://lysine.univ-brest.fr/RAVA-FIRST/ in the repository of the package Ravages or the scores of variants can be provided to \code{variant.scores} to gain in computation time (this file should contain 5 columns: the chromosome ('chr'), position ('pos'), reference allele ('A1'), alternative allele ('A2') and adjusted CADD scores ('adjCADD'). As CADD scores are only available for SNVs, only those ones will be kept in the analysis.  
 
   If a column 'adjCADD' is already present in \code{x@snps}, no annotation will be performed and filtering will be directly on this column.  
   
   To use this function, a factor 'genomic.region' corresponding to the CADD regions and a vector 'adjCADD.Median' should be present in the slot \code{x@snps}. To obtain those two, use the function \code{set.CADDregions}.  
   
-  Only variants with an adjusted CADD score upper than the median value are kept in the analysis.      
+  Only variants with an adjusted CADD score upper than the median value are kept in the analysis. It is the filtering strategy applied in the \code{RAVA.FIRST()} pipeline.     
 
   If \code{filter="whole"}, only the variants having a MAF lower than the threshold in the entire sample are kept.
 
@@ -44,7 +44,7 @@ filter.adjustedCADD(x, variant.scores = NULL, ref.level,
   
   It is recommended to use this function chromosome by chromosome for large datasets.
 }
-\source{https://lysine.univ-brest.fr/CADD_Regions/}
+\source{https://lysine.univ-brest.fr/RAVA-FIRST/}
 \seealso{
  \code{\link{RAVA.FIRST}}, \code{\link{set.CADDregions}}, \code{\link{burden.subscores}}, \code{\link{filter.rare.variants} }
 }
@@ -52,7 +52,7 @@ filter.adjustedCADD(x, variant.scores = NULL, ref.level,
 #Import 1000Genome data from region around LCT gene
 #x <- as.bed.matrix(LCT.gen, LCT.fam, LCT.bim)
 
-#Group variants within CADD regions and genomic areas
+#Group variants within CADD regions and genomic categories
 #x <- set.CADDregions(x)
 
 #Annotate variants with adjusted CADD score

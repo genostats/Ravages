@@ -78,18 +78,5 @@ x1.H0 <- NullObject.parameters(pheno = x1@ped$pop, ref.level = "CEU",
 burden(x1, NullObject = x1.H0, burden = "WSS", get.effect.size=TRUE, cores = 1)
 
 
-#Simulation of a covariate + Sex as a covariate
-sex <- x1@ped$sex
-set.seed(1) ; u <- runif(nrow(x1))
-covar <- cbind(sex, u)
-
-#Null model with the covariate sex and a continuous phenotype
-x1.H0.covar <- NullObject.parameters(pheno = x1@ped$pheno <- rnorm(nrow(x1)),
-                                     RVAT = "burden", pheno.type = "continuous",
-                                     data = covar, formula = ~ sex)
-#WSS test
-burden(x1, NullObject = x1.H0.covar, burden = "WSS", 
-       get.effect.size=TRUE, cores = 1)
-
 }
 

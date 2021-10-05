@@ -7,7 +7,7 @@
 \title{Genes positions}
 
 \description{
-  Positions of human genes. These data were downloaded from Biomart on the Ensembl website with the GRCh37 and GRCh38 versions. Only genes present in GnomAD were kept.
+  Positions of human genes in bed format (Start is 0-based and End is 1-based). These data were downloaded from Biomart on the Ensembl website with the GRCh37 and GRCh38 versions. Only genes present in GnomAD were kept.
 
   Data contain the \code{Chr}, the \code{Start} position, the \code{End} position and the \code{Name} of all the genes in chromosomes 1 to 22 representing 19375 and 18278 genes in the two GRCh versions respectively.
 }
@@ -19,8 +19,8 @@ data(genes.b38) }
   The data contain one dataframe with four columns:
   \describe{
     \item{\code{Chr}}{The chromosome of the gene}
-    \item{\code{Start}}{The start position of the gene}
-    \item{\code{End}}{The end position of the gene}
+    \item{\code{Start}}{The start position of the gene (0-based)}
+    \item{\code{End}}{The end position of the gene (1-based)}
     \item{\code{Name}}{The name of the gene}
   }
 }  

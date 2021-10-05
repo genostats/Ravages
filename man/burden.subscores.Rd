@@ -16,7 +16,7 @@ burden.subscores(x, NullObject, genomic.region = x@snps$genomic.region,
   \item{x}{ A bed matrix}
   \item{NullObject}{ A list returned from \code{NullObject.parameters} }
   \item{genomic.region}{ A factor containing the genomic region of each SNP, \code{x@snps$genomic.region} by default, for example the CADD regions}
-  \item{SubRegion}{ A vector containing subregions within each \code{genomic.region}, \code{x@snps$SubRegion} by default, for example genomic areas}
+  \item{SubRegion}{ A vector containing subregions within each \code{genomic.region}, \code{x@snps$SubRegion} by default, for example genomic categories}
   \item{burden.function}{A function to compute the genetic score, \code{WSS} by default.}
   \item{maf.threshold}{ The MAF threshold to use for the definition of a rare variant in the CAST score. Set at 0.5 by default}
   \item{get.effect.size}{ TRUE/FALSE: whether to return effect sizes of the tested \code{genomic.region} (OR for categorial phenotypes, betas for continuous phenotypes) }
@@ -25,7 +25,9 @@ burden.subscores(x, NullObject, genomic.region = x@snps$genomic.region,
   \item{verbose}{ Whether to display information about the function actions }
 }
 \details{
-  This function will return results from the regression of the phenotype on the genetic score(s) for each genomic region. Within each genomic region, a subscore will be computed for each SubRegion and one test will be performed for each genomic.region.
+  This function will return results from the regression of the phenotype on the genetic score(s) for each genomic region. Within each genomic region, a subscore will be computed for each SubRegion and one test will be performed for each genomic.region.  
+
+  When used after \code{set.CADDregions}, it will perform a test by CADD region with one subscore by genomic category (coding, regulatory, intergenic) as in the \code{RAVA.FIRST()} strategy.  
 
   If only two groups of individuals are present, a classical logistic regression is performed.
   If more than two groups of individuals are present, a non-ordinal multinomial regression is performed,
@@ -50,17 +52,36 @@ burden.subscores(x, NullObject, genomic.region = x@snps$genomic.region,
 
 \seealso{\code{\link{RAVA.FIRST}}, \code{\link{NullObject.parameters}}, \code{\link{burden.continuous.subscores}}, \code{\link{burden.mlogit.subscores}},  \code{\link{CAST}}, \code{\link{WSS}}}
 \examples{
-#Import data in a bed matrix
-#x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
+#Import 1000Genome data from region around LCT gene
+x <- as.bed.matrix(x=LCT.matrix.bed, fam=LCT.matrix.fam, bim=LCT.snps)
+
+#Group variants within known genes and
+#Within coding and regulatory regions
+x <- set.genomic.region.subregion(x, regions = genes.b37, 
+                                  subregions = subregions.LCT)
 
 #Add population
-#x@ped[,c("pop", "superpop")] <- LCT.matrix.pop1000G[,c("population", "super.population")]
+x@ped[,c("pop", "superpop")] <- LCT.matrix.pop1000G[,c("population", "super.population")]
 
 #Select EUR superpopulation
-#x <- select.inds(x, superpop=="EUR")
-#x@ped$pop <- droplevels(x@ped$pop)
+x <- select.inds(x, superpop=="EUR")
+x@ped$pop <- droplevels(x@ped$pop)
 
-#Group variants within CADD regions and genomic areas
+#Keep only variants with a MAF lower than 1%
+x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.01)
+
+#run null model, using the 1000Genome population as "outcome"
+x1.H0 <- NullObject.parameters(pheno = x1@ped$pop, ref.level = "CEU",
+                               RVAT = "burden", pheno.type = "categorial")
+
+#run functionally-informed burden test WSS in LCT
+burden.subscores(select.snps(x1, genomic.region == "LCT"), 
+                 NullObject = x1.H0, burden.function = WSS, 
+                 get.effect.size=FALSE, cores = 1)
+
+
+####Using the RAVA-FIRST approach with CDD regions
+#Group variants within CADD regions and genomic categories
 #x <- set.CADDregions(x)
 
 #Filter of rare variants: only non-monomorphic variants with
@@ -68,28 +89,9 @@ burden.subscores(x, NullObject, genomic.region = x@snps$genomic.region,
 #and with a adjusted CADD score greater than the median
 #x1 <- filter.adjustedCADD(x, filter = "whole", maf.threshold = 0.025)
 
-#run null model, using the 1000Genome population as "outcome"
-#x1.H0 <- NullObject.parameters(pheno = x1@ped$pop, ref.level = "CEU",
-#                               RVAT = "burden", pheno.type = "categorial")
-
-#run burden test WSS
-#burden.subscores(x1, NullObject = x1.H0, burden = WSS, get.effect.size=FALSE, cores = 1)
-
-
-#Simulation of a covariate + Sex as a covariate
-#sex <- x1@ped$sex
-#set.seed(1) ; u <- runif(nrow(x1))
-#covar <- cbind(sex, u)
-
-#Null model with the covariate sex and a continuous phenotype
-#x1.H0.covar <- NullObject.parameters(pheno = x1@ped$pheno <- rnorm(nrow(x1)),
-#                                     RVAT = "burden", pheno.type = "continuous",
-#                                     data = covar, formula = ~ sex)
-#WSS test
-#res.subscores <- burden.subscores(x1, NullObject = x1.H0.covar, burden = WSS, 
-#                 get.effect.size=TRUE, cores = 1)
-#res.subscores$Asso #P-values
-#res.subscores$effect #Effect size: betas for continuous phenotype
+#run functionally-informed burden test WSS
+#burden.subscores(x1, NullObject = x1.H0, burden.function = WSS, 
+#                 get.effect.size=FALSE, cores = 1)
 
 }
 

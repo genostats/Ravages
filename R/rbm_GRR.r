@@ -1,9 +1,9 @@
-##random.bed.matrix with GRR
-random.bed.matrix <- function(genes.maf = Kryukov, size, prev, replicates, 
-                              GRR.matrix.del, GRR.matrix.pro, p.causal = 0.5, p.protect = 0, 
-                              same.variant=FALSE, 
-                              genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene,
-                              selected.controls = T) {
+##rbm with GRR
+rbm.GRR <- function(genes.maf = Kryukov, size, prev, replicates, 
+                    GRR.matrix.del, GRR.matrix.pro, p.causal = 0.5, p.protect = 0, 
+                    same.variant=FALSE, 
+                    genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene,
+                    selected.controls = T) {
   
   if (nlevels(genes.maf$gene) > 1){ 
     if(missing(select.gene)){
