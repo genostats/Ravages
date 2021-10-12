@@ -1,5 +1,5 @@
 
-filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "any"), maf.threshold = 0.01, min.nb.snps = 2, min.cumulative.maf, group, genomic.region = NULL) {
+filter.rare.variants <- function(x, ref.level = NULL, filter = c("whole", "controls", "any"), maf.threshold = 0.01, min.nb.snps = 2, min.cumulative.maf = NULL, group = NULL, genomic.region = NULL) {
   if (is.null(genomic.region) & !("genomic.region" %in% colnames(x@snps))) stop("genomic.region should be provided or already in x@snps")
 
   if (!is.null(genomic.region)){
@@ -15,7 +15,7 @@ filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "
   filter <- match.arg(filter)
 
   if(filter != "whole"){  
-    if(missing(group)){
+    if(is.null(group)){
       group <- x@ped$pheno
     }else{
       #Check dim of group
@@ -26,7 +26,7 @@ filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "
 
   filter <- match.arg(filter)
   if(filter == "controls") {
-    if(missing(ref.level)) stop("Need to specify the controls group")
+    if(is.null(ref.level)) stop("Need to specify the controls group")
     which.controls <- group == ref.level
     st <- .Call('gg_geno_stats_snps', PACKAGE = "Ravages", x@bed, rep(TRUE, ncol(x)), which.controls)$snps
     p <- (st$N0.f + 0.5*st$N1.f)/(st$N0.f + st$N1.f + st$N2.f)
@@ -57,7 +57,7 @@ filter.rare.variants <- function(x, ref.level, filter = c("whole", "controls", "
   x@snps$genomic.region <- droplevels(x@snps$genomic.region)
   
   #Filter genomic regions based on minimum cumulative MAF
-  if(!missing(min.cumulative.maf)) {
+  if(!is.null(min.cumulative.maf)) {
     cmaf.snps <- by(x@snps$maf, x@snps$genomic.region, sum)
     keep <- names(cmaf.snps)[cmaf.snps >= min.cumulative.maf]
     x <- select.snps(x, x@snps$genomic.region %in% keep)

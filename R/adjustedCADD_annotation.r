@@ -25,7 +25,7 @@ adjustedCADD.annotation <- function(x, variant.scores = NULL, cores = 10, verbos
     start.indexes <- c(1, end.indexes[-length(end.indexes)]+1)
     ##Get CADD score for corresponding positions
     variant.scores <- do.call(rbind, mclapply(1:cores, function(z) tabix(x.pos.merged[start.indexes[z]:end.indexes[z]], CADDfile, check.chr=F, verbose = F), mc.cores = cores))
-    colnames(x.scores) <- c("chr", "pos", "A1", "A2", "adjCADD")
+    colnames(variant.scores) <- c("chr", "pos", "A1", "A2", "adjCADD")
   }else{
     #Annotation with provided scores file
     if(!(all(colnames(variant.scores) %in% c("chr", "pos", "A1", "A2", "adjCADD")))) stop("'variant.scores' should contain the columns 'chr', 'pos', 'A1', 'A2' and 'adjCADD'")

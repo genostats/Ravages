@@ -7,9 +7,9 @@
   Filter rare variants based on a MAF threshold and a given number of SNP or a given cumulative MAF per genomic region
 }
 \usage{
-filter.rare.variants(x, ref.level, filter=c("whole", "controls", "any"), 
-                     maf.threshold=0.01, min.nb.snps = 2, min.cumulative.maf, 
-                     group, genomic.region = NULL)
+filter.rare.variants(x, ref.level = NULL, filter=c("whole", "controls", "any"), 
+                     maf.threshold=0.01, min.nb.snps = 2, min.cumulative.maf = NULL, 
+                     group = NULL, genomic.region = NULL)
 }
 \arguments{
   \item{x}{ A bed.matrix }

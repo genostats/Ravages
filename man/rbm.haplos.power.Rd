@@ -8,9 +8,11 @@
 }
 \usage{
   rbm.haplos.power(haplos, freqs, weights = -0.4*log10(colMeans(haplos)), 
-                   maf.threshold = 0.01, nb.causal, p.protect = 0, 
-                   h2, prev, normal.approx = TRUE, size, verbose = TRUE,
+                   maf.threshold = 0.01, nb.causal = 0.5*ncol(haplos), 
+                   p.protect = 0, h2 = c(0.01, 0.01), prev = c(1, 0.01),
+                   normal.approx = TRUE, size = c(500, 500), verbose = TRUE,
                    alpha = 2.5e-6, RVAT = c("CAST", "WSS", "SKAT"),
+                   SKAT.method = c("permutations", "theoretical"),
                    simus.haplos = c("freqs", "liability"), 
                    replicates = 1000, rep.by.causal = 50, cores = 10)
 }
@@ -28,6 +30,7 @@
   \item{verbose}{ Whether to display information about the function actions }
   \item{alpha}{ The significance level to compute the power}
   \item{RVAT}{ On which RVAT among 'CAST', 'WSS' and 'SKAT' to compute power (only needed if \code{power.type="simulations"} }
+  \item{SKAT.method}{ Which method to use to compute SKAT ppower, i.e. permutations or theoretical moments (cf \code{SKAT} documentation)}
   \item{simus.haplos}{ Which method to simulate the data, if \code{simus.haplos="freqs"}, {rbm.haplos.freqs()} is used, otherwise \code{rbm.haplos.thresholds()} is used.}
   \item{replicates}{ The number of simulations to perform to estimate the power}
   \item{rep.by.causal}{ The number of time causal variants will be sampled}

@@ -7,14 +7,15 @@
   Filter rare variants based on a MAF threshold, a given number of SNP or a given cumulative MAF per genomic region and the median of adjusted CADD score for each CADD region
 }
 \usage{
-filter.adjustedCADD(x, variant.scores = NULL, ref.level, 
+filter.adjustedCADD(x, variant.scores = NULL, ref.level = NULL, 
                     filter=c("whole", "controls", "any"), 
-                    maf.threshold=0.01, min.nb.snps = 2, min.cumulative.maf, 
-                    group, cores = 10, verbose = T)
+                    maf.threshold=0.01, min.nb.snps = 2, 
+                    min.cumulative.maf = NULL, 
+                    group = NULL, cores = 10, verbose = T)
 }
 \arguments{
   \item{x}{ A bed.matrix annotated with CADD regions using \code{set.CADDregions} }
-  \item{variant.scores}{ A dataframe containing the adjusted CADD scores of the variants}
+  \item{variant.scores}{ A dataframe containing the adjusted CADD scores of the variants (Optional, useful to gain in computation time if the adjusted CADD scores of variants in the study are available)}
   \item{ref.level}{ The level corresponding to the controls group, only needed if \code{filter=="controls"} }
   \item{filter}{ On which group the filter will be applied }
   \item{maf.threshold}{ The MAF threshold used to define a rare variant, set at 0.01 by default}

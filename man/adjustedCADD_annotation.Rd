@@ -11,7 +11,7 @@ adjustedCADD.annotation(x, variant.scores, cores = 10, verbose = T)
 }
 \arguments{
   \item{x}{ A bed.matrix annotated with CADD regions using \code{set.CADDregions} }
-  \item{variant.scores}{ A dataframe containing the adjusted CADD scores of the variants}
+  \item{variant.scores}{ A dataframe containing the adjusted CADD scores of the variants (Optional, useful to gain in computation time if the adjusted CADD scores of variants in the study are available)}
   \item{cores}{ How many cores to use, set at 10 by default}
   \item{verbose}{ Whether to display information about the function actions }
 }

@@ -51,8 +51,10 @@ set.genomic.region <- function(x, regions = genes.b37, flank.width = 0L, split =
 
   x@snps$genomic.region <- R.genename
   x@snps$genomic.region <- factor(x@snps$genomic.region, levels = unique(x@snps$genomic.region))
-  if(any(grepl(x@snps$genomic.region, pattern = ","))){
-    x <- bed.matrix.split.genomic.region(x, genomic.region = x@snps$genomic.region, split.pattern = ",")
+  if(split){
+    if(any(grepl(x@snps$genomic.region, pattern = ","))){
+      x <- bed.matrix.split.genomic.region(x, genomic.region = x@snps$genomic.region, split.pattern = ",")
+    }
   }
   x
 }

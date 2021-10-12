@@ -9,13 +9,14 @@
 \usage{
 RAVA.FIRST(x, variant.scores = NULL, ref.level, 
            filter=c("whole", "controls", "any"), 
-           maf.threshold=0.01, min.nb.snps = 2, min.cumulative.maf, group, 
+           maf.threshold=0.01, min.nb.snps = 2, 
+           min.cumulative.maf = NULL, group = NULL, 
            cores = 10, burden = TRUE, H0.burden, burden.parameters, 
            SKAT = TRUE, H0.SKAT, SKAT.parameters, verbose = TRUE)
 }
 \arguments{
   \item{x}{ A bed.matrix }
-  \item{variant.scores}{ A dataframe containing the adjusted CADD scores of the variants}
+  \item{variant.scores}{ A dataframe containing the adjusted CADD scores of the variants (Optional, useful to gain in computation time if the adjusted CADD scores of variants in the study are available)}
   \item{ref.level}{ The level corresponding to the controls group, only needed if \code{filter=="controls"} }
   \item{filter}{ On which group the MAF filter will be applied }
   \item{maf.threshold}{ The MAF threshold used to define a rare variant, set at 0.01 by default}
@@ -28,7 +29,7 @@ RAVA.FIRST(x, variant.scores = NULL, ref.level,
   \item{burden.parameters}{ A list containing the parameters to use by \code{burden.subscores} for the burden analysis ('burden.function' and 'get.effect.size')}
   \item{SKAT}{ Whether to compute SKAT}
   \item{H0.SKAT}{A list returned from \code{NullObject.parameters} with \code{RVAT="SKAT"} }
-  \item{SKAT.parameters}{ A list containing the parameters to use by \code{SKAT} ('weights', 'get.moments', 'estimation.pvalue', 'params.sampling', 'debug')}
+  \item{SKAT.parameters}{ A list containing the parameters to use by \code{SKAT} ('get.moments', 'estimation.pvalue', 'params.sampling', 'debug')}
   \item{verbose}{ Whether to display information about the function actions }
 }
 \value{

@@ -30,7 +30,7 @@ When two regions overlap, variants in the overlapping zone will be assigned to t
 If \code{flank.width} is a positive number, variants \code{flank.width} downstream or upstream a gene will be annotated annotated to this gene. You can use \code{flank.width = Inf}
 to have each variant attributed to the nearest gene.  
 
-If a variant is attributed to multiple genomic regions, it will be duplicated in the bed matrix with one row per genomic region if \code{split = TRUE}.  
+If a variant is attributed to multiple genomic regions, it will be duplicated in the bed matrix with one row per genomic region if \code{split = TRUE}. Variants will have new IDs being CHR:POS:A1:A2:genomic.region.  
 }
 \value{
 The same bed matrix as x with an additional column \code{x@snps$genomic.region} containing the annotation of each variant.
