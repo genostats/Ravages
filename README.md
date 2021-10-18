@@ -1,8 +1,9 @@
 # Ravages
-Ravages is an R package to perform rare variant association tests (RVAT) and genetic simulations
+Ravages is an R package to perform rare variant association tests (RVAT) and genetic simulations in the whole genome.
 
 ## Description
-Ravages enables to perform rare variant association tests (burden and SKAT) with a multi-category, binary, and continuous phenotypes.
+Ravages enables to perform rare variant association tests (burden and SKAT) with a multi-category, binary, and continuous phenotypes.  
+These association tests can be applied genome-wide using the RAVA-FIRST approach based on the CADD regions. 
 Ravages also enables to perform genetic simulations based on real data to mimic allele frequency spectrum and linkage disequilibrium pattern observed on these data.
 
 ## Installation

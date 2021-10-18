@@ -15,6 +15,9 @@ adjustedCADD.annotation <- function(x, variant.scores = NULL, cores = 10, verbos
     }
     CADDfile = paste0(Ravages_path, "/AdjustedCADD_v1.4_202108.tsv.gz")
     
+    #Download README
+    if(!file.exists(paste0(Ravages_path, "/README_RAVAFIRST"))) curl_download("https://lysine.univ-brest.fr/RAVA-FIRST/README_RAVAFIRST", destfile = paste0(Ravages_path, "/README_RAVAFIRST"))
+    
     ##Annotation with adjusted CADD
     x.pos <- paste0(x@snps$chr, ":", format(x@snps$pos-1, scientific = F, trim = T), "-", format(x@snps$pos, scientific = F, trim = T))
     ##Sort and merger positions

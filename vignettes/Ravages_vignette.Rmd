@@ -22,6 +22,11 @@ Functions of Ravages use bed.matrix to manipulate genetic data as in the package
 In this vignette, we illustrate how to perform rare variant association tests on real data on different phenotypes at a genome-wide scale. A second vignette is available showing how to simulate genetic data and how to use them for power calculation.
 To learn more about all options of the functions, the reader is advised to look at the manual pages.
 
+### Global parameters of Ravages
+Functions in Ravages are parallelised either using RcppParallel when functions are implemented in C++ or using parallel otherwise. When the argument *cores* is present in the function, it can be directly changed to fix the number of cores to use. Otherwise, the number of threads used by multithreaded functions can be modified through RcppParallel function **setThreadOptions()**. It is advised to try several values for the number of threads, as using too many threads might be counterproductive due to an important overhead. The default value set by RcppParallel is generally too high.  
+
+Information on progression is provided if *verbose = T* for multiple functions in Ravages. 
+
 
 ## Example of analysis using LCT data
 Below is an example of an association analysis and previous steps of data filtering using the dataset `LCT.matrix` available with the package Ravages. This dataset containts data from the 1000Genome project in the locus containing the Lactase gene. In this example, we look for an association between rare variants and the european populations of 1000Genomes. The population of each
@@ -72,7 +77,7 @@ SKAT(x1, x1.H0.SKAT, params.sampling=list(perm.target = 10, perm.max = 500))
 
 ## Defining genomic regions
 For rare variant association tests, the unit of analysis is not a single variant but a genomic region or 'testing unit', typically a gene. The first step of the analysis is therefore to group variants into genomic regions. This can be done using the function **set.genomic.region()** and known regions positions. It works on a bed.matrix (see Gaston) and simply adds a column
-"genomic.region" to the slot `x@snps` containing the genomic region (a factor) assigned to each variant. The positions of regions should be given to *regions* as a dataframe in a bed format containing the following columns: *Chr*, *Start*, *End*, *Name*. The dataframe should absolutely be ordered in the genome order, as well as the levels of *regions$Name*. 
+"genomic.region" to the slot `x@snps` containing the genomic region (a factor) assigned to each variant. The positions of regions should be given to *regions* as a dataframe in a bed format containing the following columns: *Chr*, *Start* (0-based), *End* (1-based), *Name*. The dataframe should absolutely be ordered in the genome order, as well as the levels of *regions$Name*. 
 
 By default, any variant being outside the gene positions won't be annotated. Regions boundaries can be extended to include more variants using the argument *flank.width* corresponding to the number of base pairs upstream and downstream the region to which expand the positions. If *flank.width=Inf*, each variant will be assigned to the nearest region. 
 
@@ -235,7 +240,7 @@ To compute the p-values, a chi-square approximation is used based on the statist
 
 If the sample size is lower than 2000, we recommand to use the sampling procedure. If no covariates are present, a simple permutation procedure can be used (*get.moments = "permutations"*), otherwise, a boostrap sampling should be used (*get.moments = "bootstrap"*). For those two situations, a sequential procedure is used to compute the p-values: permutated statistics are computed and each one is compared to the observed statistics. The sampling procedure stops when either *perm.target* (the number of times a permutated statistics should be greater than the observed statistics) or *perm.max* (the maximum number of permutations to perform) is reached. P-values are then computed in two different ways: if *perm.target* is reached, the p-value is computed as *perm.target* divided by the number of permutations performed to reach this value; if *perm.max* is reached before *perm.target* (that is, for pretty small p-values), p-values are computed using the chi-square approximation based on moments estimated from the permutated statistics. *perm.target* and *perm.max* should be given as a list to the argument *params.sampling* of SKAT.  
 
-If the sample size is bigger than 2000, the analytical calculation from Liu et al. can be used to compute the theoretical moments. In this situation, it is possible to parallelise the calculations using the argument *cores*, set at 10 by default.  
+If the sample size is bigger than 2000, the analytical calculation from Liu et al. (2009) can be used to compute the theoretical moments. In this situation, it is possible to parallelise the calculations using the argument *cores*, set at 10 by default. Nevertheless, this method can take more computation time than the permutation procedures when the sample size is large. We therefore recommend to use one of the permutation procedures to run a first analysis, and then to use the theoretical moments only for the most associated regions.  
 
 It is possible to clearly ask for a specific method to compute the moments using *get.moments = "permutations"*, *"bootstrap"* or *"theoretical"*. By default, *get.moments = "size.based"*, and the method will depend on the sample size.   
 
@@ -313,6 +318,10 @@ for(chr in 1:22){
                                  burden.function = WSS, H0.SKAT = H0.SKAT)
 }
 ```
+
+When using **RAVA-FIRST()**, results of association analysis will be provided for burden and/or SKAT depending on the corresponding arguments. In addition of the results of the test, information about the CADD region will be provided: the positions of the regions, the type of genomic category overlapped by each CADD region, and finally the median of adjusted CADD scores used for the filtering of rare variants.  
+
+To get more information about a specific CADD region of interest, especially about the positions of the genomic categories in this region, the user is advised to directly use the file	"FunctionalAreas.hg19.bed.gz" and the corresponding tabix file in the Ravages repository to look at the positions of the corresponding CADD region. 
 
 ## Data management
 Data in plink format or in vcf format can be loaded in R using the functions **read.bed.matrix()** and **read.vcf()** respectively from the package gaston.  

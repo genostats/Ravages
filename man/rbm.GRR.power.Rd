@@ -7,13 +7,15 @@
   Computes the power of the tests CAST, WSS and SKAT based on simulations with GRR and based on theoretical calculations for CAST
 }
 \usage{
-rbm.GRR.power(genes.maf = Kryukov, size, prev, GRR.matrix.del, GRR.matrix.pro, 
+rbm.GRR.power(genes.maf = Kryukov, size = c(500, 500), prev = 0.01, 
+              GRR.matrix.del, GRR.matrix.pro = NULL, 
               p.causal = 0.5, p.protect = 0, same.variant = FALSE, 
-              genetic.model=c("general", "multiplicative", "dominant", "recessive"), 
+              genetic.model=c("multiplicative", "general", "dominant", "recessive"), 
               select.gene, alpha = 2.5e-6, selected.controls = TRUE, 
               power.type = c("simulations", "theoretical"), verbose = TRUE, 
-              RVAT = c("CAST", "WSS", "SKAT"), maf.threshold = 0.01, 
-              replicates = 1000, cores = 10)
+              RVAT = c("CAST", "WSS", "SKAT"), 
+              SKAT.method = c("permutations", "theoretical"),
+              maf.threshold = 0.01, replicates = 1000, cores = 10)
 }
 \arguments{
   \item{genes.maf}{ A dataframe containing at least the MAF in the general population (column maf) for variants with their associated gene (column gene), by default the file \code{Kryukov} is used}
@@ -31,7 +33,8 @@ rbm.GRR.power(genes.maf = Kryukov, size, prev, GRR.matrix.del, GRR.matrix.pro,
   \item{power.type}{ Whether to compute the power based on 'simulations' (by default) or 'theoretical' calculations (only for CAST)}
   \item{verbose}{ Whether to print details about the running function}
   \item{RVAT}{ On which RVAT among 'CAST', 'WSS' and 'SKAT' to compute power (only needed if \code{power.type="simulations"} }
-  \item{maf.threshold}{ The maf threshold to consider a rare variant  (set at 0.01 by default). Only variants with a MAF upper than this threshold will be kept to compute RVAT power}
+  \item{SKAT.method}{ Which method to use to compute SKAT ppower, i.e. permutations or theoretical moments (cf \code{SKAT} documentation)}
+  \item{maf.threshold}{ The maf threshold to consider a causal variant  (set at 0.01 by default)}
   \item{replicates}{ On how many replicates the power should be computed}
   \item{cores}{ How many cores to use for moments computation, set at 10 by default }
 }
@@ -58,5 +61,5 @@ rbm.GRR.power(genes.maf = Kryukov, size = c(1000, 500, 500),
               prev = c(0.001, 0.001), GRR.matrix.del = GRR.del, 
               p.causal = 0.5, p.protect = 0, select.gene="R1",
               same.variant = FALSE, genetic.model = "multiplicative", 
-              power.type="theoretical", cores = 1)
+              power.type="theoretical", cores = 1, alpha = c(0.001,2.5e-6))
 }

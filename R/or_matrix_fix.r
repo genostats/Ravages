@@ -1,4 +1,4 @@
-OR.matrix <- function (n.variants, n.groups, OR.del, OR.pro = 1/OR.del, p.causal, prob.pro) {
+OR.matrix <- function (n.variants, n.groups, OR.del, OR.pro = 1/OR.del, p.causal, prob.pro, maf, maf.threshold) {
     if (length(OR.del) != length(OR.pro))
         stop("Dimensions mismatch")
     
@@ -15,9 +15,13 @@ OR.matrix <- function (n.variants, n.groups, OR.del, OR.pro = 1/OR.del, p.causal
 		stop("OR Dimensions mismatch")
     }
 
-   nb.causal <- n.variants*p.causal
+   #Causal variants only among variants with maf < threshold
+   w <- which(maf <= maf.threshold)
+   if(length(w)==0) stop(paste0("No variants with MAF lower than ", maf.threshold))
+   nb.causal <- length(w)*p.causal
+   
    #Sample of causal variants
-   v.causal <- lapply(1:nrow(OR.del), function(z) if(nb.causal>0) sample(1:n.variants, nb.causal))
+   v.causal <- lapply(1:nrow(OR.del), function(z) if(nb.causal>0) sample(w, nb.causal))
    v.protect <- lapply(v.causal, function(z) if(prob.pro>0) sample(z, nb.causal*prob.pro))
 
    #Matrix of 1 to be change with GRR values of causal variants	

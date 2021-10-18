@@ -1,13 +1,14 @@
-rbm.haplos.power <- function(haplos, freqs, weights = -0.4*log10(colMeans(haplos)), maf.threshold = 0.01, nb.causal = 0.5*ncol(haplos), p.protect = 0, h2 = c(0.01, 0.01), prev = c(1, 0.01), normal.approx = TRUE, size = c(500, 500), verbose = TRUE, alpha = 2.5e-6, RVAT = c("CAST", "WSS", "SKAT"), SKAT.method = c("permutations", "theoretical"), simus.haplos = c("freqs", "liability"), replicates = 1000, rep.by.causal = 50, cores = 10) {
+rbm.haplos.power <- function(haplos, freqs, weights = "SKAT", maf.threshold = 0.01, p.causal = 0.5, p.protect = 0, h2 = c(0.01, 0.01), prev = c(1, 0.01), normal.approx = TRUE, size = c(500, 500), verbose = TRUE, alpha = 2.5e-6, RVAT = c("CAST", "WSS", "SKAT"), SKAT.method = c("permutations", "theoretical"), simus.haplos = c("freqs", "liability"), replicates = 1000, rep.by.causal = 50, cores = 10) {
   SKAT.method <- match.arg(SKAT.method)
   simus.haplos <- match.arg(simus.haplos)
+  
   if(!("CAST" %in% RVAT | "WSS" %in% RVAT | "SKAT" %in% RVAT)) stop("Power calculations are only available for 'CAST', 'WSS' and 'SKAT'")
   #Simulation of data
   if(simus.haplos=="freqs"){
     x <- rbm.haplos.freqs(haplos = haplos, freqs = freqs, size = size, replicates = replicates)
   }
   if(simus.haplos=="liability"){
-    x <- rbm.haplos.thresholds(haplos = haplos, weights = weights, maf.threshold = maf.threshold, nb.causal = nb.causal, p.protect = p.protect, h2 = h2, prev = prev, normal.approx = normal.approx, size = size, replicates = replicates, rep.by.causal = 50, verbose = verbose)
+    x <- rbm.haplos.thresholds(haplos = haplos, weights = weights, maf.threshold = maf.threshold, p.causal = p.causal, p.protect = p.protect, h2 = h2, prev = prev, normal.approx = normal.approx, size = size, replicates = replicates, rep.by.causal = 50, verbose = verbose)
   }
   #Keeping only rare variants
   x <- filter.rare.variants(x, filter = "whole", maf.threshold = maf.threshold)

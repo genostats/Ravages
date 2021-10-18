@@ -7,8 +7,8 @@
   Computes the power of the tests CAST, WSS and SKAT based on simulations with haplotypes
 }
 \usage{
-  rbm.haplos.power(haplos, freqs, weights = -0.4*log10(colMeans(haplos)), 
-                   maf.threshold = 0.01, nb.causal = 0.5*ncol(haplos), 
+  rbm.haplos.power(haplos, freqs, weights = "SKAT", 
+                   maf.threshold = 0.01, p.causal = 0.5, 
                    p.protect = 0, h2 = c(0.01, 0.01), prev = c(1, 0.01),
                    normal.approx = TRUE, size = c(500, 500), verbose = TRUE,
                    alpha = 2.5e-6, RVAT = c("CAST", "WSS", "SKAT"),
@@ -19,9 +19,9 @@
 \arguments{
   \item{haplos}{ A matrix of haplotypes with one row per haplotype and one column per variant}
   \item{freqs}{ A matrix of haplotypes frequencies in each group of individuals, only needed if \code{simus.haplos = "freqs"} }
-  \item{weights}{ A vector of weights for each variant to compute the burden used in the liability model, only needed if \code{simus.haplos = "liability"}. By default, wieghts=-0.4*log10(MAF). It can also be a single value that will be given to all variants}
+  \item{weights}{ How to weight rare variants (if "constant", all variants have the same weight, if "SKAT", the rarest variants have the highest weights: weights = -0.4*log10(MAF) )}
   \item{maf.threshold}{ The maf threshold to consider a rare variant  (set at 0.01 by default). Only variants with a MAF upper than this threshold will be kept to compute RVAT power. If \code{simus.haplos="liability"}, variants with a MAF upper this threshold will have a weight of 0}
-  \item{nb.causal}{ The number of causal variants, only needed if \code{simus.haplos = "liability"}}
+  \item{p.causal}{ The percentage of causal variants, only needed if \code{simus.haplos = "liability"}}
   \item{p.protect}{ The proportion of protective variants among causal variants, only needed if \code{simus.haplos = "liability"}}
   \item{h2}{ The variance explained by the gene, only needed if \code{simus.haplos = "liability"}}
   \item{prev}{ A vector with the prevalence in each group of individuals, only needed if \code{simus.haplos = "liability"}}
@@ -62,6 +62,7 @@
 
   #Simulation of genetic data for five groups of 50 individuals
   rbm.haplos.power(haplos=LCT.gene.hap, freqs=LCT.freqs, size=rep(50,5), 
-                   replicates=5, rep.by.causal = 5,  RVAT = "CAST", cores = 1)
+                   replicates=5, rep.by.causal = 5,  RVAT = "CAST", 
+                   alpha = c(0.001,2.5e-6), cores = 1)
 }
 }

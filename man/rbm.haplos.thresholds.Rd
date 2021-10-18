@@ -7,16 +7,16 @@
   Simulates genetic data with respect to allele frequency spectrum and linkage disequilibrium pattern observed on given haplotype data under a libaility model
 }
 \usage{
-  rbm.haplos.thresholds(haplos, weights = -0.4*log10(colMeans(haplos)), 
-                        maf.threshold = 0.01, nb.causal, p.protect = 0, 
+  rbm.haplos.thresholds(haplos, weights = c("SKAT", "constant"), 
+                        maf.threshold = 0.01, p.causal = 0.5, p.protect = 0, 
                         h2, prev, normal.approx = TRUE, size, 
                         replicates, rep.by.causal, verbose = TRUE)
 }
 \arguments{
   \item{haplos}{ A matrix of haplotypes with one row per haplotype and one column per variant}
-  \item{weights}{ A vector of weights for each variant to compute the burden used in the liability model. By default, wieghts=-0.4*log10(MAF). It can also be a single value that will be given to all variants}
+  \item{weights}{ How to weight rare variants (if "constant", all variants have the same weight, if "SKAT", the rarest variants have the highest weights as in the SKAT paper: weights = -0.4*log10(MAF) )}
   \item{maf.threshold}{ The maf threshold to consider a rare variant  (set at 0.01 by default), variants with a MAF upper this threshold will have a weight of 0}
-  \item{nb.causal}{ The number of causal variants}
+  \item{p.causal}{ The proportion of causal variants}
   \item{p.protect}{ The proportion of protective variants among causal variants}
   \item{h2}{ The variance explained by the gene}
   \item{prev}{ A vector with the prevalence in each group of individuals}
@@ -53,11 +53,11 @@
   LCT.gene.hap <- LCT.hap[which(LCT.sample$super.population=="EUR"), 
                           which(LCT.snps$pos>=136545410 & LCT.snps$pos<=136594750)]
 
-  #Simulation of 100 controls, and two groups of 50 cases with 30 causal variants
+  #Simulation of 100 controls, and two groups of 50 cases with 30% causal variants
   #and with the second group having half h2 and twice the prevalence
   #compared to the first one
   #5 replicates are performed and causal variants are sampled once
-  x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, maf.threshold = 0.01, nb.causal=30,
+  x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, maf.threshold = 0.01, p.causal=0.3,
                              p.protect=0, h2=c(0.01, 0.01, 0.02), prev=c(1, 0.01, 0.005),
                              size=c(100, 50, 50), replicates = 5, rep.by.causal = 5)
 }

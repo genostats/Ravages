@@ -1,7 +1,6 @@
 #We only accept matrices of good dimensions
 genotypic.freq <- function(genes.maf = Kryukov, GRR.het, GRR.homo.alt, prev, genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene, selected.controls = T) {
   
-  genetic.model <- match.arg(genetic.model)
   #Test if a good genetic model is given
   genetic.model <- match.arg(genetic.model)
 

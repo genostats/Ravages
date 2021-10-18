@@ -8,10 +8,10 @@
 }
 \usage{
 rbm.GRR(genes.maf = Kryukov, size, prev, replicates, 
-        GRR.matrix.del, GRR.matrix.pro, 
+        GRR.matrix.del, GRR.matrix.pro = NULL, 
         p.causal = 0.5, p.protect = 0, same.variant = FALSE, 
         genetic.model=c("general", "multiplicative", "dominant", "recessive"), 
-        select.gene, selected.controls = T)
+        select.gene, selected.controls = T, maf.threshold = 0.01)
 }
 \arguments{
   \item{genes.maf}{ A dataframe containing at least the MAF in the general population (column maf) for variants with their associated gene (column gene), by default the file \code{Kryukov} is used}
@@ -26,6 +26,7 @@ rbm.GRR(genes.maf = Kryukov, size, prev, replicates,
   \item{genetic.model}{ The genetic model of the disease }
   \item{select.gene}{ Which gene to choose from \code{genes.maf$gene} if multiple genes are present. If missing, only the first level is kept.}
   \item{selected.controls}{ Whether controls are selected controls (by default) or controls from the general population}
+  \item{maf.threshold}{ Only variants with a MAF lower than this threshold can be sampled as causal variants. }
 }
 \value{
   A bed.matrix with as much columns (variants) as \code{replicates}*number of variants.

@@ -3,11 +3,17 @@
 #and thresholds corresponding to the desired prevalence
 #p.causal=P(causal variant) ; p.protect=P(protective variant | causal variant)
 
-rbm.haplos.thresholds <- function(haplos, weights = -0.4*log10(colMeans(haplos)), maf.threshold = 0.01, 
-             nb.causal, p.protect = 0, h2, prev, normal.approx = TRUE, size, replicates, rep.by.causal, verbose = TRUE) {
+rbm.haplos.thresholds <- function(haplos, weights = c("SKAT", "constant"), maf.threshold = 0.01, 
+             p.causal = 0.5, p.protect = 0, h2, prev, normal.approx = TRUE, size, replicates, rep.by.causal, verbose = TRUE) {
 
-  if (length(weights) == 1) {
-        weights <- rep(weights, ncol(haplos))
+  weights <- match.arg(weights)
+  
+  if (weights=="SKAT") {
+        weights <- -0.4*log10(colMeans(haplos))
+  }else{
+    if (weights=="constant") {
+          weights <- rep(1, ncol(haplos))
+    }
   }
 
   
@@ -20,10 +26,10 @@ rbm.haplos.thresholds <- function(haplos, weights = -0.4*log10(colMeans(haplos))
   }else{
     if(length(maf.threshold) != length(h2)) stop("maf.threshold should be of size 1 or of same size as h2 and prev")
   }
-  if(length(nb.causal)==1){
-    nb.causal <- rep(nb.causal, length(h2))
+  if(length(p.causal)==1){
+    p.causal <- rep(p.causal, length(h2))
   }else{
-    if(length(nb.causal) != length(h2)) stop("nb.causal should be of size 1 or of same size as h2 and prev")
+    if(length(p.causal) != length(h2)) stop("p.causal should be of size 1 or of same size as h2 and prev")
   }
   if(length(p.protect)==1){
     p.protect <- rep(p.protect, length(h2))
@@ -37,7 +43,7 @@ rbm.haplos.thresholds <- function(haplos, weights = -0.4*log10(colMeans(haplos))
   x <- new.bed.matrix(nb_inds=sum(size), nb_snps=ncol(haplos)*replicates)
  
   for(i in 1:length(seq(1,replicates, by=rep.by.causal))){
-    burdens <- mapply(get.causal.burden, weights=list(weights), haplos = list(haplos), maf.threshold, nb.causal, p.protect, h2, SIMPLIFY=FALSE)
+    burdens <- mapply(get.causal.burden, weights=list(weights), haplos = list(haplos), maf.threshold, p.causal, p.protect, h2, SIMPLIFY=FALSE)
   
     ##Computation of thresholds to respect 'prev' 
     ##normal.approx = TRUE : ok if small h2
@@ -66,13 +72,14 @@ rbm.haplos.thresholds <- function(haplos, weights = -0.4*log10(colMeans(haplos))
 
 
 
-get.causal.burden <- function(weights, haplos, maf.threshold, nb.causal, p.protect, h2){
+get.causal.burden <- function(weights, haplos, maf.threshold, p.causal, p.protect, h2){
   weights[colMeans(haplos) == 0 | colMeans(haplos) > maf.threshold ] <- 0
   w <- which(weights > 0) # parmi les SNPs potentiellement causaux
   
-  if(nb.causal > length(w)) 
-    stop("There are not enough positively weighted variants to pick ", nb.causal, " ones")
+  if(length(w) == 0) 
+    stop("There are not enough positively weighted variants")
 
+  nb.causal <- round(p.causal*length(w))
   nb.pro <- round(nb.causal * p.protect)
   nb.del <- nb.causal - nb.pro
   

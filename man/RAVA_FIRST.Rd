@@ -33,7 +33,7 @@ RAVA.FIRST(x, variant.scores = NULL, ref.level,
   \item{verbose}{ Whether to display information about the function actions }
 }
 \value{
-  A list containing the results for the burden analysis ('burden') and the results for the SKAT analysis ('SKAT').
+  A list containing the results for the burden analysis ('burden') and the results for the SKAT analysis ('SKAT'), along with information about CADD regions (positions, type of genomic categories overlapped by each region and median of adjusted CADD scores).
 }
 \details{
   Rare variants are analysed using the 'RAVA-FIRST' strategy composed of three steps:  
