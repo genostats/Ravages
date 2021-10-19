@@ -309,13 +309,15 @@ x.SKAT <- SKAT(x.median, x1.H0.SKAT)
 RAVA-FIRST enables to perform RVAT in the whole genome. To facilitate the analysis, we propose the function **RAVA.FIRST()** which gathers all the previous functions and enables to directly performs the whole RAVA-FIRST strategy on a bed matrix. It simply needs the bed matrix and the NullObject (that can be obtained from **NullObject.parameters()** and should be given to *H0.burden* and/or *H0.SKAT*) and optional filtering arguments and parameters for the RVAT previously mentionned. *burden.parametrs* should be a list containing *burden.function* and *get.effect.size* if *burden  = TRUE* and *SKAT.parameters* should be a list containing *weights*, *get.moments* *estimation.pvalue*, *param.sampling* and *debug* if *SKAT = TRUE*. If no such list is provided, the default parameters of **burden.subscores()** and **SKAT** will be used. Due to time and memory management, we advise the user to import the data and apply the different functions of annotation, filtering and association (or directly **RAVA.FIRST()**) chromosome by chromosome for large datasets as shown in the example below. 
 
 ```{r, eval = F}
-# *** RAVA-FIRST analysis with functionally-informed burden and SKAT
+# *** RAVA-FIRST analysis with functionally-informed WSS and SKAT
+#Burden parameters
+burden.parameters <- list(get.effect.size = T, burden.function = WSS)
 # Chromosome by chromosome
 res.bychr <- vector("list", 22)
 for(chr in 1:22){
   x <- read.bed.matrix(paste0(path_file, prefix_vcf, chr, ".vcf.gz"))
-  res.bychr[[chr]] <- RAVA.FIRST(x, H0.burden = H0.burden, 
-                                 burden.function = WSS, H0.SKAT = H0.SKAT)
+  res.bychr[[chr]] <- RAVA.FIRST(x, H0.burden = H0.burden, H0.SKAT = H0.SKAT,
+                                 burden.parameters = burden.parameters)
 }
 ```
 

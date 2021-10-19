@@ -10,8 +10,6 @@ rbm.haplos.power <- function(haplos, freqs, weights = "SKAT", maf.threshold = 0.
   if(simus.haplos=="liability"){
     x <- rbm.haplos.thresholds(haplos = haplos, weights = weights, maf.threshold = maf.threshold, p.causal = p.causal, p.protect = p.protect, h2 = h2, prev = prev, normal.approx = normal.approx, size = size, replicates = replicates, rep.by.causal = 50, verbose = verbose)
   }
-  #Keeping only rare variants
-  x <- filter.rare.variants(x, filter = "whole", maf.threshold = maf.threshold)
   ###RVAT
   pow.names <- c()
   if("CAST" %in% RVAT | "WSS" %in% RVAT){

@@ -4,7 +4,7 @@ v1.0.0 :
     *Three files with adjusted CADD scores, CADD regions and Functional categories are available at https://lysine.univ-brest.fr/RAVA-FIRST/ and directly downoladed in Ravages repository if RAVA-FIRST functions are used
     *Variants can be annotated into CADD regions and genomic categories (set.CADDregions)
     *Possilibity to annotate variants with the adjusted CADD score and to filter them based on the median observed in each CADD region (filter.adjustedCADD)
-    *Possibility to perform burden tests with subscores in the regression to take into account the genomic areas (burden.subscores)
+    *Possibility to perform burden tests with subscores in the regression to take into account the genomic categories (burden.subscores)
 
  - Parallelisation of burden on continuous phenotypes
 
@@ -12,7 +12,10 @@ v1.0.0 :
 
  - Add the possibility to filter genomic regions based on the cumulative MAF (min.cumulative.maf)
 
- - Simulations: rbm.haplos.power() and random.bed.matrix.power() are available to directly compute power of CAST, WSS and SKAT on the corresponding simulations
+ - Simulations: 
+    *random.bed.matrix() is now rbm.GRR()
+    *rbm.haplos.power() and rbm.GRR.power() are available to directly compute power of CAST, WSS and SKAT on the corresponding simulations
+    *CAST power can be computed using theoretical computations in rbm.GRR.power() 
 
 v0.1.5:
  - Fix bugs with tinythreads and RcppParallel in SKAT

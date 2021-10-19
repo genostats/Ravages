@@ -49,14 +49,14 @@ rbm.GRR.power <- function(genes.maf = Kryukov, size = c(500, 500), prev = 0.01, 
   rownames(pow) <- pow.names
   colnames(pow) <- alpha 
   } else{
-    pow <- CAST.theoretical(genes.maf = genes.maf, size = size, prev = prev, replicates = replicates, GRR.matrix.del = GRR.matrix.del, GRR.matrix.pro = GRR.matrix.pro, p.causal = p.causal, p.protect = p.protect, same.variant = same.variant, genetic.model = genetic.model, select.gene = select.gene, selected.controls = selected.controls, alpha = alpha, maf = maf, maf.threshold = maf.threshold)
+    pow <- CAST.theoretical(genes.maf = genes.maf, size = size, prev = prev, replicates = replicates, GRR.matrix.del = GRR.matrix.del, GRR.matrix.pro = GRR.matrix.pro, p.causal = p.causal, p.protect = p.protect, same.variant = same.variant, genetic.model = genetic.model, select.gene = select.gene, selected.controls = selected.controls, alpha = alpha, maf.threshold = maf.threshold)
   }
   pow
 }
   
   
   
-CAST.theoretical <- function(genes.maf = Kryukov, size, prev, replicates, GRR.matrix.del, GRR.matrix.pro, p.causal, p.protect, same.variant, genetic.model, select.gene, selected.controls, alpha, maf, maf.threshold){
+CAST.theoretical <- function(genes.maf = Kryukov, size, prev, replicates, GRR.matrix.del, GRR.matrix.pro, p.causal, p.protect, same.variant, genetic.model, select.gene, selected.controls, alpha, maf.threshold){
   #Checks
   if (nlevels(genes.maf$gene) > 1){ 
     if(missing(select.gene)){
