@@ -18,7 +18,7 @@ burden.continuous.subscores <- function(x, NullObject, genomic.region = x@snps$g
   # preparation data / formula
   data.reg <- cbind(NullObject$data, score) ; rownames(data.reg) <- NULL
 
-  RR <- mclapply( levels(genomic.region), function(reg) run.burden.continuous.subscores(reg = reg, pheno = NullObject$pheno, score = score[,grepl(colnames(score), pattern=reg), drop=FALSE], covar.toinclude = NullObject$covar.toinclude, data = data.reg, get.effect.size = get.effect.size, alpha = alpha), mc.cores = cores)
+  RR <- mclapply( levels(genomic.region), function(reg) run.burden.continuous.subscores(reg = reg, pheno = NullObject$pheno, score = score[,grepl(colnames(score), pattern=reg), drop=FALSE], covar.toinclude = NullObject$covar.toinclude, data = data.reg, H0.LogLik = NullObject$H0.LogLik, get.effect.size = get.effect.size, alpha = alpha), mc.cores = cores)
 
   if(get.effect.size){
     RR.res <- do.call(rbind, lapply(RR, function(z) z$res))
@@ -37,7 +37,7 @@ burden.continuous.subscores <- function(x, NullObject, genomic.region = x@snps$g
 }
 
 
-run.burden.continuous.subscores <- function(reg, pheno, score, region, covar.toinclude, data, get.effect.size, alpha){
+run.burden.continuous.subscores <- function(reg, pheno, score, region, covar.toinclude, data, H0.LogLik, get.effect.size, alpha){
   region <- paste(colnames(score), collapse="+")
   # Formula for the current region
   if(is.null(covar.toinclude)) { 
@@ -56,8 +56,13 @@ run.burden.continuous.subscores <- function(reg, pheno, score, region, covar.toi
     beta.values <- data.frame(Estimate = NA, sd = NA)
   } else {
     my.model <- summary(fit)
-    #p-valeur totale du modele
-    pval <- with(my.model, pf(fstatistic[1],fstatistic[2],fstatistic[3],lower.tail=F))
+    if(is.null(covar.toinclude)){
+      pval <- with(my.model, pf(fstatistic[1],fstatistic[2],fstatistic[3],lower.tail=F))
+    }else{
+      #Log-Likelihood
+      H1.LogLik <- as.numeric(logLik(fit, data = data))
+      pval <- pchisq(-2 * H0.LogLik + 2 * H1.LogLik, ncol(score), lower.tail = FALSE)
+    }
     is.err <- 0
     if(get.effect.size)  beta.values <- my.model$coefficients
   }

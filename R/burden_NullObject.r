@@ -35,6 +35,7 @@ burden.NullObject <- function(group, ref.level, data, formula){
 burden.NullObject.continuous <- function(pheno, data, formula){
   if (!is.numeric(pheno))  stop("'pheno' should be a numeric vector")
   if (is.null(data)){
+        LogLik <- NULL
         covar.toinclude <- NULL
         data <- data.frame(ind.pheno = pheno) ; rownames(data) <- NULL
   }else{
@@ -43,15 +44,19 @@ burden.NullObject.continuous <- function(pheno, data, formula){
     if (nrow(data) != length(pheno)) {stop("'data' has wrong dimensions")}
     if (is.null(formula)){
       covar.toinclude <- paste(colnames(data), collapse = "+")
+      my.formula <- as.formula(paste("ind.pheno ~ ", covar.toinclude))
     }else {
       z <- as.character(formula)
       if (z[1] != "~" | length(z) != 2)   stop("'formula' should be a formula of the form \"~ var1 + var2\"")
       covar.toinclude <- z[2]
+      my.formula <- as.formula(paste("ind.pheno ~ ", z[2]))
     }
     ##Creer data pour regression
     data <- as.data.frame(data) ; rownames(data) <- NULL
     data <- cbind(ind.pheno = pheno, data)
+    ##Get H0 LogLikelihood (for sub-scores)
+    LogLik <- as.numeric(logLik(lm(my.formula, data = data)))
   }
   
-  return(list(pheno = pheno, covar.toinclude = covar.toinclude, data = data))
+  return(list(pheno = pheno, H0.LogLik = LogLik, covar.toinclude = covar.toinclude, data = data))
 }

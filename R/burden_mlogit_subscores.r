@@ -43,7 +43,7 @@ run.mlogit.subscores.withNull <- function (reg, pheno, score, ref.level, alt.lev
       my.formula <- Formula(as.formula(paste("ind.pheno ~ 0 |", region, " + ", covar.toinclude)))
     }
     
-    fit <- tryCatch(mlogit(my.formula, data = data, ref.level = ref.level), error = identity, warning = identity)
+    fit <- tryCatch(mlogit(my.formula, data = data, reflevel = ref.level), error = identity, warning = identity)
 
     if (is(fit, "error")) {
         pval <- NA
