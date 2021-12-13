@@ -22,20 +22,22 @@ XPtr<matrix4> rbm_haplos_freqs(NumericMatrix haplos, NumericMatrix freq, Numeric
   int N = sum(size);
   XPtr<matrix4> pA(new matrix4(reps*p, N));
 
-  // list of 2*size[k] haplotypes for the size[k] individuals of group k
-  List LHaps(K);
-  for(int k = 0; k < K; k++) { // groupe de pop k
-    NumericVector p = freq(_ , k);  // freqs haplo groupe k;
-    LHaps[k] = sample(u, 2*size[k], true, p, false);
-  }  
-
-  for(int snp = 0; snp < reps*p; snp++) {
-    int c = snp % p; // position dans la matrice haplos
-    int ind = 0; //
-    for(int k = 0; k < K; k++) { // groupe de pop k 
-      IntegerVector H = LHaps[k];
-      for(int i = 0; i < size[k]; i++) { 
-        pA->set(snp, ind++, haplos(H[2*i],c) + haplos(H[2*i+1],c) );
+  for(int r = 0; r < reps; r++) { // replicats
+    // tirage liste d'haplotypes pour le replicat
+    // each elt is a vector of 2*size[k] haplotypes for the size[k] individuals of group k = 0 .. K-1
+    List LHaps(K);
+    for(int k = 0; k < K; k++) { // groupe de pop k
+      NumericVector p = freq(_ , k);  // freqs haplo groupe k;
+      LHaps[k] = sample(u, 2*size[k], true, p, false);
+    }
+    // filling data for current replicate, SNP after SNP
+    for(int snp = 0; snp < p; snp++) {
+      int ind = 0; // indice de l'individu
+      for(int k = 0; k < K; k++) { // groupe de pop k 
+        IntegerVector H = LHaps[k];
+        for(int i = 0; i < size[k]; i++) {
+          pA->set(r*p + snp, ind++, haplos(H[2*i],snp)+haplos(H[2*i+1],snp) );
+        }
       }
     }
   }
