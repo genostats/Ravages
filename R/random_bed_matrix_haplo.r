@@ -3,7 +3,7 @@
 #and thresholds corresponding to the desired prevalence
 #p.causal=P(causal variant) ; p.protect=P(protective variant | causal variant)
 
-rbm.haplos.thresholds <- function(haplos, weights = c("SKAT", "constant"), maf.threshold = 0.01, 
+rbm.haplos.thresholds <- function(haplos, weights = c("SKAT", "constant"), max.maf.causal = 0.01, 
              p.causal = 0.5, p.protect = 0, h2, prev, normal.approx = TRUE, size, replicates, rep.by.causal, verbose = TRUE) {
 
   weights <- match.arg(weights)
@@ -21,10 +21,10 @@ rbm.haplos.thresholds <- function(haplos, weights = c("SKAT", "constant"), maf.t
     stop("replicates should be a multiple of rep.by.causal")
 
   if(length(h2) != length(prev) | length(h2) != length(size) | length(prev) != length(size)) stop("h2 and prev should have same size as size")
-  if(length(maf.threshold)==1){
-    maf.threshold <- rep(maf.threshold, length(h2))
+  if(length(max.maf.causal)==1){
+    max.maf.causal <- rep(max.maf.causal, length(h2))
   }else{
-    if(length(maf.threshold) != length(h2)) stop("maf.threshold should be of size 1 or of same size as h2 and prev")
+    if(length(max.maf.causal) != length(h2)) stop("max.maf.causal should be of size 1 or of same size as h2 and prev")
   }
   if(length(p.causal)==1){
     p.causal <- rep(p.causal, length(h2))
@@ -41,25 +41,32 @@ rbm.haplos.thresholds <- function(haplos, weights = c("SKAT", "constant"), maf.t
     
   
   x <- new.bed.matrix(nb_inds=sum(size), nb_snps=ncol(haplos)*replicates)
+  #For causal variants 
+  x@snps$Causal <- ""
  
   for(i in 1:length(seq(1,replicates, by=rep.by.causal))){
-    burdens <- mapply(get.causal.burden, weights=list(weights), haplos = list(haplos), maf.threshold, p.causal, p.protect, h2, SIMPLIFY=FALSE)
+    burdens.causal <- mapply(get.causal.burden, weights=list(weights), haplos = list(haplos), max.maf.causal, p.causal, p.protect, h2, SIMPLIFY=FALSE)
+    burdens <- lapply(burdens.causal, function(z) z$burdens) 
   
     ##Computation of thresholds to respect 'prev' 
     ##normal.approx = TRUE : ok if small h2
     if(normal.approx) {
       s <- qnorm(prev, lower.tail = FALSE)
     } else {  
-      BRD <- sample(burdens, 1e6, TRUE) + sample(burdens, 1e6, TRUE) + rnorm(1e6, sd = sqrt(1-h2))
-      s <- quantile(BRD, 1 - prev)
+      BRD <- mapply(sample, x = burdens, size = 1e6, replace = TRUE) + mapply(sample, x = burdens, size = 1e6, replace = TRUE) + mapply(rnorm, n = 1e6, sd = sqrt(1-h2))
+      s <- sapply(1:length(prev), function(z) quantile(BRD[,z], 1 - prev[z]))
     }
 
     .Call('rbm_haplos_thresholds_filling', PACKAGE = 'Ravages', x@bed,  haplos, burdens, sd = sqrt(1-h2), thr1 = s, thr2 = rep(Inf, length(size)), size, repNumber = i-1, reps=rep.by.causal)
+    #add flag on causal variants in cases
+    for(j in which(prev<1)){
+      x@snps[as.vector(outer(((i-1)*rep.by.causal):(i*rep.by.causal-1)*ncol(haplos), burdens.causal[[j]]$causal, FUN = "+")), "Causal"] <- paste0(x@snps[as.vector(outer(((i-1)*rep.by.causal):(i*rep.by.causal-1)*ncol(haplos), burdens.causal[[j]]$causal, FUN = "+")), "Causal"], "Gpe", j)
+    }
   }
 
   x@ped$pheno <- factor(rep.int( 1:length(size) - 1, size))
   x@snps$genomic.region <- factor( rep( sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = ncol(haplos)) )
-  
+  x@snps$Causal[which(x@snps$Causal=="")] <- "NonCausal"
  
   if( is.null(colnames(haplos)) )
     x@snps$id <- paste( x@snps$genomic.region, x@snps$id, sep="_")
@@ -98,5 +105,5 @@ get.causal.burden <- function(weights, haplos, maf.threshold, p.causal, p.protec
   tau <- as.numeric(2*var(burdens))
   burdens <- burdens / sqrt(tau) * sqrt(h2)
   #To generate the liability, a gaussian variable of standard deviation sqrt(1-h2) should be added to the burdens
-  burdens
+  return(list(burdens = burdens, causal = w.causal))
 }

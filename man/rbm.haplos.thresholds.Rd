@@ -8,14 +8,14 @@
 }
 \usage{
   rbm.haplos.thresholds(haplos, weights = c("SKAT", "constant"), 
-                        maf.threshold = 0.01, p.causal = 0.5, p.protect = 0, 
+                        max.maf.causal = 0.01, p.causal = 0.5, p.protect = 0, 
                         h2, prev, normal.approx = TRUE, size, 
                         replicates, rep.by.causal, verbose = TRUE)
 }
 \arguments{
   \item{haplos}{ A matrix of haplotypes with one row per haplotype and one column per variant}
   \item{weights}{ How to weight rare variants (if "constant", all variants have the same weight, if "SKAT", the rarest variants have the highest weights as in the SKAT paper: weights = -0.4*log10(MAF) )}
-  \item{maf.threshold}{ The maf threshold to consider a rare variant  (set at 0.01 by default), variants with a MAF upper this threshold will have a weight of 0}
+  \item{max.maf.causal}{ The maf threshold to consider a rare variant  (set at 0.01 by default), variants with a MAF upper this threshold will have a weight of 0}
   \item{p.causal}{ The proportion of causal variants}
   \item{p.protect}{ The proportion of protective variants among causal variants}
   \item{h2}{ The variance explained by the gene}
@@ -32,7 +32,7 @@
 \details{
   \code{nb.causal}, \code{p.protect}, \code{h2} and \code{prev} should be vectors of length corresponding to the number of groups to simulate. If they are of size 1, values will be duplicated. 
 
-  All monomorphic variants and variants with a MAF higher than \code{maf.threshold} will have a weight of 0. Causal variants are sampled among variants having weights greater than 0.  
+  All monomorphic variants and variants with a MAF higher than \code{max.maf.causal} will have a weight of 0. Causal variants are sampled among variants having weights greater than 0. Causal variants in each group of individuals are indicated in \code{x@ped$Causal}.  
 
   A liability model is built on haplotypes' burden computed on sampled causal variants using each variant's \code{weights}, and adjusted on the desired \code{h2}. Thresholds from this liability are then chosen to respect the given \code{prev} (from a standard normal distribution if \code{normal.approx=TRUE}, or using a distribution from 1e6 sampled burdens if \code{normal.approx=FALSE}). Please be carreful when using the normal approximation with high \code{h2} values or low \code{prev} values. 
   Haplotypes' probabilities in each group of individuals are then computed and two haplotypes are then sampled for each individual based on these probabilities.  
@@ -57,7 +57,7 @@
   #and with the second group having half h2 and twice the prevalence
   #compared to the first one
   #5 replicates are performed and causal variants are sampled once
-  x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, maf.threshold = 0.01, p.causal=0.3,
+  x <- rbm.haplos.thresholds(haplos=LCT.gene.hap, max.maf.causal = 0.01, p.causal=0.3,
                              p.protect=0, h2=c(0.01, 0.01, 0.02), prev=c(1, 0.01, 0.005),
                              size=c(100, 50, 50), replicates = 5, rep.by.causal = 5)
 }

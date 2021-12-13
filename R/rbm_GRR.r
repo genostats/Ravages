@@ -3,16 +3,25 @@ rbm.GRR <- function(genes.maf = Kryukov, size, prev, replicates,
                     GRR.matrix.del, GRR.matrix.pro = NULL, p.causal = 0.5, p.protect = 0, 
                     same.variant=FALSE, 
                     genetic.model=c("general", "multiplicative", "dominant", "recessive"), select.gene,
-                    selected.controls = T, maf.threshold = 0.01) {
+                    selected.controls = T, max.maf.causal = 0.01) {
   
   if (nlevels(genes.maf$gene) > 1){ 
     if(missing(select.gene)){
       warning("More than one gene in the file, only the first one is used")
       select.gene <- levels(genes.maf$gene)[[1]]
     }
-    pop.maf <- subset(genes.maf, genes.maf$gene %in% select.gene)$maf
+    pop.maf <- subset(genes.maf, gene %in% select.gene & maf > 0)$maf
+    if(any(subset(genes.maf, gene %in% select.gene)$maf == 0)){
+      warning("Some variants have a maf equal to 0 and won't be kept")
+      genes.maf <- subset(genes.maf, maf > 0 )
+    }
   }else{
-    pop.maf <- genes.maf$maf
+    if(any(genes.maf$maf == 0)){
+      warning("Some variants have a maf equal to 0 and won't be kept")
+      pop.maf <- subset(genes.maf, maf > 0)$maf
+    }else{
+      pop.maf <- genes.maf$maf
+    }
   }
   
   ##Check GRR
@@ -101,10 +110,12 @@ rbm.GRR <- function(genes.maf = Kryukov, size, prev, replicates,
   nb_snps <- GRR.pars$n.variants * replicates
   nb_inds <- sum(size)
   GRR.pars$maf <- pop.maf
-  GRR.pars$maf.threshold <- maf.threshold
+  GRR.pars$maf.threshold <-  max.maf.causal
   x <- new.bed.matrix(nb_inds, nb_snps);
+  x@snps$Causal <- ""
   for(b in 1:replicates) {
-    GRR.het <- do.call( variant.function, GRR.pars)
+    GRR.causal <- do.call( variant.function, GRR.pars)
+    GRR.het <- GRR.causal$OR
     if(!is.null(GRR.homo.alt.pars)){
       #Give GRR>1 for the same variants as GRR.het
       for(i in 1:length(prev)){
@@ -118,10 +129,18 @@ rbm.GRR <- function(genes.maf = Kryukov, size, prev, replicates,
   #Check if problems with model
     if(any(MAFS$freq.homo.ref[1,]>1 | MAFS$freq.het[1,]<0 | MAFS$freq.homo.alt[1,]<0)) stop("Impossible genetic model, please change your parametrization")
     .Call("oz_random_filling_bed_matrix_noHW", PACKAGE = "Ravages", x@bed, MAFS$freq.homo.ref, MAFS$freq.het, size, (b-1)*GRR.pars$n.variants)
+    #Add flag for causal variants
+    if(same.variant) x@snps$Causal[(b-1)*GRR.pars$n.variants + GRR.causal$causal] <- paste("Gpe", 1:length(prev)+1, collapse = "", sep = "")
+    else{
+      for(i in 1:length(GRR.causal$causal)){
+        x@snps$Causal[(b-1)*GRR.pars$n.variants + GRR.causal$causal[[i]]] <- paste0(x@snps$Causal[(b-1)*GRR.pars$n.variants + GRR.causal$causal[[i]]], "Gpe", i+1)
+      }
+    }
   }
   x@ped$pheno <- factor(rep.int( 1:length(size) - 1, size))
   x@snps$genomic.region <- factor( rep( sprintf("R%0*d", log10(replicates) + 1, 1:replicates), each = GRR.pars$n.variants) )
   x@snps$id <- paste( x@snps$genomic.region, x@snps$id, sep="_")
+  x@snps$Causal[which(x@snps$Causal=="")] <- "NonCausal"
   x <- set.stats(x, verbose = FALSE)
   x
 }

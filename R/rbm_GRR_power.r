@@ -1,4 +1,4 @@
-rbm.GRR.power <- function(genes.maf = Kryukov, size = c(500, 500), prev = 0.01, GRR.matrix.del, GRR.matrix.pro = NULL, p.causal = 0.5, p.protect = 0, same.variant = FALSE, genetic.model = c("multiplicative", "general", "dominant", "recessive"), select.gene, alpha = 2.5e-6, selected.controls = TRUE, power.type = c("simulations", "theoretical"), verbose = TRUE, RVAT = c("CAST", "WSS", "SKAT"), SKAT.method = c("permutations", "theoretical"), maf.threshold = 0.01, replicates = 1000, cores = 10){
+rbm.GRR.power <- function(genes.maf = Kryukov, size = c(500, 500), prev = 0.01, GRR.matrix.del, GRR.matrix.pro = NULL, p.causal = 0.5, p.protect = 0, same.variant = FALSE, genetic.model = c("multiplicative", "general", "dominant", "recessive"), select.gene, alpha = 2.5e-6, selected.controls = TRUE, power.type = c("simulations", "theoretical"), verbose = TRUE, RVAT = c("CAST", "WSS", "SKAT"), SKAT.method = c("permutations", "theoretical"), max.maf.causal = 0.01, maf.filter = max.maf.causal, replicates = 1000, cores = 10){
   power.type <- match.arg(power.type)
   SKAT.method <- match.arg(SKAT.method)
   genetic.model <- match.arg(genetic.model)
@@ -13,14 +13,17 @@ rbm.GRR.power <- function(genes.maf = Kryukov, size = c(500, 500), prev = 0.01, 
   #*With simulations*
   if(power.type=="simulations"){
     #Simulations using rbm.GRR
-    x <- rbm.GRR(genes.maf = genes.maf, size = size, prev = prev, GRR.matrix.del = GRR.matrix.del, GRR.matrix.pro = GRR.matrix.pro, p.causal = p.causal, p.protect = p.protect, select.gene = select.gene, same.variant = same.variant, genetic.model = genetic.model, replicates = replicates, selected.controls = selected.controls, maf.threshold = maf.threshold)
+    x <- rbm.GRR(genes.maf = genes.maf, size = size, prev = prev, GRR.matrix.del = GRR.matrix.del, GRR.matrix.pro = GRR.matrix.pro, p.causal = p.causal, p.protect = p.protect, select.gene = select.gene, same.variant = same.variant, genetic.model = genetic.model, replicates = replicates, selected.controls = selected.controls, max.maf.causal = max.maf.causal)
     pow.names <- c()
+    
+    #Filtering to keep only rare variants
+    x <- filter.rare.variants(x, maf.threshold = maf.filter, min.nb.snps = 2)
     
     ##RVAT
     if("CAST" %in% RVAT | "WSS" %in% RVAT){
       H0.burden <- NullObject.parameters(x@ped$pheno, RVAT = "burden", pheno.type = "cat", ref.level = 0)
       if("CAST" %in% RVAT){
-        x.CAST <- burden(x, H0.burden, burden = "CAST", verbose = verbose, maf.threshold = maf.threshold, cores = cores)
+        x.CAST <- burden(x, H0.burden, burden = "CAST", verbose = verbose, maf.threshold = 0.5, cores = cores)
         x.CAST.pow <- sapply(alpha, function(z) mean(x.CAST$p.value<z, na.rm = T))
         pow.names <- c(pow.names, "CAST")
       }else{
@@ -49,7 +52,7 @@ rbm.GRR.power <- function(genes.maf = Kryukov, size = c(500, 500), prev = 0.01, 
   rownames(pow) <- pow.names
   colnames(pow) <- alpha 
   } else{
-    pow <- CAST.theoretical(genes.maf = genes.maf, size = size, prev = prev, replicates = replicates, GRR.matrix.del = GRR.matrix.del, GRR.matrix.pro = GRR.matrix.pro, p.causal = p.causal, p.protect = p.protect, same.variant = same.variant, genetic.model = genetic.model, select.gene = select.gene, selected.controls = selected.controls, alpha = alpha, maf.threshold = maf.threshold)
+    pow <- CAST.theoretical(genes.maf = genes.maf, size = size, prev = prev, replicates = replicates, GRR.matrix.del = GRR.matrix.del, GRR.matrix.pro = GRR.matrix.pro, p.causal = p.causal, p.protect = p.protect, same.variant = same.variant, genetic.model = genetic.model, select.gene = select.gene, selected.controls = selected.controls, alpha = alpha, maf.threshold = max.maf.causal)
   }
   pow
 }
@@ -57,15 +60,21 @@ rbm.GRR.power <- function(genes.maf = Kryukov, size = c(500, 500), prev = 0.01, 
   
   
 CAST.theoretical <- function(genes.maf = Kryukov, size, prev, replicates, GRR.matrix.del, GRR.matrix.pro, p.causal, p.protect, same.variant, genetic.model, select.gene, selected.controls, alpha, maf.threshold){
+  
   #Checks
   if (nlevels(genes.maf$gene) > 1){ 
     if(missing(select.gene)){
       warning("More than one gene in the file, only the first one is used")
       select.gene <- levels(genes.maf$gene)[[1]]
     }
-    pop.maf <- subset(genes.maf, genes.maf$gene %in% select.gene)$maf
+    genes.maf <- subset(genes.maf, genes.maf$gene %in% select.gene)
+    #Keep only rare variants
+    var.rare <- which(genes.maf$maf <= maf.threshold)
+    pop.maf <- genes.maf$maf[var.rare]
   }else{
-    pop.maf <- genes.maf$maf
+    #Keep only rare variants
+    var.rare <- which(genes.maf$maf <= maf.threshold)
+    pop.maf <- genes.maf$maf[var.rare]
   }
   
   ##Check GRR
@@ -75,8 +84,10 @@ CAST.theoretical <- function(genes.maf = Kryukov, size, prev, replicates, GRR.ma
     }else{
       stop("GRR.matrix.del should be a list or a matrix")
     }
-  GRR.het <- GRR.matrix.del[[1]]
   }
+  #Keep only rare variants
+  GRR.matrix.del <- lapply(GRR.matrix.del, function(z) z[,var.rare])
+  GRR.het <- GRR.matrix.del[[1]]
 
   if (length(GRR.matrix.del) == 1) {
     if (genetic.model == "general") {
@@ -102,6 +113,8 @@ CAST.theoretical <- function(genes.maf = Kryukov, size, prev, replicates, GRR.ma
         stop("GRR.matrix.pro should be a list or a matrix")
       }
     }
+    #Keep only rare variants
+    GRR.matrix.pro <- lapply(GRR.matrix.pro, function(z) z[,var.rare])
     GRR.het.pro <- GRR.matrix.pro[[1]]
     if (length(GRR.matrix.pro) == 1) {
       if (genetic.model == "general") {
@@ -156,7 +169,7 @@ CAST.theoretical <- function(genes.maf = Kryukov, size, prev, replicates, GRR.ma
   #Compute power
   pow <- matrix(NA, ncol = length(alpha), nrow = replicates)
   for (b in 1:replicates) {
-      GRR.het <- do.call( variant.function, GRR.pars)
+      GRR.het <- do.call( variant.function, GRR.pars)$OR
       if(!is.null(GRR.homo.alt.pars)){
         #Give GRR>1 for the same variants as GRR.het
         for(i in 1:length(prev)){

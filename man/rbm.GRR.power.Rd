@@ -15,7 +15,8 @@ rbm.GRR.power(genes.maf = Kryukov, size = c(500, 500), prev = 0.01,
               power.type = c("simulations", "theoretical"), verbose = TRUE, 
               RVAT = c("CAST", "WSS", "SKAT"), 
               SKAT.method = c("permutations", "theoretical"),
-              maf.threshold = 0.01, replicates = 1000, cores = 10)
+              max.maf.causal = 0.01, maf.filter = max.maf.causal, 
+              replicates = 1000, cores = 10)
 }
 \arguments{
   \item{genes.maf}{ A dataframe containing at least the MAF in the general population (column maf) for variants with their associated gene (column gene), by default the file \code{Kryukov} is used}
@@ -34,7 +35,8 @@ rbm.GRR.power(genes.maf = Kryukov, size = c(500, 500), prev = 0.01,
   \item{verbose}{ Whether to print details about the running function}
   \item{RVAT}{ On which RVAT among 'CAST', 'WSS' and 'SKAT' to compute power (only needed if \code{power.type="simulations"} }
   \item{SKAT.method}{ Which method to use to compute SKAT ppower, i.e. permutations or theoretical moments (cf \code{SKAT} documentation)}
-  \item{maf.threshold}{ The maf threshold to consider a causal variant  (set at 0.01 by default)}
+  \item{max.maf.causal}{ The maf threshold to consider a causal variant  (set at 0.01 by default)}
+  \item{maf.filter}{ The MAF filter to apply after the simulations to select rare variants to keep for RVAT power analysis. By default corresponds to \code{max.maf.causal}}
   \item{replicates}{ On how many replicates the power should be computed}
   \item{cores}{ How many cores to use for moments computation, set at 10 by default }
 }
@@ -45,6 +47,8 @@ rbm.GRR.power(genes.maf = Kryukov, size = c(500, 500), prev = 0.01,
   Simulations are performed in the same was as in \code{rbm.GRR}. Please refer to the documentation of this function.  
 
   Theoretical power is only available for CAST for which a non-central Chi-squared is used.   
+  
+  Variants are filtered after the simulations to keep only the rare ones, defined by \code{maf.filter}. By defaut, it corresponds to \code{max.maf.causal} is used. To disable this filter, set \code{maf.filter} at 0.5.
 
 }
 \seealso{ \code{\link{GRR.matrix}}, \code{\link{Kryukov}}, \code{\link{GnomADgenes}}, \code{\link{rbm.GRR}} }

@@ -29,7 +29,7 @@ OR.matrix <- function (n.variants, n.groups, OR.del, OR.pro = 1/OR.del, p.causal
    
    OR.tot <- t(sapply(1:nrow(OR.tot), function(z){ OR.tot[z,v.causal[[z]]] <- OR.del[z, v.causal[[z]]] ; return(OR.tot[z,])}))
    OR.tot <- t(sapply(1:nrow(OR.tot), function(z){ OR.tot[z,v.protect[[z]]] <- OR.pro[z, v.protect[[z]]] ; return(OR.tot[z,])})) 
-   return(OR.tot)
+   return(list(OR = OR.tot, causal = v.causal))
 }
 
 

@@ -5,9 +5,15 @@ GRR.matrix <- function(genes.maf=Kryukov, n.case.groups=2, GRR=c("SKAT", "consta
       warning("More than one gene in the file, only the first one is used")
       select.gene <- levels(genes.maf$gene)[[1]]
     }
-    pop.maf <- subset(genes.maf, genes.maf$gene %in% select.gene)$maf
+    if(any(subset(genes.maf, gene %in% select.gene)$maf == 0))  warning("Some variants have a maf equal to 0 and won't be kept")
+    pop.maf <- subset(genes.maf, gene %in% select.gene & maf>0)$maf
   }else{
-    pop.maf <- genes.maf$maf
+    if(any(genes.maf$maf == 0)){
+      warning("Some variants have a maf equal to 0 and won't be kept")
+      pop.maf <- subset(genes.maf, maf > 0)$maf
+    }else{
+      pop.maf <- genes.maf$maf
+    }
   }
   n.variants <- length(pop.maf)
 

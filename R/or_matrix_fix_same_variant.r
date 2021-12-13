@@ -14,5 +14,5 @@ OR.matrix.same.variant <- function (n.variants, OR.del, OR.pro = 1/OR.del, p.cau
     #If NULL vector: OR.tot won't be change
     OR.tot[,v.causal] <- OR.del[,v.causal]
     OR.tot[,v.protect] <- OR.pro[,v.protect]
-    return(OR.tot)
+    return(list(OR = OR.tot, causal = v.causal))
 }

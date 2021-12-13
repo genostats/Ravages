@@ -8,7 +8,7 @@
 \title{LCT haplotypes data set}
 
 \description{
-  These data contain the haplotype matrix \code{LCT.hap} of the 5008 individuals from the 1000 Genomes data for a ~300kb segment containing the Lactase gene.  
+  These data contain the haplotype matrix \code{LCT.hap} (5008 haplotypes) of the 2004 individuals from the 1000 Genomes data for a ~300kb segment containing the Lactase gene.  
   Information about individuals (sex, population and super population) is present in \code{LCT.sample}, and information about snps is available in \code{LCT.snps}.
 }
 
