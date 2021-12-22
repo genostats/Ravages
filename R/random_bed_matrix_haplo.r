@@ -8,6 +8,11 @@ rbm.haplos.thresholds <- function(haplos, weights = c("SKAT", "constant"), max.m
 
   weights <- match.arg(weights)
   
+  if(any(colMeans(haplos)==0 | colMeans(haplos)==1)){
+     warning("Some variants have a maf equal to 0 and won't be kept")
+     haplos <- haplos[,which(colMeans(haplos)>0 & colMeans(haplos)<1)]
+  }
+  
   if (weights=="SKAT") {
         weights <- -0.4*log10(colMeans(haplos))
   }else{

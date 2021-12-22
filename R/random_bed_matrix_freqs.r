@@ -1,4 +1,8 @@
 rbm.haplos.freqs <- function(haplos, freqs, size, replicates) {
+  if(any(colMeans(haplos)==0 | colMeans(haplos)==1)){
+     warning("Some variants have a maf equal to 0 and won't be kept")
+     haplos <- haplos[,which(colMeans(haplos)>0 & colMeans(haplos)<1)]
+  }
   bed <- .Call('rbm_haplos_freqs', PACKAGE = "Ravages", haplos, freqs, size, replicates)
 
   nb_inds <- sum(size);

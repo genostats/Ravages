@@ -18,10 +18,9 @@ rbm.GRR <- function(genes.maf = Kryukov, size, prev, replicates,
   }else{
     if(any(genes.maf$maf == 0)){
       warning("Some variants have a maf equal to 0 and won't be kept")
-      pop.maf <- subset(genes.maf, maf > 0)$maf
-    }else{
-      pop.maf <- genes.maf$maf
+      genes.maf <- subset(genes.maf, maf > 0 )
     }
+    pop.maf <- genes.maf$maf
   }
   
   ##Check GRR
