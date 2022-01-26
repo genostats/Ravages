@@ -1,5 +1,5 @@
 SKAT.theoretical <- function(x, NullObject, genomic.region = x@snps$genomic.region, 
-                     weights = (1 - @snps$maf)**24, maf.threshold = 0.5, 
+                     weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
                      estimation.pvalue = "kurtosis", cores = 10, debug = FALSE){
 
 
