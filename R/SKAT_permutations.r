@@ -9,7 +9,8 @@ SKAT.permutations <- function(x, NullObject, genomic.region = x@snps$genomic.reg
   if(!is.factor(genomic.region)) stop("'genomic.region' should be a factor")
   genomic.region <- droplevels(genomic.region)
 
-  if(any(table(genomic.region)==1)) stop("All 'genomic.region' sould contain at least 2 variants, please use 'filter.rare.variants()' to filter the bed matrix")
+  if(any(table(genomic.region)==1)) 
+    stop("All 'genomic.region' sould contain at least 2 variants, please use 'filter.rare.variants()' to filter the bed matrix")
 
   which.snps <- (x@snps$maf <= maf.threshold) & (x@snps$maf > 0)
 
