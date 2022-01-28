@@ -34,23 +34,27 @@ List skatMoments(XPtr<matrix4> pA, LogicalVector which_snps, IntegerVector regio
   }
 
   // Produit (Y - Pi) * G * W [ dimensions nb_snps x nb_ind_groups : elle est transposée ]
+  // extraction matrice "which snps"
   std::vector<const uint8_t *> data;
   std::vector<double> pp;
   std::vector<double> W;
+  std::vector<int> region2;
   for(int i = 0; i < m; i++) {
     if(which_snps[i]) {
       data.push_back( pA->data[i] );
       pp.push_back( p[i] );
       W.push_back( weights[i] );
+      region2.push_back( region[i] );
     }
   }
-  NumericMatrix Z = WLP(&data[0], &pp[0], m, n, pA->true_ncol, W, Y_Pi);
+  int m1 = data.size(); // nvlle taille
+  NumericMatrix Z = WLP(&data[0], &pp[0], m1, n, pA->true_ncol, W, Y_Pi);
 
   // Vecteur de stats
   NumericVector STATS(nb_snp_groups);
   for(int j = 0; j < nb_ind_groups; j++) {
-    for(int i = 0; i < m; i++) {
-      STATS[ region[i] - 1 ] += Z(i,j)*Z(i,j) / nb_ind_in_group[j];
+    for(int i = 0; i < m1; i++) {
+      STATS[ region2[i] - 1 ] += Z(i,j)*Z(i,j) / nb_ind_in_group[j];
     }
   }
 
