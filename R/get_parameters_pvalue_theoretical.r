@@ -12,8 +12,8 @@ get.parameters.pvalue.theoretical <- function(x, RR, P1, ymp, n, estimation.pval
   G.bloc <- .Call("block_diag", PACKAGE = "Ravages", G.L)
 
   #Stat de test
-  Q <- as.vector(ymp) %*% (G.bloc %*% t(G.bloc)) %*% as.vector(ymp)
-  # Q <- tcrossprod(as.vector(ymp) %*% G.bloc)
+  # Q <- as.vector(ymp) %*% (G.bloc %*% t(G.bloc)) %*% as.vector(ymp)
+  Q <- tcrossprod(as.vector(ymp) %*% G.bloc)
  
 
   #Moments
