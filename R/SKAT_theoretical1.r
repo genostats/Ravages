@@ -18,12 +18,20 @@ SKAT.theoretical1 <- function(x, NullObject, genomic.region = x@snps$genomic.reg
   Pi <- NullObject$Pi.data
   P <- NullObject$P1
 
-  M <- .Call('rvg_skatMoments', PACKAGE = "Ravages", x@bed, which.snps, genomic.region, group, x@p, Pi, P, weights);
+  stat <- .Call('rvg_skatStats', PACKAGE = "Ravages", x@bed, which.snps, genomic.region, group, x@p, Pi, P, weights);
+
+  nb.ind.in.groups <- as.vector(table(group))
+
+  M <- mclapply(1:nlevels(genomic.region) - 1L, 
+                function(g) .Call('rvg_skatMoments', PACKAGE = "Ravages", 
+                      x@bed, which.snps, genomic.region, group, x@p, Pi, P, weights, nb.ind.in.groups, g), mc.cores = cores);
+
+  M <- as.data.frame(cbind(stat, t(simplify2array(M))))
 
   M$p.value <- mapply(p.valeur.moments.liu, Q = M$stat, mu = M$mean, sigma = M$sigma, skewness = M$skewness, kurtosis = M$kurtosis, 
                                     estimation.pvalue = estimation.pvalue)
 
-  M <- as.data.frame(M)[,c("stat", "p.value", "mean", "sigma", "skewness", "kurtosis")]
+  M <- M[,c("stat", "p.value", "mean", "sigma", "skewness", "kurtosis")]
   M$kurtosis <- 3 + M$kurtosis
   rownames(M) <- levels(genomic.region)
   if(debug)

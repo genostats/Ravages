@@ -41,7 +41,6 @@ struct paraWLP2 : public Worker {
         for(size_t j = 0; j < true_ncol; j++) {
           uint8_t x = data[i][j];
           for(int ss = 0; ss < 4 && (4*j + ss < ncol); ss++) {
-            // Av[nrow*c+i] += v[k++]*gg[x&3];
             Av[c + i*r] += v[k++]*gg[x&3];
             x >>= 2;
           }

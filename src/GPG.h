@@ -16,5 +16,7 @@ Eigen::MatrixXd GPG(XPtr<matrix4> pA, LogicalVector which_snps, NumericVector p,
 
 Eigen::MatrixXd GPG(std::vector<const uint8_t *> & data, int true_ncol, std::vector<double> & pp, std::vector<double> & W, NumericMatrix P,
                     IntegerVector N, bool symmetrize);
+Eigen::MatrixXd GPG2(std::vector<const uint8_t *> & data, int true_ncol, std::vector<double> & pp, std::vector<double> & W, NumericMatrix P,
+                    IntegerVector N, bool symmetrize);
 #endif
 
