@@ -17,7 +17,6 @@ extern SEXP oz_sum_fst(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP oz_sum_fst_max_perm(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP oz_sum_fst1(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP oz_sum_fst1_max_perm(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP Ravages_GPG(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP rbm_haplos_freqs(SEXP, SEXP, SEXP, SEXP);
 extern SEXP rbm_haplos_thresholds_filling(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP rvg_skatMoments(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
@@ -38,7 +37,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"oz_sum_fst_max_perm",               (DL_FUNC) &oz_sum_fst_max_perm,                6},
     {"oz_sum_fst1",                       (DL_FUNC) &oz_sum_fst1,                        6},
     {"oz_sum_fst1_max_perm",              (DL_FUNC) &oz_sum_fst1_max_perm,               6},
-    {"Ravages_GPG",                       (DL_FUNC) &Ravages_GPG,                        6},
     {"rbm_haplos_freqs",                  (DL_FUNC) &rbm_haplos_freqs,                   4},
     {"rbm_haplos_thresholds_filling",     (DL_FUNC) &rbm_haplos_thresholds_filling,      9},
     {"rvg_skatMoments",                   (DL_FUNC) &rvg_skatMoments,                   10},
