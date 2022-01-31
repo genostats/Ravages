@@ -37,7 +37,7 @@ struct paraWLP : public Worker {
 // std::cout << "i = " << i << "\n";
       gg[1] = we[i];
       gg[2] = 2*we[i];
-      gg[3] = 2*p[i]; // imputation par le "génotype moyen"
+      gg[3] = 2*p[i]*we[i]; // imputation par le "génotype moyen"
       for(size_t c = 0; c < r; c++) {
         size_t k = c*ncol;
         for(size_t j = 0; j < true_ncol; j++) {
