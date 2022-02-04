@@ -21,9 +21,9 @@ SKAT <- function(x, NullObject, genomic.region = x@snps$genomic.region,
     if(length(weights) != length(genomic.region)) stop("weights and genomic.region should have the same length")
   }
 
-  #Test if phenotype is continuous or categorial
-  if(NullObject$pheno.type == "categorial"){
-    if(verbose) cat("Categorial phenotype \n")
+  #Test if phenotype is continuous or categorical
+  if(NullObject$pheno.type == "categorical"){
+    if(verbose) cat("Categorical phenotype \n")
     if(get.moments == "size.based"){
       get.moments <- NullObject$get.moments
     }else{

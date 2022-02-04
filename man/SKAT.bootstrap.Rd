@@ -84,7 +84,7 @@ covar <- cbind(sex, u)
 #and the target number is 10, please increase
 #both values for a more accurate estimation of the p-values
 #Fit Null model with covariates
-x1.H0 <- NullObject.parameters(x1@ped$pop, data = covar, RVAT = "SKAT", pheno.type = "categorial")
+x1.H0 <- NullObject.parameters(x1@ped$pop, data = covar, RVAT = "SKAT", pheno.type = "categorical")
 
 SKAT.bootstrap(x1, x1.H0, perm.target = 10, perm.max = 100)
 }

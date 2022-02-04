@@ -4,7 +4,7 @@
   Linear, logistic or multinomial regression on a genetic score
 }
 \description{
-  Performs burden tests on categorial or continuous phenotypes
+  Performs burden tests on categorical or continuous phenotypes
 }
 \usage{
 burden(x, NullObject, genomic.region = x@snps$genomic.region, burden,
@@ -17,7 +17,7 @@ burden(x, NullObject, genomic.region = x@snps$genomic.region, burden,
   \item{genomic.region}{ A factor containing the genomic region of each SNP, \code{x@snps$genomic.region} by default, only needed if \code{burden}="CAST" or \code{burden}="WSS"}
   \item{burden}{"CAST" or "WSS" to directly compute the CAST or the WSS genetic score, or a matrix with one row per individual and one column per \code{genomic.region} if another genetic score is wanted.}
   \item{maf.threshold}{ The MAF threshold to use for the definition of a rare variant in the CAST score. Set at 0.5 by default}
-  \item{get.effect.size}{ TRUE/FALSE: whether to return effect sizes of the tested \code{genomic.region} (OR for categorial phenotypes, betas for continuous phenotypes) }
+  \item{get.effect.size}{ TRUE/FALSE: whether to return effect sizes of the tested \code{genomic.region} (OR for categorical phenotypes, betas for continuous phenotypes) }
   \item{alpha}{ The alpha threshold to use for the OR confidence interval}
   \item{cores}{ How many cores to use, set at 10 by default.}
   \item{verbose}{ Whether to display information about the function actions }
@@ -42,8 +42,8 @@ burden(x, NullObject, genomic.region = x@snps$genomic.region, burden,
   A dataframe with one row per genomic region and at least two columns:
   \item{p.value}{ The p.value of the regression}
   \item{is.err}{ 0/1: whether there was a convergence problem with the regression}
-  If \code{NullObject$pheno.type = "categorial"} and \code{get.OR.value=TRUE}, additional columns are present:
-  \item{OR/beta}{ The OR/beta value(s) associated to the regression. For categorial phenotypes, if there are more than two groups, there will be one OR value per group compared to the reference group}
+  If \code{NullObject$pheno.type = "categorical"} and \code{get.OR.value=TRUE}, additional columns are present:
+  \item{OR/beta}{ The OR/beta value(s) associated to the regression. For categorical phenotypes, if there are more than two groups, there will be one OR value per group compared to the reference group}
   \item{l.lower}{ The lower bound of the confidence interval of each OR/beta}
   \item{l.upper}{ The upper bound of the confidence interval of each OR/beta}
 }
@@ -72,7 +72,7 @@ x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.sn
 
 #run null model, using the 1000Genome population as "outcome"
 x1.H0 <- NullObject.parameters(pheno = x1@ped$pop, ref.level = "CEU",
-                               RVAT = "burden", pheno.type = "categorial")
+                               RVAT = "burden", pheno.type = "categorical")
 
 #run burden test WSS
 burden(x1, NullObject = x1.H0, burden = "WSS", get.effect.size=TRUE, cores = 1)

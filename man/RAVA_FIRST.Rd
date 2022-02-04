@@ -63,7 +63,7 @@ RAVA.FIRST(x, variant.scores = NULL, ref.level,
 
 #Perform RAVA-FIRST with burden analysis
 #H0.burden <- NullObject.parameters(pheno = x@ped$pop, ref.level = "CEU",
-#                                   RVAT = "burden", pheno.type = "categorial")
+#                                   RVAT = "burden", pheno.type = "categorical")
 #res.burden <- RAVA.FIRST(x, maf.threshold = 0.05,
 #                         H0.burden = H0.burden, SKAT = F)
 }

@@ -4,7 +4,7 @@
   Logistic or multinomial regression on a multiple genetic scores within a genomic region
 }
 \description{
-  Performs burden tests with subscores in the regression on categorial phenotypes
+  Performs burden tests with subscores in the regression on categorical phenotypes
 }
 \usage{
 burden.mlogit.subscores(x, NullObject, genomic.region = x@snps$genomic.region, 
@@ -19,9 +19,9 @@ burden.mlogit.subscores(x, NullObject, genomic.region = x@snps$genomic.region,
   \item{SubRegion}{ A vector containing subregions within each \code{genomic.region}, \code{x@snps$SubRegion} by default, for example genomic categories}
   \item{burden.function}{A function to compute the genetic score, \code{WSS} by default.}
   \item{maf.threshold}{ The MAF threshold to use for the definition of a rare variant in the CAST score. Set at 0.5 by default}
-  \item{get.effect.size}{ TRUE/FALSE: whether to return effect sizes of the tested \code{genomic.region} (OR for categorial phenotypes, betas for continuous phenotypes) }
+  \item{get.effect.size}{ TRUE/FALSE: whether to return effect sizes of the tested \code{genomic.region} (OR for categorical phenotypes, betas for continuous phenotypes) }
   \item{alpha}{ The alpha threshold to use for the OR confidence interval}
-  \item{cores}{ How many cores to use, set at 10 by default. Only needed if \code{NullObject$pheno.type = "categorial"} }
+  \item{cores}{ How many cores to use, set at 10 by default. Only needed if \code{NullObject$pheno.type = "categorical"} }
 }
 \details{
   This function will return results from the regression of the phenotype on the genetic score(s) for each genomic region. Within each genomic region, a subscore will be computed for each SubRegion and one test will be performed for each genomic.region.
@@ -65,7 +65,7 @@ burden.mlogit.subscores(x, NullObject, genomic.region = x@snps$genomic.region,
 
 #run null model, using the 1000Genome population as "outcome"
 #x1.H0 <- NullObject.parameters(pheno = x1@ped$pop, ref.level = "CEU",
-#                               RVAT = "burden", pheno.type = "categorial")
+#                               RVAT = "burden", pheno.type = "categorical")
 
 #run burden test WSS
 #res.subscores <- burden.subscores(x1, NullObject = x1.H0, burden = WSS, 
