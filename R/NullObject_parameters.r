@@ -2,7 +2,7 @@ NullObject.parameters <- function(pheno, RVAT, pheno.type = c("categorical", "co
   pheno.type <- match.arg(pheno.type)
   if(missing(data)) data <- NULL
   if(missing(formula)) formula <- NULL
-  if(!(pheno.type %in% c("categorical", "continuous"))) stop("'pheno.type' should be 'categorial' or 'continuous'")
+  if(!(pheno.type %in% c("categorical", "continuous"))) stop("'pheno.type' should be 'categorical' or 'continuous'")
   if(!(RVAT %in% c("burden", "SKAT"))) stop ("'RVAT' should be 'burden' or 'SKAT'")
   if(pheno.type == "categorical"){
     if (!is.factor(pheno))  stop("'pheno' is not a factor")
