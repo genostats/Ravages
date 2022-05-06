@@ -3,14 +3,14 @@
 \title{ Null Model for SKAT and burden tests }
 \description{ Get the parameters under the null model to peforms burden tests or SKAT}
 \usage{
-  NullObject.parameters(pheno, RVAT, pheno.type = c("categorial", "continuous"), 
+  NullObject.parameters(pheno, RVAT, pheno.type = c("categorical", "continuous"), 
                         ref.level, data, formula)
 }
 \arguments{
-  \item{pheno}{ The phenotype of each individual: a factor if \code{pheno.type = "categorial"}, and a numeric vector if \code{pheno.type = "continuous"} }
+  \item{pheno}{ The phenotype of each individual: a factor if \code{pheno.type = "categorical"}, and a numeric vector if \code{pheno.type = "continuous"} }
   \item{RVAT}{ The type of Rare Variant Association Test (RVAT) to perform: should be "burden" or "SKAT"}
-  \item{pheno.type}{ The type of phenotype: "categorial" for binary or multinomial traits, or "continuous"}
-  \item{ref.level}{ The reference group of individuals for the regression, only needed if \code{RVAT = "burden"} and \code{pheno.type = "categorial"}}
+  \item{pheno.type}{ The type of phenotype: "categorical" for binary or multinomial traits, or "continuous"}
+  \item{ref.level}{ The reference group of individuals for the regression, only needed if \code{RVAT = "burden"} and \code{pheno.type = "categorical"}}
   \item{data}{ Optional, a matrix containing the covariates with one column per covariate and one row per individual }
   \item{formula}{ Optional, an R formula corresponding to the regression model indicating which covariates from \code{data} to include in the model if only some of them are to be included}
 }
@@ -28,7 +28,7 @@
 \value{
   A list containing different elements depending on the \code{RVAT} performed and the \code{pheno.type}.  
 
-  - if \code{RVAT = "burden"} and \code{pheno.type = "categorial"}:
+  - if \code{RVAT = "burden"} and \code{pheno.type = "categorical"}:
   \item{group}{A factor containing the group of each individual as given}
   \item{ref.level}{ The reference group of individuals for the regression as given}
   \item{H0.LogLik}{ The Log-Likelihood of the null model}
@@ -42,11 +42,11 @@
   \item{data}{ The \code{data} argument containing covariates, NULL if it was missing}   
 
 
-  - if \code{RVAT = "SKAT"} and \code{pheno.type = "categorial"}:  
+  - if \code{RVAT = "SKAT"} and \code{pheno.type = "categorical"}:  
   \item{Pi.data}{ A matrix n.individuals x n.groups containing the probabilities that each individual belong to each group }
   \item{X}{ A matrix containing 1 in the first column for the intercept, and covariates from \code{data} and \code{formula}}
   \item{group}{ A factor containing the group of each individual as given}
-  \item{get.moments}{ How to compute moments based on sample size for p-value calculations (only used if \code{get.moments = "size.based"} for a categorial phenotype in \code{SKAT}. }
+  \item{get.moments}{ How to compute moments based on sample size for p-value calculations (only used if \code{get.moments = "size.based"} for a categorical phenotype in \code{SKAT}. }
   \item{P1}{ The vairance-covariance matrix of (Y - Pi_hat)}   
 
  
@@ -70,7 +70,7 @@ random.covar <- matrix( sample(1:2, prob = c(0.4, 0.6), size = 100, replace = TR
 #Null Model for burden with a multinomi-category phenotype
 #Controls as reference group, no covariates
 H0.burden.multi <- NullObject.parameters(pheno = as.factor(random.multi.pheno), 
-                                         RVAT = "burden", pheno.type = "categorial", ref.level = 1)
+                                         RVAT = "burden", pheno.type = "categorical", ref.level = 1)
 #Null Model for SKAT with a continuous phenotype and a covariate
 H0.SKAT.continuous <- NullObject.parameters(pheno = random.continuous.pheno,
                                             RVAT = "SKAT", pheno.type = "continuous",

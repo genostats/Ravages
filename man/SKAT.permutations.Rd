@@ -79,7 +79,7 @@ x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.01, min.nb.snp
 #and the target number is 10, please increase
 #both values for a more accurate estimation of the p-values
 #Fit Null model
-x1.H0 <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial")
+x1.H0 <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorical")
 SKAT.permutations(x1, x1.H0, perm.target = 10, perm.max=100)
 }
 }

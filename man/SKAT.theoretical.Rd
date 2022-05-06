@@ -59,7 +59,7 @@ x1 <- filter.rare.variants(x, filter = "whole", maf.threshold = 0.025, min.nb.sn
 
 #run SKAT using the 1000 genome EUR populations as "outcome" using one core
 #Fit Null model
-x1.H0 <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial")
+x1.H0 <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorical")
 
 SKAT.theoretical(x1, x1.H0, cores = 1)
 }

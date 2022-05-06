@@ -1,10 +1,10 @@
 \name{multinomial.asso.freq}
 \alias{multinomial.asso.freq}
 \title{
-  Single variant association test with categorial phenotype
+  Single variant association test with categorical phenotype
 }
 \description{
-  Performs an association test between categorial phenotypes and single variants
+  Performs an association test between categorical phenotypes and single variants
 }
 \usage{
 multinomial.asso.freq(x, pheno = x@ped$pheno, ref.level,
@@ -13,7 +13,7 @@ multinomial.asso.freq(x, pheno = x@ped$pheno, ref.level,
 }
 \arguments{
   \item{x}{ A bed matrix, only needed if \code{burden="CAST"} or \code{burden="WSS"}}
-  \item{pheno}{ The phenotype of each individual: a factor if \code{pheno.type = "categorial"}, and a numeric vector if \code{pheno.type = "continuous"} }
+  \item{pheno}{ The phenotype of each individual: a factor if \code{pheno.type = "categorical"}, and a numeric vector if \code{pheno.type = "continuous"} }
   \item{ref.level}{ The reference group of individuals for the estimation of the effect size, only needed if \code{get.effect.size = T} }
   \item{test}{ Whether to perform the test on the three genotypes ("Genotypic") or on the two alleles ("Allelic")}
   \item{get.effect.size}{ TRUE/FALSE: whether to return effect sizes of the variants (OR) }

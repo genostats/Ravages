@@ -1,10 +1,10 @@
-NullObject.parameters <- function(pheno, RVAT, pheno.type = c("categorial", "continuous"), ref.level, data, formula){
+NullObject.parameters <- function(pheno, RVAT, pheno.type = c("categorical", "continuous"), ref.level, data, formula){
   pheno.type <- match.arg(pheno.type)
   if(missing(data)) data <- NULL
   if(missing(formula)) formula <- NULL
-  if(!(pheno.type %in% c("categorial", "continuous"))) stop("'pheno.type' should be 'categorial' or 'continuous'")
+  if(!(pheno.type %in% c("categorical", "continuous"))) stop("'pheno.type' should be 'categorical' or 'continuous'")
   if(!(RVAT %in% c("burden", "SKAT"))) stop ("'RVAT' should be 'burden' or 'SKAT'")
-  if(pheno.type == "categorial"){
+  if(pheno.type == "categorical"){
     if (!is.factor(pheno))  stop("'pheno' is not a factor")
     pheno <- droplevels(pheno)
     if(nlevels(pheno)==1) stop("Only one group of individuals, association tests cannot be run")

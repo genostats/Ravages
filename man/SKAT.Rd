@@ -1,7 +1,7 @@
 \name{SKAT}
 \alias{SKAT}
 \title{ SKAT test }
-\description{ Peforms SKAT on categorial or binary phenotypes }
+\description{ Peforms SKAT on categorical or binary phenotypes }
 \usage{
 SKAT(x, NullObject, genomic.region = x@snps$genomic.region, 
      weights = (1 - x@snps$maf)**24, maf.threshold = 0.5, 
@@ -14,7 +14,7 @@ SKAT(x, NullObject, genomic.region = x@snps$genomic.region,
   \item{genomic.region}{ A factor defining the genomic region of each variant }
   \item{weights}{ A vector with the weight of each variant. By default, the weight of each variant is inversely proportionnal to its MAF, as it was computed in the original SKAT method}
   \item{maf.threshold}{ The MAF above which variants are removed (default is to keep all variants)}
-  \item{get.moments}{ How to estimate the moments to compute the p-values among "size.based", "bootstrap", "permutations", or "theoretical" for categorial phenotypes (2 or more groups of individuals). By default "size.based" that will choose the method depending on sample size (see \code{details}) }
+  \item{get.moments}{ How to estimate the moments to compute the p-values among "size.based", "bootstrap", "permutations", or "theoretical" for categorical phenotypes (2 or more groups of individuals). By default "size.based" that will choose the method depending on sample size (see \code{details}) }
   \item{estimation.pvalue}{ Whether to use the skewness ("skewness") or the kurtosis ("kurtosis") for the chi-square approximation }
   \item{params.sampling}{ A list containing the elements "perm.target", "perm.max", "debug". Only needed if \code{get.moments = "boostrap"} or \code{get.moments = "permutations" } }
   \item{cores}{ How many cores to use for moments computation, set at 10 by default. Only needed if \code{get.moments = "theoretical"} }
@@ -22,7 +22,7 @@ SKAT(x, NullObject, genomic.region = x@snps$genomic.region,
   \item{verbose}{ Whether to display information about the function actions }
 }
 \details{
-  For categorial phenotypes, the p-value is calculated using a chi-square approximation based on the statistics' moments. The user has to choose how to compute these moments (argument \code{get.moments}), and which moments to use for the chi-square approximation (argument \code{estimation.pvalue}).  
+  For categorical phenotypes, the p-value is calculated using a chi-square approximation based on the statistics' moments. The user has to choose how to compute these moments (argument \code{get.moments}), and which moments to use for the chi-square approximation (argument \code{estimation.pvalue}).  
 
   The moments can be computed either using a sampling procedure (\code{"permutations"} if there are no covariates, or \code{"bootstrap"} otherwise), or using theoretical moments computed as in Liu et al. 2008 (\code{"theoretical"}).  
 
@@ -86,7 +86,7 @@ x.sim <- rbm.GRR(genes.maf = Kryukov, size = c(50, 25, 25),
                  p.causal = 0.5, p.protect = 0, select.gene="R1",
                  same.variant = FALSE, genetic.model = "multiplicative", replicates = 5)
 #Null Model
-x.sim.H0 <- NullObject.parameters(x.sim@ped$pheno, RVAT = "SKAT", pheno.type = "categorial")
+x.sim.H0 <- NullObject.parameters(x.sim@ped$pheno, RVAT = "SKAT", pheno.type = "categorical")
 
 #Run SKAT (here permutations as n<2000 and no covariates)
 #Parameters for the sampling procedure: target = 5, max = 100
@@ -128,7 +128,7 @@ covar <- cbind(sex, u)
 #with very few permutations
 #Please increase the permutations for a more accurate estimation of the p-values
 #Fit Null model with covariate sex
-x1.H0.covar <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial",
+x1.H0.covar <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorical",
                                      data = covar, formula = ~ sex)
 
 #Run SKAT with the covariates: use boostrap as n<2000

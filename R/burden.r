@@ -3,8 +3,8 @@ burden <- function(x, NullObject, genomic.region = x@snps$genomic.region, burden
   if("P1" %in% names(NullObject)) stop("'NullObject' has been generated with wrong 'RVAT' in 'NullObject.parameters()'") 
  
   if(missing(x)) x <- NULL
-  if(NullObject$pheno.type == "categorial"){
-    if(verbose) cat("Categorial phenotype \n")
+  if(NullObject$pheno.type == "categorical"){
+    if(verbose) cat("Categorical phenotype \n")
     res <- burden.mlogit(x = x, NullObject = NullObject, genomic.region = genomic.region, burden = burden, maf.threshold = maf.threshold, get.effect.size = get.effect.size, alpha = alpha, cores = cores)
   }
   if(NullObject$pheno.type == "continuous"){

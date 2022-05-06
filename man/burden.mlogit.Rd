@@ -70,7 +70,7 @@ covar <- cbind(sex, u)
 #run null model, using the 1000Genome population as "outcome"
 #Null model with the covariate sex
 x1.H0.covar <- NullObject.parameters(pheno = x1@ped$pop, ref.level = "CEU", 
-                                     RVAT = "burden", pheno.type = "categorial",
+                                     RVAT = "burden", pheno.type = "categorical",
                                      data = covar, formula = ~ sex)
 #WSS test
 burden.mlogit(x1, NullObject = x1.H0.covar, burden = "WSS", get.effect.size=TRUE, cores = 1)
