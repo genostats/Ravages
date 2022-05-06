@@ -1,21 +1,21 @@
-set.CADDregions <- function(x, verbose = T) {
-  Ravages_path <- system.file(package="Ravages")
+set.CADDregions <- function(x, verbose = T, path.data) {
+  if(missing(path.data)) stop("the directory 'path.data' to download and use the necessary files for RAVA-FIRST analysis should be provided")
   ##Check if file with score already downloaded
-  if(!file.exists(paste0(Ravages_path, "/README_RAVAFIRST"))) curl_download("https://lysine.univ-brest.fr/RAVA-FIRST/README_RAVAFIRST", destfile = paste0(Ravages_path, "/README_RAVAFIRST")) #download README
-  if(!file.exists(paste0(Ravages_path, "/CADDRegions.2021.hg19.bed.gz"))){
-    if(verbose) cat("Downloading CADD regions in ", Ravages_path, "\n")
-    curl_download("https://lysine.univ-brest.fr/RAVA-FIRST/CADDRegions.2021.hg19.bed.gz", destfile = paste0(Ravages_path, "/CADDRegions.2021.hg19.bed.gz"))
-    curl_download("https://lysine.univ-brest.fr/RAVA-FIRST/CADDRegions.2021.hg19.bed.gz.tbi", destfile = paste0(Ravages_path, "/CADDRegions.2021.hg19.bed.gz.tbi"))
+  if(!file.exists(paste0(path.data, "/README_RAVAFIRST"))) curl_download("https://lysine.univ-brest.fr/RAVA-FIRST/README_RAVAFIRST", destfile = paste0(path.data, "/README_RAVAFIRST")) #download README
+  if(!file.exists(paste0(path.data, "/CADDRegions.202204.hg19.bed.gz"))){
+    if(verbose) cat("Downloading CADD regions in ", path.data, "\n")
+    curl_download("https://lysine.univ-brest.fr/RAVA-FIRST/CADDRegions.202204.hg19.bed.gz", destfile = paste0(path.data, "/CADDRegions.202204.hg19.bed.gz"))
+    curl_download("https://lysine.univ-brest.fr/RAVA-FIRST/CADDRegions.202204.hg19.bed.gz.tbi", destfile = paste0(path.data, "/CADDRegions.202204.hg19.bed.gz.tbi"))
   }
-  if(!file.exists(paste0(Ravages_path, "/FunctionalAreas.hg19.bed.gz"))){
-    if(verbose) cat("Downloading Genomic Categories in ", Ravages_path, "\n")
-    curl_download("https://lysine.univ-brest.fr/RAVA-FIRST/FunctionalAreas.hg19.bed.gz", destfile = paste0(Ravages_path, "/FunctionalAreas.hg19.bed.gz"))
-    curl_download("https://lysine.univ-brest.fr/RAVA-FIRST/FunctionalAreas.hg19.bed.gz.tbi", destfile = paste0(Ravages_path, "/FunctionalAreas.hg19.bed.gz.tbi"))
+  if(!file.exists(paste0(path.data, "/FunctionalAreas.hg19.bed.gz"))){
+    if(verbose) cat("Downloading Genomic Categories in ", path.data, "\n")
+    curl_download("https://lysine.univ-brest.fr/RAVA-FIRST/FunctionalAreas.hg19.bed.gz", destfile = paste0(path.data, "/FunctionalAreas.hg19.bed.gz"))
+    curl_download("https://lysine.univ-brest.fr/RAVA-FIRST/FunctionalAreas.hg19.bed.gz.tbi", destfile = paste0(path.data, "/FunctionalAreas.hg19.bed.gz.tbi"))
   }
 
-  regions <- read.table(gzfile(paste0(Ravages_path, "/CADDRegions.2021.hg19.bed.gz")), header = T, as.is = T)
+  regions <- read.table(gzfile(paste0(path.data, "/CADDRegions.202204.hg19.bed.gz")), header = T, as.is = T)
   regions$Name <- factor(regions$Name, levels = unique(regions$Name))
-  subregions <- read.table(gzfile(paste0(Ravages_path, "/FunctionalAreas.hg19.bed.gz")), header = T, as.is = T)
+  subregions <- read.table(gzfile(paste0(path.data, "/FunctionalAreas.hg19.bed.gz")), header = T, as.is = T)
 
   #Add one to start to take into account bed format
   regions$Start <- regions$Start+1

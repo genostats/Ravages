@@ -1,3 +1,8 @@
+v1.1.0 :
+ RAVA-FIRST:
+   - Indels are now considered when computed the median adjusted CADD scores in each CADD region
+   - Indels can be annotated and analysed using the RAVA-FIRST strategy
+
 v1.0.0 :
  - Analysis using the RAVA-FIRST stratgey by CADD regions:
     *Used RAVA.FIRST() to run the whole RAVA-FIRST strategy

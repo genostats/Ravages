@@ -5,11 +5,12 @@
 Attributes CADD regions and genomic categories to variants based on their positions
 }
 \usage{
-set.CADDregions(x, verbose = T)
+set.CADDregions(x, verbose = T, path.data)
 }
 \arguments{
   \item{x}{ A bed.matrix }
   \item{verbose}{ Whether to display information about the function actions }
+  \item{path.data}{ The repository where data for RAVA-FIRST are or will be downloaded from https://lysine.univ-brest.fr/RAVA-FIRST/}
 }
 \details{
   To attribute variants to CADD regions and genomic categories, the files "CADDRegions.2021.hg19.bed.gz" and "FunctionalAreas.hg19.bed.gz" will be downloaded from https://lysine.univ-brest.fr/RAVA-FIRST/ in the repository of the package Ravages.  

@@ -1,8 +1,8 @@
 Package: Ravages
 Type: Package
 Title: Rare Variant Analysis and Genetic Simulations
-Version: 1.0.0
-Date: 2021-10-18
+Version: 1.1.0
+Date: 2022-05-03
 Encoding: UTF-8
 Author: Ozvan Bocher and Hervé Perdry
 Maintainer: Ozvan Bocher <bocherozvan@gmail.com>
@@ -10,7 +10,7 @@ Description: Rare variant association tests: burden tests (Bocher et al. 2019 <d
 License: GPL-3
 LinkingTo: Rcpp, RcppParallel, RcppEigen, gaston, BH
 Depends: R (>= 3.5.0), Rcpp, RcppParallel, methods, gaston, mlogit (>= 1.1-0)
-Imports: Formula, dfidx, parallel, bedr, curl
+Imports: Formula, dfidx, parallel, bedr, curl, data.table
 NeedsCompilation: yes
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
