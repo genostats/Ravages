@@ -57,7 +57,7 @@ adjustedCADD.annotation.indels <- function(x, variant.scores = NULL, cores = 10,
       #Select scores of new variants
       variant.scores.new <- tmp.x[which(is.na(x@snps$adjCADD)),]
       scores.adj.indels <- fread(paste0(path.data, "/AdjustedCADD_v1.4_202204_indels.tsv.gz"), select=c(5,6,7))
-      scores.byarea <- lapply(c("Coding", "Regulatory", "Intergenic"), function(z) subset(scores.adj.indels, SubRegion==z)) 
+      scores.byarea <- lapply(c("Coding", "Regulatory", "Intergenic"), function(z) subset(scores.adj.indels, scores.adj.indels$SubRegion==z)) 
       names(scores.byarea) <- c("Coding", "Regulatory", "Intergenic")
       #Find the nearest neighbour
       adj.scores <- mclapply(1:nrow(variant.scores.new), function(z) if(is.na(variant.scores.new[z,"PHRED_1.4"])){NA}else{as.numeric(scores.byarea[[variant.scores.new[z,"SubRegion"]]][which.min(abs(as.numeric(variant.scores.new[z,"PHRED_1.4"]) - scores.byarea[[variant.scores.new[z,"SubRegion"]]]$PHRED_1.4)), "adjCADD"])}, mc.cores = cores)

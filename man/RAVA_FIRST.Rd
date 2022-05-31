@@ -12,7 +12,7 @@ RAVA.FIRST(x, SNVs.scores = NULL, indels.scores = NULL, ref.level,
            maf.threshold=0.01, min.nb.snps = 2, 
            min.cumulative.maf = NULL, group = NULL, 
            cores = 10, burden = TRUE, H0.burden, burden.parameters, 
-           SKAT = TRUE, H0.SKAT, SKAT.parameters, verbose = TRUE, data.path)
+           SKAT = TRUE, H0.SKAT, SKAT.parameters, verbose = TRUE, path.data)
 }
 \arguments{
   \item{x}{ A bed.matrix }

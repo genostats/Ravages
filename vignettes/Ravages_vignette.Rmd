@@ -61,12 +61,12 @@ table(x1@snps$genomic.region, useNA="ifany")
 # run burden test CAST, using the 1000Genome population as "outcome"
 # Null model for CAST
 x1.H0.burden <- NullObject.parameters(x1@ped$pop, ref.level = "CEU", 
-                                      RVAT = "burden", pheno.type = "categorial")
+                                      RVAT = "burden", pheno.type = "categorical")
 burden(x1, NullObject = x1.H0.burden, burden = "CAST", cores = 1)
 
 # run SKAT, using the 1000Genome population as "outcome"
 # COnstruct null model for SKAT, then run test with only a few permutations
-x1.H0.SKAT <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial")
+x1.H0.SKAT <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorical")
 SKAT(x1, x1.H0.SKAT, params.sampling=list(perm.target = 10, perm.max = 500))
 
 # run a similar analysis but using the RAVA-FIRST approach with WSS
@@ -165,7 +165,7 @@ where $Y_{j}$ corresponds to the phenotype of the individual $j$ and $K_{l}$ is 
 
 The p-value associated to the genetic effect is calculated using a likelihood ratio test comparing this model to the same model without the genetic effect (null hypothesis). If only two groups are compared, a classical logistic regression is performed.  
 
-This regression can be performed on a bed.matrix using the function **burden()** which relies on the package mlogit. Parameters under the null model can be obtained using the function **NullObject.parameters()**. To generate this null model, the phenotype (argument *pheno*) of each individual should be given as a factor, and the potential covariates to include in the model should be given as a matrix to the argument *data* (one row per individual and one column per covariate). If only a subset of covariates from *data* are to be included in the model, a R formula should be given to *formula* with these covariates, otherwise all the covariates will be included. In addition, the reference group should be given to the argument *ref.level*, i.e. all odds ratios will be computed in comparison to this group of individuals. The choice of the reference group won't affect the p-value. As the parameters needed to run the association tests depend on the type of test performed (burden tests or SKAT), and the type of phenotype (continuous or categorial), both arguments shouls be given to **NullObject.parameters()** (*RVAT* and *pheno.type* respectively).  
+This regression can be performed on a bed.matrix using the function **burden()** which relies on the package mlogit. Parameters under the null model can be obtained using the function **NullObject.parameters()**. To generate this null model, the phenotype (argument *pheno*) of each individual should be given as a factor, and the potential covariates to include in the model should be given as a matrix to the argument *data* (one row per individual and one column per covariate). If only a subset of covariates from *data* are to be included in the model, a R formula should be given to *formula* with these covariates, otherwise all the covariates will be included. In addition, the reference group should be given to the argument *ref.level*, i.e. all odds ratios will be computed in comparison to this group of individuals. The choice of the reference group won't affect the p-value. As the parameters needed to run the association tests depend on the type of test performed (burden tests or SKAT), and the type of phenotype (continuous or categorical), both arguments shouls be given to **NullObject.parameters()** (*RVAT* and *pheno.type* respectively).  
 
 The function **NullObject.parameters()** will return a list with the parameters to use in **burden()** to run the burden test, including the Log-Likelihood computed under the null model, the argument *data* with the covariates to include determined from the argument *formula*.  
 
@@ -175,14 +175,14 @@ The  CAST or WSS genetic scores can be directly calculated in the regression (*b
 
 To shorten the computation time, calculations are parallelised; the argument *cores*, set at 10 by default, controls the parallelisation.
 
-The function **burden()** will return the p-value associated to the regression for each genomic region. If there is a convergence problem with the regression, the function will return 1 in the column *is.err*. The effect size (odds ratio for categorial phenotypes and beta value for continuous phenotypes) associated to each group of cases compared to the reference group (*NullObject$ref.level*) with its confidence interval at a given alpha threshold (argument *alpha*) can also be obtained with *get.effect.size=TRUE*.   
+The function **burden()** will return the p-value associated to the regression for each genomic region. If there is a convergence problem with the regression, the function will return 1 in the column *is.err*. The effect size (odds ratio for categorical phenotypes and beta value for continuous phenotypes) associated to each group of cases compared to the reference group (*NullObject$ref.level*) with its confidence interval at a given alpha threshold (argument *alpha*) can also be obtained with *get.effect.size=TRUE*.   
 
 An example of the p-value and OR calculation with its 95% confidence interval using WSS on the LCT data is shown below with or without the inclusion of covariates. The outcome here corresponds to the population from 1000Genome.
 
 ```{r, eval = F}
 # Null model
 x1.H0 <- NullObject.parameters(x1@ped$pop, ref.level = "CEU", 
-                               RVAT = "burden", pheno.type = "categorial")
+                               RVAT = "burden", pheno.type = "categorical")
 # WSS 
 burden(x = x1, NullObject = x1.H0, burden ="WSS", 
       alpha=0.05, get.effect.size=TRUE, cores = 1)
@@ -193,7 +193,7 @@ u <- runif(nrow(x1))
 covar <- cbind(sex, u)
 # Null model with the covariate "sex"
 x1.H0.covar <- NullObject.parameters(x1@ped$pop, ref.level = "CEU",
-                                     RVAT = "burden", pheno.type = "categorial",
+                                     RVAT = "burden", pheno.type = "categorical",
                                      data = covar, formula = ~ sex)
 
 # Regression with the covariate "sex" without OR values
@@ -248,7 +248,7 @@ An example of the SKAT function by specifying the "permutations" or "theoretical
 
 ```{r, eval = F}
 # Null model
-x1.null <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorial")
+x1.null <- NullObject.parameters(x1@ped$pop, RVAT = "SKAT", pheno.type = "categorical")
 # Permutations because no covariates
 SKAT(x1, x1.null, get.moments = "permutations", debug = TRUE,
      params.sampling = list(perm.target = 100, perm.max =5e4))

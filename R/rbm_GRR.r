@@ -10,15 +10,15 @@ rbm.GRR <- function(genes.maf = Kryukov, size, prev, replicates,
       warning("More than one gene in the file, only the first one is used")
       select.gene <- levels(genes.maf$gene)[[1]]
     }
-    pop.maf <- subset(genes.maf, gene %in% select.gene & maf > 0)$maf
-    if(any(subset(genes.maf, gene %in% select.gene)$maf == 0)){
+    pop.maf <- subset(genes.maf, genes.maf$gene %in% select.gene & genes.maf$maf > 0)$maf
+    if(any(subset(genes.maf, genes.maf$gene %in% select.gene)$maf == 0)){
       warning("Some variants have a maf equal to 0 and won't be kept")
-      genes.maf <- subset(genes.maf, maf > 0 )
+      genes.maf <- subset(genes.maf, genes.maf$maf > 0 )
     }
   }else{
     if(any(genes.maf$maf == 0)){
       warning("Some variants have a maf equal to 0 and won't be kept")
-      genes.maf <- subset(genes.maf, maf > 0 )
+      genes.maf <- subset(genes.maf, genes.maf$maf > 0 )
     }
     pop.maf <- genes.maf$maf
   }

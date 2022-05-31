@@ -8,7 +8,7 @@
 }
 \usage{
 adjustedCADD.annotation.SNVs(x, variant.scores = NULL, 
-			     cores = 10, verbose = T, data.path)
+			     cores = 10, verbose = T, path.data)
 }
 \arguments{
   \item{x}{ A bed.matrix annotated with CADD regions using \code{set.CADDregions} }

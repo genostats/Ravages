@@ -6,7 +6,7 @@ multinomial.asso.freq <- function(x, pheno = x@ped$pheno, ref.level, test = c("G
   if(get.effect.size)
     if(is.null(ref.level)) stop("'ref.level' should be specified to estimate OR")
   #Keep only frequent variants
-  x <- select.snps(x, maf >= min.maf.threshold)
+  x <- select.snps(x, x@snps$maf >= min.maf.threshold)
   if(get.effect.size) pheno <- relevel(pheno, ref = ref.level)
   x@ped$pheno <- pheno
   if(test == "Genotypic"){

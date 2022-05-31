@@ -8,7 +8,7 @@
 }
 \usage{
 adjustedCADD.annotation.indels(x, variant.scores = NULL, 
-			       cores = 10, verbose = T, data.path)
+			       cores = 10, verbose = T, path.data)
 }
 \arguments{
   \item{x}{ A bed.matrix annotated with CADD regions using \code{set.CADDregions} }
@@ -32,6 +32,4 @@ adjustedCADD.annotation.indels(x, variant.scores = NULL,
 \source{https://lysine.univ-brest.fr/RAVA-FIRST/}
 \seealso{
  \code{\link{adjustedCADD.annotation}, \link{adjustedCADD.annotation.SNVs}, \link{RAVA.FIRST}}, \code{\link{filter.adjustedCADD}} 
-}
-\examples{
 }
