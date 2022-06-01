@@ -1,7 +1,7 @@
+#include <RcppEigen.h>
 #include <Rcpp.h>
 #include <iostream>
 #include "gaston/matrix4.h"
-#include <RcppEigen.h>
 #include "GPG.h"
 #include "weightedGenotypes.h"
 
