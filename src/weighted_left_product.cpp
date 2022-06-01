@@ -6,6 +6,7 @@
  *                                         *
  *******************************************/
 #include "weighted_left_product.h"
+#include <RcppParallel.h>
 
 using namespace Rcpp;
 using namespace RcppParallel;

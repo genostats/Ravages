@@ -3,6 +3,7 @@
 #include <iostream>
 #include "gaston/matrix4.h"
 #include "GPG.h"
+#include "weighted_left_product.h"
 
 using namespace Rcpp;
 

@@ -2,7 +2,6 @@
 #include "gaston/matrix4.h"
 
 using namespace Rcpp;
-using namespace RcppParallel;
 
 #ifndef _rvg_wlp_
 #define _rvg_wlp_
