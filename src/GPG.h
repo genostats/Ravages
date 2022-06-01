@@ -1,8 +1,6 @@
-#include <Rcpp.h>
-#include <iostream>
-#include "gaston/matrix4.h"
-#include "weighted_left_product.h"
 #include <RcppEigen.h>
+#include <Rcpp.h>
+#include "gaston/matrix4.h"
 
 using namespace Rcpp;
 
