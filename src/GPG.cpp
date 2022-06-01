@@ -3,7 +3,6 @@
 #include "gaston/matrix4.h"
 #include <RcppEigen.h>
 #include "GPG.h"
-#include "weightedGenotypes.h"
 
 using namespace Rcpp;
 
