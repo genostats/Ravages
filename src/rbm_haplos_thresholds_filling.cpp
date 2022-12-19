@@ -11,7 +11,7 @@ using namespace Rcpp;
 // sd = l'Ã©cart type de la composante E
 // thr1, thr2 = thresholds dÃ©finissant les diffÃ©rents groupes (longueur K)
 // size un vecteur de tailles (longueur K)
-// repNumber = Numéro du réplicat pour remplir la bed matrice 
+// repNumber = Numero du replicat pour remplir la bed matrice
 // [[Rcpp::export]]
 void rbm_haplos_thresholds_filling(XPtr<matrix4> pA, IntegerMatrix haplos, List burden, NumericVector sd,
                      NumericVector thr1, NumericVector thr2, NumericVector size, int repNumber, int reps) {
@@ -46,7 +46,7 @@ void rbm_haplos_thresholds_filling(XPtr<matrix4> pA, IntegerMatrix haplos, List 
         one_to_pair(DIP[d++], h1, h2);
         for(int snp = 0; snp < p; snp++) {
           pA->set(p*reps*repNumber + p*rep + snp, ind + i, haplos(h1,snp) + haplos(h2,snp) );
-          //remplir matrice par réplicat avec memes fardeaux*snp, puis par replicat en changeant les variants causaux
+          //remplir matrice par replicat avec memes fardeaux*snp, puis par replicat en changeant les variants causaux
         }
       }
     }

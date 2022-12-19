@@ -12,7 +12,7 @@ filter.adjustedCADD(x, SNVs.scores = NULL, indels.scores = NULL,
                     filter=c("whole", "controls", "any"), 
                     maf.threshold=0.01, min.nb.snps = 2, 
                     min.cumulative.maf = NULL, 
-                    group = NULL, cores = 10, verbose = T)
+                    group = NULL, cores = 10, path.data, verbose = T)
 }
 \arguments{
   \item{x}{ A bed.matrix annotated with CADD regions using \code{set.CADDregions} }
@@ -25,7 +25,9 @@ filter.adjustedCADD(x, SNVs.scores = NULL, indels.scores = NULL,
   \item{min.cumulative.maf}{ The minimum cumulative maf of variants needed to keep a CADD region}
   \item{group}{ A factor indicating the group of each individual, only needed if \code{filter = "controls"} or \code{filter = "any"}. If missing, \code{x@ped$pheno} is taken}
   \item{cores}{ How many cores to use, set at 10 by default}
+  \item{path.data}{ The repository where data for RAVA-FIRST are or will be downloaded from https://lysine.univ-brest.fr/RAVA-FIRST/}
   \item{verbose}{ Whether to display information about the function actions }
+  
 }
 \value{
   A bed.matrix with filtered variants

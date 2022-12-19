@@ -13,7 +13,7 @@ RAVA.FIRST <- function(x, SNVs.scores = NULL, indels.scores = NULL, ref.level, f
   rownames(regions) <- regions$Name
   
   ###Filtering based on CADD scores
-  x.filter <- filter.adjustedCADD(x, SNVs.scores = SNVs.scores, indels.scores = indels.scores, ref.level = ref.level, filter = filter, maf.threshold = maf.threshold, min.nb.snps = min.nb.snps, min.cumulative.maf = min.cumulative.maf, group = group, verbose = verbose)
+  x.filter <- filter.adjustedCADD(x, SNVs.scores = SNVs.scores, indels.scores = indels.scores, ref.level = ref.level, filter = filter, maf.threshold = maf.threshold, min.nb.snps = min.nb.snps, min.cumulative.maf = min.cumulative.maf, group = group, path.data = path.data, verbose = verbose)
   if(verbose) cat("Filtering of rare variants within CADD regions\n")
   ###Association
   if(burden){
