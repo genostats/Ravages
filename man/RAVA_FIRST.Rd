@@ -63,6 +63,9 @@ RAVA.FIRST(x, SNVs.scores = NULL, indels.scores = NULL, ref.level,
 #x <- select.inds(x, superpop=="EUR")
 #x@ped$pop <- droplevels(x@ped$pop)
 
+#Remove indels from the bed matrix
+#x <- select.snps(x, nchar(A1)==1 & nchar(A2)==1)
+
 #Perform RAVA-FIRST with burden analysis
 #H0.burden <- NullObject.parameters(pheno = x@ped$pop, ref.level = "CEU",
 #                                   RVAT = "burden", pheno.type = "categorical")

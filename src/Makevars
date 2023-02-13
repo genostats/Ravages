@@ -1,2 +1,2 @@
 # required by  RcppParallel
-CXX_STD = CXX11 
+#CXX_STD = CXX11
