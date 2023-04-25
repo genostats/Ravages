@@ -1,6 +1,6 @@
 p.valeur.moments.liu <- function(Q, mu, sigma, skewness, kurtosis, estimation.pvalue) {
   # l'astuce pour le cas kurtosis < 3 vient de SKAT
-  # ca revient a  prendre une approximation normale
+  # ca revient a prendre une approximation normale
   if(!is.na(kurtosis)){ #tester si kurtosis a NA: peut etre le cas si seulement variants monomorphes
     if(kurtosis < 0){
       chi2val <- 1e5 + sqrt(2*1e5 / sigma**2)*(Q - mu)

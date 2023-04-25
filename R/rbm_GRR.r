@@ -30,8 +30,8 @@ rbm.GRR <- function(genes.maf = Kryukov, size, prev, replicates,
     }else{
       stop("GRR.matrix.del should be a list or a matrix")
     }
-  GRR.het <- GRR.matrix.del[[1]]
   }
+  GRR.het <- GRR.matrix.del[[1]]
 
   genetic.model <- match.arg(genetic.model)
 
