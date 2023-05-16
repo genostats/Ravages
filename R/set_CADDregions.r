@@ -1,4 +1,12 @@
 set.CADDregions <- function(x, verbose = T, path.data) {
+  #Check the chromosomes names in the bed matrix
+  if(all(is.na(x@snps$chr))){ stop("All chromomsome names are unknown, CADD regions can't be attributed, please consider setting convert.chr = F if read.vcf() was used") }
+  #Replace the chromosome names if starting with 'chr'
+  if(any(grepl(x@snps$chr, pattern = "chr"))){
+    cat("Chromosome names contain 'chr' which will be removed")
+    x@snps$chr <- as.numeric(gsub(x@snps$chr, pattern = 'chr', replacement = ''))
+  }  
+
   if(missing(path.data)) stop("the directory 'path.data' to download and use the necessary files for RAVA-FIRST analysis should be provided")
   ##Check if file with score already downloaded
   if(!file.exists(paste0(path.data, "/README_RAVAFIRST"))) curl_download("https://lysine.univ-brest.fr/RAVA-FIRST/README_RAVAFIRST", destfile = paste0(path.data, "/README_RAVAFIRST")) #download README
