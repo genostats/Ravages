@@ -5,7 +5,6 @@ adjustedCADD.annotation <- function(x, SNVs.scores = NULL, indels.scores = NULL,
     if(!("SubRegion" %in% colnames(x@snps))) stop("The 'SubRegion' of each CADD region should be in x@snps, please use 'set.CADDregions()'")
     which.indels <- (nchar(x@snps$A1)>1 | nchar(x@snps$A2)>1)
     x.indels <- select.snps(x, which.indels)
-    if(ncol(x.indels) != nrow(indels.scores)) stop("'indels.scores' has wrong dimensions")
     x.indels <- adjustedCADD.annotation.indels(x.indels, variant.scores = indels.scores, cores = cores, verbose = verbose, path.data = path.data)
     if(ncol(x.indels)<ncol(x)){
       x.SNVs <- select.snps(x, !which.indels)

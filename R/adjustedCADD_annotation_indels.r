@@ -1,4 +1,6 @@
 adjustedCADD.annotation.indels <- function(x, variant.scores = NULL, cores = 10, verbose = T, path.data){
+  if(bedr::check.binary(x = "bedtools", verbose = F)==F) stop("'bedtools' is not available and need to be installed on the system")
+
   if("adjCADD" %in% colnames(x@snps)){
     warning("'adjCADD' already exists and will be replaced")
     x@snps <- x@snps[,-which(colnames(x@snps)=="adjCADD")]
@@ -21,7 +23,7 @@ adjustedCADD.annotation.indels <- function(x, variant.scores = NULL, cores = 10,
     
     ##Annotation with adjusted CADD
     x.pos <- paste0(x@snps$chr, ":", format(x@snps$pos-1, scientific = F, trim = T), "-", format(x@snps$pos, scientific = F, trim = T))
-    ##Sort and merger positions
+    ##Sort and merge positions
     x.pos.sort <- bedr.sort.region(x.pos, check.chr=F, verbose = F, method="natural")
     x.pos.merged <- bedr.merge.region(x.pos.sort, check.chr=F, verbose = F)
     ##Split pos for parallelisation
@@ -42,6 +44,7 @@ adjustedCADD.annotation.indels <- function(x, variant.scores = NULL, cores = 10,
     
     ###For indels that are new: attribute the adjusted value of the nearest CADD value  
     if(sum(is.na(x@snps$adjCADD))>0){
+      if(!(all(c("chr", "pos", "A1", "A2", "PHRED_1.4") %in% colnames(variant.scores)))) stop("'variant.scores' should contain the columns 'chr', 'pos', 'A1', 'A2' and 'PHRED_1.4'")      
       
       ###For indels that are new: attribute the adjusted value of the nearest CADD value  
       #Annotation of PHRED by looking at A1->A2 and A2->A1

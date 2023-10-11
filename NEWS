@@ -1,3 +1,7 @@
+v1.1.4 : 
+ - Fix multiple mistakes in the package
+ - Addition of a running example for RAVA-FIRST
+
 v1.1.0 :
  - RAVA-FIRST:
     *Indels are now considered when computed the median adjusted CADD scores in each CADD region

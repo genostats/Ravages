@@ -6,6 +6,8 @@ adjustedCADD.annotation.SNVs <- function(x, variant.scores = NULL, cores = 10, v
   if(missing(path.data)) stop("the directory 'path.data' to download and use the necessary files for RAVA-FIRST analysis should be provided")
 ##Check if file with scores is provided
   if(is.null(variant.scores)){
+    if(bedr::check.binary(x = "bedtools")==F) stop("'bedtools' is not available and need to be installed on the system")
+
     ##Check if file with score already downloaded
     if(!file.exists(paste0(path.data, "/AdjustedCADD_v1.4_202108.tsv.gz"))){
       if(verbose){
@@ -34,7 +36,7 @@ adjustedCADD.annotation.SNVs <- function(x, variant.scores = NULL, cores = 10, v
     colnames(variant.scores) <- c("chr", "pos", "A1", "A2", "adjCADD")
   }else{
     #Annotation with provided scores file
-    if(!(all(colnames(variant.scores) %in% c("chr", "pos", "A1", "A2", "adjCADD")))) stop("'variant.scores' should contain the columns 'chr', 'pos', 'A1', 'A2' and 'adjCADD'")
+    if(!(all(c("chr", "pos", "A1", "A2", "adjCADD") %in% colnames(variant.scores)))) stop("'variant.scores' should contain the columns 'chr', 'pos', 'A1', 'A2' and 'adjCADD'")
     if(verbose) cat("Annotation of variants with provided scores in 'variant.scores'. Warning: these scores should correspond to the adjusted CADD scores available at https://lysine.univ-brest.fr/RAVA-FIRST/AdjustedCADD_v1.4_202108.tsv.gz\n")
   } 
   #Remove duplicated positions if any

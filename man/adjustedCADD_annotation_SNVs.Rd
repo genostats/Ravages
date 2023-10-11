@@ -12,7 +12,7 @@ adjustedCADD.annotation.SNVs(x, variant.scores = NULL,
 }
 \arguments{
   \item{x}{ A bed.matrix annotated with CADD regions using \code{set.CADDregions} }
-  \item{variant.scores}{ A dataframe containing the ADJUSTED CADD scores of the SNVs (Optional, useful to gain in computation time if the adjusted CADD scores of variants in the study are available)}
+  \item{variant.scores}{ A dataframe with the columns 'chr', 'pos', 'A1', 'A2' and 'adjCADD' containing the ADJUSTED CADD scores of the SNVs (Optional, useful to gain in computation time if the adjusted CADD scores of variants in the study are available)}
   \item{cores}{ How many cores to use, set at 10 by default}
   \item{verbose}{ Whether to display information about the function actions }
   \item{path.data}{ The repository where data for RAVA-FIRST are or will be downloaded from https://lysine.univ-brest.fr/RAVA-FIRST/}
@@ -21,6 +21,8 @@ adjustedCADD.annotation.SNVs(x, variant.scores = NULL,
   The bed matrix x with adjusted CADD scores in \code{adjCADD}.
 }
 \details{
+  bedtools need to be installed on the system if scores are not in \code{variants.scores} and need to be provided by Ravages.  
+
   SNVs are directly annotated with the adjusted CADD scores in the function using the file "AdjustedCADD_v1.4_202108.tsv.gz" downloaded from https://lysine.univ-brest.fr/RAVA-FIRST/ in the repository of the package Ravages or the scores of variants can be provided to \code{variant.scores} to gain in computation time (this file should contain 5 columns: the chromosome ('chr'), position ('pos'), reference allele ('A1'), alternative allele ('A2') and adjusted CADD scores ('adjCADD').  
 
   Those adjusted scores are used in the \code{RAVA.FIRST()} pipeline to filter rare variants.  

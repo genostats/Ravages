@@ -12,8 +12,8 @@ adjustedCADD.annotation(x, SNVs.scores = NULL, indels.scores = NULL,
 }
 \arguments{
   \item{x}{ A bed.matrix annotated with CADD regions using \code{set.CADDregions} }
-  \item{SNVs.scores}{ A dataframe containing the ADJUSTED CADD scores of the SNVs (Optional, useful to gain in computation time if the adjusted CADD scores of variants in the study are available)}
-  \item{indels.scores}{ A dataframe containing the CADD PHREDv1.4 scores of the indels - Compulsory if indels are present in \code{x}}
+  \item{SNVs.scores}{ A dataframe with the columns 'chr', 'pos', 'A1', 'A2' and 'adjCADD' containing the ADJUSTED CADD scores of the SNVs (Optional, useful to gain in computation time if the adjusted CADD scores of variants in the study are available)}
+  \item{indels.scores}{ A dataframe with the columns 'chr', 'pos', 'A1', 'A2' and 'PHRED_1.4' containing the CADD PHREDv1.4 scores of the indels - Compulsory if indels are present in \code{x}}
   \item{cores}{ How many cores to use, set at 10 by default}
   \item{verbose}{ Whether to display information about the function actions }
   \item{path.data}{ The repository where data for RAVA-FIRST are or will be downloaded from https://lysine.univ-brest.fr/RAVA-FIRST/}
@@ -22,6 +22,8 @@ adjustedCADD.annotation(x, SNVs.scores = NULL, indels.scores = NULL,
   The bed matrix x with adjusted CADD scores in \code{adjCADD}.
 }
 \details{
+  bedtools need to be installed on the system to run this function if indels are present are if scores are not provided for SNVs.  
+
   This function calls \code{adjustedCADD.annotation.SNVs} and \code{adjustedCADD.annotation.indels}. See the help of those two functions for more details.  
 }
 \source{https://lysine.univ-brest.fr/RAVA-FIRST/}
